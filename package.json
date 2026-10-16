@@ -9,9 +9,12 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "motion": "^14.3.0",
     "next": "16.4.2",
+    "nodemailer": "^10.1.2",
     "react": "19.3.0",
-    "react-dom": "19.3.0"
+    "react-dom": "19.3.0",
+    "react-icons": "^5.7.0"
   },
   "devDependencies": {
     "babel-plugin-react-compiler": "1.0.0",
