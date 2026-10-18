@@ -3,6 +3,7 @@ import { stories } from "@/drizzle/schema";
 import { eq, desc } from "drizzle-orm";
 import { auth } from "@/auth";
 import SubmitButton from "./SubmitButton";
+import ProfileCard from "./ProfileCard";
 import type { Status } from "@/lib/roles";
 
 export const dynamic = "force-dynamic";
@@ -31,6 +32,9 @@ export default async function MyStories() {
 
   return (
     <div className="font-body">
+      <div className="measure">
+        <ProfileCard />
+      </div>
       <h1 className="font-display mb-6">My stories</h1>
       {mine.length === 0 && (
         <p className="text-muted measure mb-10">
