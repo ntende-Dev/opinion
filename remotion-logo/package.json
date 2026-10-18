@@ -25,6 +25,7 @@
   "scripts": {
     "dev": "remotion studio",
     "build": "remotion bundle",
+    "render:webm": "remotion render src/index.ts LogoAnimation ../public/opinion-logo.webm --codec=vp8 --pixel-format=yuva420p --image-format=png",
     "upgrade": "remotion upgrade",
     "lint": "eslint src && tsc"
   },
