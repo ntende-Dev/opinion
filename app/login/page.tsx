@@ -108,14 +108,14 @@ export default function Login() {
           </button>
         </form>
         <p className="mt-6 text-sm text-muted font-ui">
-          Tha opinionated editorial dashboard is a work in progress. If you have
-          any questions or feedback, please reach out to{" "}
-          <Linkvercel
-            href="mailto: mvenda@opinionweekly.co.za"
+          The opinionated editorial dashboard is a work in progress. If you
+          have any questions or feedback, please reach out to{" "}
+          <Link
+            href="mailto:mvenda@opinionweekly.co.za"
             className="underline underline-offset-2 hover:no-underline"
           >
             mvenda@opinionweekly.co.za
-          </Linkvercel>
+          </Link>
         </p>
         <p className="mt-4 text-sm font-ui">
           Don't have an account?{" "}
