@@ -2,14 +2,17 @@
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import PulseLoader from "react-spinners/PulseLoader";
 import ImageUpload from "./ImageUpload";
 import Feedback from "@/app/Feedback";
 import { uploadImage } from "@/lib/upload";
+import { toast } from "sonner";
 
 export default function Write() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [coverImage, setCoverImage] = useState("");
+  const [uploading, setUploading] = useState(false);
   const contentRef = useRef<HTMLTextAreaElement>(null);
   const router = useRouter();
 
@@ -41,35 +44,57 @@ export default function Write() {
   async function insertImage() {
     const el = contentRef.current;
     if (!el) return;
-    setBusy(true);
-    const url = await new Promise<string | null>((resolve) => {
-      const input = document.createElement("input");
-      input.type = "file";
-      input.accept = "image/jpeg,image/png,image/webp,image/gif,image/avif";
-      input.onchange = () => {
-        const file = input.files?.[0];
-        if (file) resolve(uploadImage(file));
-        else resolve(null); // dialog cancelled
-      };
-      // Fire a change-resistant cleanup if the dialog is dismissed via Escape
-      document.body.appendChild(input);
-      input.style.display = "none";
-      input.click();
-      input.oncancel = () => {
-        input.remove();
-        resolve(null);
-      };
-    });
-    setBusy(false);
-    if (!url) return;
-    const img = `<p><img src="${url}" alt="" style="max-width:100%" /></p>`;
-    const start = el.selectionStart ?? el.value.length;
-    const end = el.selectionEnd ?? el.value.length;
-    el.value = el.value.slice(0, start) + "\n" + img + "\n" + el.value.slice(end);
+    setUploading(true);
+    try {
+      const url = await new Promise<string | null>((resolve) => {
+        const input = document.createElement("input");
+        input.type = "file";
+        input.accept = "image/jpeg,image/png,image/webp,image/gif,image/avif";
+        input.onchange = () => {
+          const file = input.files?.[0];
+          if (!file) {
+            resolve(null); // dialog cancelled without a file
+            return;
+          }
+          uploadImage(file)
+            .then(resolve)
+            .catch((e) => {
+              toast.error(e instanceof Error ? e.message : "Image upload failed");
+              resolve(null);
+            });
+        };
+        document.body.appendChild(input);
+        input.style.display = "none";
+        input.click();
+        input.oncancel = () => {
+          input.remove();
+          resolve(null);
+        };
+      });
+      if (!url) return;
+      const img = `<p><img src="${url}" alt="" style="max-width:100%" /></p>`;
+      const start = el.selectionStart ?? el.value.length;
+      const end = el.selectionEnd ?? el.value.length;
+      el.value = el.value.slice(0, start) + "\n" + img + "\n" + el.value.slice(end);
+      toast.success("Image inserted.");
+    } finally {
+      setUploading(false);
+    }
   }
 
   return (
     <div className="font-body measure">
+      {/* Upload-in-progress veil: quiet, centered spinner over the form */}
+      {uploading && (
+        <div className="fixed inset-0 z-50 grid place-items-center bg-white/70">
+          <div className="flex flex-col items-center gap-3">
+            <PulseLoader size={12} color="var(--color-accent)" />
+            <p className="font-ui text-sm text-[var(--color-muted)]" aria-live="polite">
+              Uploading image…
+            </p>
+          </div>
+        </div>
+      )}
       <h1 className="font-display mb-6">Write a story</h1>
       {error && <Feedback>{error}</Feedback>}
       <form action={submit} className="space-y-6">

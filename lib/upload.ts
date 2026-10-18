@@ -1,5 +1,9 @@
-/** Client-side image upload: authorize → PUT straight to the bucket. Returns /api/images/<key>. */
-export async function uploadImage(file: File): Promise<string | null> {
+/**
+ * Client-side image upload: authorize → PUT straight to the bucket.
+ * Returns the /api/images/<key> URL. Throws Error on failure so callers
+ * choose the presentation (toast, inline error, ...).
+ */
+export async function uploadImage(file: File): Promise<string> {
   const authorize = await fetch("/api/upload/authorize", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -7,8 +11,7 @@ export async function uploadImage(file: File): Promise<string | null> {
   });
   if (!authorize.ok) {
     const err = (await authorize.json().catch(() => ({}))) as { error?: string };
-    window.alert(err.error || "Could not start upload");
-    return null;
+    throw new Error(err.error || "Could not start the image upload");
   }
 
   const { uploadUrl, key } = (await authorize.json()) as {
@@ -23,8 +26,7 @@ export async function uploadImage(file: File): Promise<string | null> {
     headers: { "Content-Type": file.type },
   });
   if (!put.ok) {
-    window.alert("Image upload failed");
-    return null;
+    throw new Error("The image upload failed — please try again");
   }
   return `/api/images/${key}`;
 }

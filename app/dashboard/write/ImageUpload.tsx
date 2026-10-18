@@ -1,7 +1,9 @@
 "use client";
 
 import { useRef, useState } from "react";
+import ClipLoader from "react-spinners/ClipLoader";
 import { uploadImage } from "@/lib/upload";
+import { toast } from "sonner";
 
 export default function ImageUpload({
   onUploaded,
@@ -15,9 +17,15 @@ export default function ImageUpload({
 
   async function pick(file: File) {
     setBusy(true);
-    const url = await uploadImage(file);
-    setBusy(false);
-    if (url) onUploaded(url);
+    try {
+      const url = await uploadImage(file);
+      onUploaded(url);
+      toast.success("Image uploaded.");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Image upload failed");
+    } finally {
+      setBusy(false);
+    }
   }
 
   return (
@@ -37,8 +45,10 @@ export default function ImageUpload({
         type="button"
         disabled={busy}
         onClick={() => inputRef.current?.click()}
-        className="rounded border border-[var(--color-line)] px-3 py-2 text-sm font-ui font-medium hover:bg-gray-50 disabled:opacity-50"
+        className="inline-flex items-center gap-2 rounded border border-[var(--color-line)] px-3 py-2 text-sm font-ui font-medium hover:bg-gray-50 disabled:opacity-60"
+        aria-busy={busy}
       >
+        {busy && <ClipLoader size={13} color="var(--color-accent)" />}
         {busy ? "Uploading…" : label}
       </button>
     </>

@@ -41,7 +41,9 @@ const BUCKET_NAME = "assets";
 const allowedOrigins = [
   ...new Set(
     [
-      envVal("NEXTAUTH_URL"), // the canonical site origin
+      "https://www.opinionweekly.co.za",
+      "https://opinionweekly.co.za",
+      "https://opinion-silk.vercel.app",
       "http://localhost:3000",
       "http://localhost:3001",
       "http://localhost:3002", // dev-server port fallbacks
