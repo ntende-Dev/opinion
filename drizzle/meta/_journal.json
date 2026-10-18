@@ -1,0 +1,27 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1792287253714,
+      "tag": "0000_huge_wild_pack",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1792288742290,
+      "tag": "0001_lying_living_lightning",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1792291584353,
+      "tag": "0002_yellow_human_torch",
+      "breakpoints": true
+    }
+  ]
+}
