@@ -5,6 +5,9 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Feedback from "@/app/Feedback";
 
+// Mirrors the thrown message in auth.ts (can't import auth.ts into a client component).
+const UNVERIFIED_ERROR = "Please verify your email before signing in.";
+
 const VERIFY_ERRORS: Record<string, string> = {
   "missing-verification-token": "Missing verification token.",
   "invalid-or-expired-verification-token":
@@ -23,9 +26,7 @@ export default function Login() {
     const err = searchParams.get("error");
     if (verified === "1") {
       setKind("success");
-      setError(
-        "Your email is verified. You can now sign in.",
-      );
+      setError("Your email is verified. You can now sign in.");
     } else if (err && VERIFY_ERRORS[err]) {
       setKind("error");
       setError(VERIFY_ERRORS[err]);
@@ -46,7 +47,11 @@ export default function Login() {
 
     setBusy(false);
     if (result?.error) {
-      setError("Invalid email or password");
+      setError(
+        result.error === UNVERIFIED_ERROR
+          ? "Please verify your email first — check your inbox for the verification link."
+          : "Invalid email or password",
+      );
       return;
     }
 
@@ -116,7 +121,10 @@ export default function Login() {
           </Link>
         </p>
         <p className="mt-4 text-sm font-ui">
-          <Link href="/" className="underline underline-offset-2 hover:no-underline">
+          <Link
+            href="/"
+            className="underline underline-offset-2 hover:no-underline"
+          >
             ← Back to home
           </Link>
         </p>

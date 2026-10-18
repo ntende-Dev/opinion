@@ -64,7 +64,7 @@ function logDelivery(info: Parameters<typeof getTestMessageUrl>[0], label: strin
 
 export async function sendVerificationEmail(email: string, token: string, name: string) {
   const transport = await getTransporter();
-  const verifyUrl = `${BASE_URL}/verify-email?token=${token}`;
+  const verifyUrl = `${BASE_URL}/api/verify-email?token=${token}`;
 
   const info = await transport.sendMail({
     from: FROM,

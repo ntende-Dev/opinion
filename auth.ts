@@ -6,6 +6,9 @@ import { users } from "@/drizzle/schema";
 import { eq } from "drizzle-orm";
 import { compare } from "bcryptjs";
 
+export const UNVERIFIED_ERROR =
+  "Please verify your email before signing in.";
+
 export const authOptions: NextAuthOptions = {
   providers: [
     CredentialsProvider({
@@ -25,7 +28,7 @@ export const authOptions: NextAuthOptions = {
         if (!user || !user.password) return null;
 
         if (!user.emailVerified) {
-          throw new Error("Please verify your email before signing in.");
+          throw new Error(UNVERIFIED_ERROR);
         }
 
         const valid = await compare(String(credentials.password), user.password);
