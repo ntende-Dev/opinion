@@ -15,6 +15,7 @@ export default async function DashboardLayout({
   const session = await auth();
   if (!session) redirect("/login");
   const isEditor = EDITORS.includes((session.user as any).role);
+  const isAdmin = (session.user as any).role === "admin";
 
   const [{ n: pendingCount }] = await db
     .select({ n: count() })
@@ -50,6 +51,11 @@ export default async function DashboardLayout({
                 ({pendingCount})
               </span>
             )}
+          </Link>
+        )}
+        {isAdmin && (
+          <Link href="/dashboard/admin" className="hover:underline">
+            Users
           </Link>
         )}
       </nav>

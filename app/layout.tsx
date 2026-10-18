@@ -1,12 +1,26 @@
 import "./globals.css";
+import type { Metadata } from "next";
 import { auth } from "@/auth";
 import Providers from "@/app/Providers";
 import { Toaster } from "sonner";
 import SiteHeader from "@/app/SiteHeader";
 
-export const metadata = {
-  title: "The Opinion Weekly",
-  description: "Where every opinion matters.",
+const siteUrl = process.env.NEXTAUTH_URL || "http://localhost:3000";
+
+export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl),
+  title: {
+    default: "The Opinion Weekly",
+    template: "%s — The Opinion Weekly",
+  },
+  description: "Where every opinion matters. A journal of editorial argument.",
+  openGraph: {
+    type: "website",
+    siteName: "The Opinion Weekly",
+    title: "The Opinion Weekly",
+    description: "Where every opinion matters. A journal of editorial argument.",
+    url: siteUrl,
+  },
 };
 
 export default async function RootLayout({
