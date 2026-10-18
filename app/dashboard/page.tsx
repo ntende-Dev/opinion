@@ -1,10 +1,11 @@
 import { db } from "@/drizzle/db";
-import { stories } from "@/drizzle/schema";
+import { stories, users } from "@/drizzle/schema";
 import { eq, desc } from "drizzle-orm";
 import { auth } from "@/auth";
 import SubmitButton from "./SubmitButton";
 import ProfileCard from "./ProfileCard";
-import type { Status } from "@/lib/roles";
+import ManageStories from "./ManageStories";
+import { EDITORS, type Status } from "@/lib/roles";
 
 export const dynamic = "force-dynamic";
 
@@ -16,6 +17,8 @@ const badge: Record<Status, string> = {
 
 export default async function MyStories() {
   const session = await auth();
+  const role = (session?.user as any)?.role;
+  const isEditor = EDITORS.includes(role);
   const userId = (session?.user as any)?.id;
 
   const mine = await db
@@ -29,6 +32,22 @@ export default async function MyStories() {
     .from(stories)
     .where(eq(stories.authorId, Number(userId)))
     .orderBy(desc(stories.createdAt));
+
+  // Admins and editors manage every story in the system — published ones
+  // included — from this dashboard.
+  const all = isEditor
+    ? await db
+        .select({
+          id: stories.id,
+          title: stories.title,
+          slug: stories.slug,
+          status: stories.status,
+          authorName: users.name,
+        })
+        .from(stories)
+        .leftJoin(users, eq(users.id, stories.authorId))
+        .orderBy(desc(stories.createdAt))
+    : [];
 
   return (
     <div className="font-body">
@@ -74,6 +93,18 @@ export default async function MyStories() {
           </li>
         ))}
       </ul>
+      {isEditor && (
+        <section className="mt-12">
+          <h2 className="font-display font-semibold mb-5 text-[var(--step-2)]">
+            All stories
+          </h2>
+          <p className="text-muted text-sm mb-5">
+            Every story in the system — published, pending or draft. Admin and
+            editor tools: edit, publish/unpublish, delete.
+          </p>
+          <ManageStories rows={all} />
+        </section>
+      )}
     </div>
   );
 }
