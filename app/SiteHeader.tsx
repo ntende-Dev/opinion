@@ -33,12 +33,14 @@ function initials(name: string) {
 export default function SiteHeader({ initialAuthed }: { initialAuthed: boolean }) {
   const { status } = useSession();
   const router = useRouter();
+  const [signedOut, setSignedOut] = useState(false);
   const authed =
-    status === "authenticated"
+    !signedOut &&
+    (status === "authenticated"
       ? true
       : status === "unauthenticated"
         ? false
-        : initialAuthed;
+        : initialAuthed);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [profileTick, setProfileTick] = useState(0);
 
@@ -65,8 +67,11 @@ export default function SiteHeader({ initialAuthed }: { initialAuthed: boolean }
   }, [status, profileTick]);
 
   async function signout() {
-    await signOut({ redirect: false });
+    // Flip the header in the same render tick — the Dashboard link and the
+    // profile block vanish immediately, before the network roundtrip lands.
+    setSignedOut(true);
     setProfile(null);
+    await signOut({ redirect: false }); // CSRF-safe cookie clear
     router.refresh();
     router.push("/");
     toast.success("You've been signed out.");
