@@ -105,6 +105,16 @@ a:hover {
   max-width: 48rem;
 }
 
+/* Line clamps for story cards */
+.clamp-2,
+.clamp-3 {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.clamp-2 { -webkit-line-clamp: 2; }
+.clamp-3 { -webkit-line-clamp: 3; }
+
 .measure {
   max-width: var(--measure);
 }
