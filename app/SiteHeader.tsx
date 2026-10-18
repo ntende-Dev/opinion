@@ -2,6 +2,7 @@
 import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -23,15 +24,19 @@ function initials(name: string) {
   );
 }
 
-/** Leaderboard ad just below the navbar (728×90 creative). */
+/** Leaderboard ad just below the navbar (728×90 creative, displayed at a
+ *  modest 600px cap so it sits quietly under the masthead). next/image
+ *  serves it as compressed WebP/AVIF per device. */
 function AdBanner() {
   return (
-    <div className="mt-4 pb-4" aria-label="Advertisement">
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
+    <div className="mt-3 pb-3" aria-label="Advertisement">
+      <Image
         src="/images/topBanner.png"
         alt="Advertisement"
-        className="block w-full h-auto rounded border border-[var(--color-line)]"
+        width={728}
+        height={90}
+        priority
+        className="mx-auto block h-auto w-full max-w-[600px] rounded border border-[var(--color-line)]"
       />
     </div>
   );
