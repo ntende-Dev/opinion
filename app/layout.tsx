@@ -1,6 +1,6 @@
 import "./globals.css";
 import { auth } from "@/auth";
-import { SessionProvider } from "next-auth/react";
+import Providers from "@/app/Providers";
 import { Toaster } from "sonner";
 import SiteHeader from "@/app/SiteHeader";
 
@@ -28,10 +28,10 @@ export default async function RootLayout({
         />
       </head>
       <body className="font-body">
-        <SessionProvider refetchOnWindowFocus={false}>
+        <Providers>
           <SiteHeader initialAuthed={isAuthed} />
           <main className="font-body">{children}</main>
-        </SessionProvider>
+        </Providers>
         <Toaster position="top-center" />
       </body>
     </html>
