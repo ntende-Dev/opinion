@@ -5,6 +5,7 @@ import { db } from "@/drizzle/db";
 import { stories } from "@/drizzle/schema";
 import { eq, count } from "drizzle-orm";
 import { EDITORS } from "@/lib/roles";
+import SessionGuard from "./SessionGuard";
 
 export default async function DashboardLayout({
   children,
@@ -22,6 +23,7 @@ export default async function DashboardLayout({
 
   return (
     <div className="container font-body">
+      <SessionGuard />
       <nav className="mb-10 flex items-center gap-4 border-b border-[var(--color-line)] pb-4 text-sm font-ui">
         <Link href="/dashboard" className="hover:underline">
           My stories

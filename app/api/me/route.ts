@@ -4,8 +4,9 @@ import { db } from "@/drizzle/db";
 import { users } from "@/drizzle/schema";
 import { eq } from "drizzle-orm";
 
-/** Avatar URLs must be keys served by our own image proxy. */
-const AVATAR_RE = /^\/api\/images\/uploads\/[A-Za-z0-9._-]+\.(jpe?g|png|webp|gif|avif)$/i;
+/** Avatar URLs must be keys served by our own image proxy. Keys are minted
+ * by lib/storage.ts as stories/<uuid>.<ext> — accept exactly those. */
+const AVATAR_RE = /^\/api\/images\/stories\/[a-f0-9-]{36}\.(jpe?g|png|webp|gif|avif)$/i;
 
 async function profile(id: number) {
   const [u] = await db
