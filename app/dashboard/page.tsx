@@ -35,7 +35,13 @@ export default async function MyStories() {
 
   // Admins and editors manage every story in the system — published ones
   // included — from this dashboard.
-  const all = isEditor
+  const allRaw: {
+    id: number;
+    title: string;
+    slug: string;
+    status: string;
+    authorName: string | null;
+  }[] = isEditor
     ? await db
         .select({
           id: stories.id,
@@ -48,6 +54,7 @@ export default async function MyStories() {
         .leftJoin(users, eq(users.id, stories.authorId))
         .orderBy(desc(stories.createdAt))
     : [];
+  const all = allRaw.map((r) => ({ ...r, status: r.status as Status }));
 
   return (
     <div className="font-body">
