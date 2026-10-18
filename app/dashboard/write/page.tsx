@@ -167,9 +167,13 @@ export default function Write() {
             className="block mb-1 text-sm font-ui font-medium text-[var(--color-muted)]"
           >
             Slug (e.g. my-story)
-            {storyId && (
+            {storyId ? (
               <span className="ml-2 font-normal text-[var(--color-muted)] normal-case">
                 — changing it moves the story&apos;s URL
+              </span>
+            ) : (
+              <span className="ml-2 font-normal text-[var(--color-muted)] normal-case">
+                — tidied to lowercase-with-dashes automatically
               </span>
             )}
           </label>

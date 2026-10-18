@@ -3,6 +3,7 @@ import { stories } from "@/drizzle/schema";
 import { auth } from "@/auth";
 import { and, eq, ne } from "drizzle-orm";
 import { EDITORS, type Status } from "@/lib/roles";
+import { slugify } from "@/lib/slug";
 
 const OWNER_MOVES: Record<Status, Status[]> = {
   draft: ["pending"],
@@ -130,9 +131,10 @@ export async function PUT(
     coverImage?: string | null;
   };
 
-  if (!body.title || !body.title.trim() || !body.slug || !body.content)
+  const slug = slugify(body.slug ?? "");
+  if (!body.title || !body.title.trim() || !slug || !body.content)
     return Response.json(
-      { error: "title, slug and content are required" },
+      { error: "title, slug and content are required (and the slug needs usable characters)" },
       { status: 400 },
     );
   if (body.coverImage && !body.coverImage.startsWith("/api/images/"))
@@ -142,7 +144,7 @@ export async function PUT(
   const [clash] = await db
     .select({ id: stories.id })
     .from(stories)
-    .where(and(eq(stories.slug, body.slug), ne(stories.id, storyId)));
+    .where(and(eq(stories.slug, slug), ne(stories.id, storyId)));
   if (clash)
     return Response.json(
       { error: "That slug is already in use by another story" },
@@ -153,7 +155,7 @@ export async function PUT(
     .update(stories)
     .set({
       title: body.title.trim(),
-      slug: body.slug,
+      slug,
       excerpt: body.excerpt ?? "",
       content: body.content,
       coverImage: body.coverImage ?? null,

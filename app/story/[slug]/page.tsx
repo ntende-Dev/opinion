@@ -8,6 +8,15 @@ import { EDITORS } from "@/lib/roles";
 
 export const dynamic = "force-dynamic";
 
+/** Decode a URL slug, tolerating stray % sequences. */
+function safeDecode(slug: string) {
+  try {
+    return decodeURIComponent(slug);
+  } catch {
+    return slug;
+  }
+}
+
 type StoryRow = {
   title: string;
   excerpt: string;
@@ -79,7 +88,10 @@ export default async function Story({
 }: {
   params: Promise<{ slug: string }>;
 }) {
-  const { slug } = await params;
+  const { slug: raw } = await params;
+  // Legacy URLs may carry percent-encoded characters (spaces etc.).
+  const slug = safeDecode(raw);
+  if (!slug) notFound();
   const story = await loadStory(slug);
   if (!story) notFound();
 
