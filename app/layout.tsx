@@ -1,7 +1,8 @@
 import "./globals.css";
-import Link from "next/link";
 import { auth } from "@/auth";
-import SignOutButton from "@/app/SignOutButton";
+import { SessionProvider } from "next-auth/react";
+import { Toaster } from "sonner";
+import SiteHeader from "@/app/SiteHeader";
 
 export const metadata = {
   title: "The Opinion Weekly",
@@ -27,37 +28,11 @@ export default async function RootLayout({
         />
       </head>
       <body className="font-body">
-        <header className="mb-10 flex items-center justify-between border-b border-[var(--color-line)] pb-4">
-          <Link href="/" className="font-ui text-xl font-bold tracking-tight">
-            The Opinion Weekly
-          </Link>
-          <nav className="font-ui text-sm font-medium flex items-center gap-4">
-            <Link href="/" className="hover:underline">
-              Home
-            </Link>
-            <Link href="/contact" className="hover:underline">
-              Contact
-            </Link>
-            {isAuthed ? (
-              <>
-                <Link href="/dashboard" className="hover:underline">
-                  Dashboard
-                </Link>
-                <SignOutButton />
-              </>
-            ) : (
-              <>
-                <Link href="/login" className="hover:underline">
-                  Login
-                </Link>
-                <Link href="/signup" className="hover:underline">
-                  Sign up
-                </Link>
-              </>
-            )}
-          </nav>
-        </header>
-        <main className="font-body">{children}</main>
+        <SessionProvider refetchOnWindowFocus={false}>
+          <SiteHeader initialAuthed={isAuthed} />
+          <main className="font-body">{children}</main>
+        </SessionProvider>
+        <Toaster position="top-center" />
       </body>
     </html>
   );

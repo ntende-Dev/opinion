@@ -3,6 +3,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { send } from "./action";
 import Feedback from "@/app/Feedback";
+import { toast } from "sonner";
 
 export default function Contact() {
   const [busy, setBusy] = useState(false);
@@ -19,6 +20,7 @@ export default function Contact() {
       return;
     }
     setSent(true);
+    toast.success("Message sent — it's in the editors' inbox.");
   }
 
   return (
