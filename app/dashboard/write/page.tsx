@@ -1,5 +1,5 @@
 "use client";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import PulseLoader from "react-spinners/PulseLoader";
@@ -8,35 +8,79 @@ import Feedback from "@/app/Feedback";
 import { uploadImage } from "@/lib/upload";
 import { toast } from "sonner";
 
+type EditStory = {
+  id: number;
+  title: string;
+  slug: string;
+  excerpt: string | null;
+  content: string;
+  coverImage: string | null;
+};
+
 export default function Write() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [coverImage, setCoverImage] = useState("");
   const [uploading, setUploading] = useState(false);
+  const [editStory, setEditStory] = useState<EditStory | null>(null);
+  const [loadError, setLoadError] = useState("");
+  // "home" when opened from a story card's Edit action, else the dashboard.
+  const [fromPage, setFromPage] = useState<string>("");
   const contentRef = useRef<HTMLTextAreaElement>(null);
   const router = useRouter();
+
+  const storyId = editStory?.id ?? null;
+
+  useEffect(() => {
+    // URL params without useSearchParams — dashboard pages render statically.
+    const params = new URLSearchParams(window.location.search);
+    const raw = params.get("story");
+    setFromPage(params.get("from") ?? "");
+    if (!raw || !/^\d+$/.test(raw)) return;
+    fetch(`/api/stories/${raw}`)
+      .then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
+      .then((s: EditStory) => {
+        setEditStory(s);
+        setCoverImage(s.coverImage ?? "");
+      })
+      .catch((code) => {
+        setLoadError(
+          code === 403
+            ? "You don't have permission to edit that story."
+            : code === 404
+              ? "Story not found."
+              : "Could not load the story.",
+        );
+      });
+  }, []);
 
   async function submit(formData: FormData) {
     setBusy(true);
     setError("");
-    const res = await fetch("/api/stories", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        title: String(formData.get("title") ?? ""),
-        slug: String(formData.get("slug") ?? ""),
-        excerpt: String(formData.get("excerpt") ?? ""),
-        content: String(formData.get("content") ?? ""),
-        coverImage: coverImage || undefined,
-      }),
-    });
+    const payload = {
+      title: String(formData.get("title") ?? "").trim(),
+      slug: String(formData.get("slug") ?? "").trim(),
+      excerpt: String(formData.get("excerpt") ?? ""),
+      content: String(formData.get("content") ?? ""),
+      // Empty means remove the cover — PUT fully specifies the row.
+      coverImage: coverImage || null,
+    };
+    const res = await fetch(
+      storyId ? `/api/stories/${storyId}` : "/api/stories",
+      {
+        method: storyId ? "PUT" : "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      },
+    );
     setBusy(false);
     if (!res.ok) {
       const err = (await res.json().catch(() => ({}))) as { error?: string };
-      setError(err.error || "Could not create story");
+      setError(err.error || (storyId ? "Could not save changes" : "Could not create story"));
       return;
     }
-    router.push("/dashboard");
+    toast.success(storyId ? "Story updated." : "Story saved as draft.");
+    router.push(fromPage === "home" ? "/" : "/dashboard");
     router.refresh();
   }
 
@@ -95,9 +139,13 @@ export default function Write() {
           </div>
         </div>
       )}
-      <h1 className="font-display mb-6">Write a story</h1>
+      <h1 className="font-display mb-6">
+        {storyId ? "Edit story" : "Write a story"}
+      </h1>
+      {loadError && <Feedback>{loadError}</Feedback>}
       {error && <Feedback>{error}</Feedback>}
-      <form action={submit} className="space-y-6">
+      {/* key remount applies the loaded story to the uncontrolled fields */}
+      <form key={editStory?.id ?? 0} action={submit} className="space-y-6">
         <div>
           <label
             htmlFor="title"
@@ -109,6 +157,7 @@ export default function Write() {
             id="title"
             name="title"
             required
+            defaultValue={editStory?.title ?? ""}
             className="block w-full border border-[var(--color-line)] rounded px-3 py-2 text-base font-body focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)]"
           />
         </div>
@@ -118,11 +167,17 @@ export default function Write() {
             className="block mb-1 text-sm font-ui font-medium text-[var(--color-muted)]"
           >
             Slug (e.g. my-story)
+            {storyId && (
+              <span className="ml-2 font-normal text-[var(--color-muted)] normal-case">
+                — changing it moves the story&apos;s URL
+              </span>
+            )}
           </label>
           <input
             id="slug"
             name="slug"
             required
+            defaultValue={editStory?.slug ?? ""}
             className="block w-full border border-[var(--color-line)] rounded px-3 py-2 text-base font-body font-ui focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)]"
           />
         </div>
@@ -136,6 +191,7 @@ export default function Write() {
           <textarea
             id="excerpt"
             name="excerpt"
+            defaultValue={editStory?.excerpt ?? ""}
             className="block w-full border border-[var(--color-line)] rounded px-3 py-2 text-base font-body focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)]"
           />
         </div>
@@ -150,7 +206,8 @@ export default function Write() {
             id="content"
             name="content"
             ref={contentRef}
-            rows={10}
+            rows={12}
+            defaultValue={editStory?.content ?? ""}
             className="block w-full border border-[var(--color-line)] rounded px-3 py-2 text-base font-body font-mono focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)]"
           />
           <div className="mt-2 flex items-center gap-3">
@@ -192,12 +249,15 @@ export default function Write() {
           disabled={busy}
           className="rounded bg-[var(--color-accent)] px-4 py-2 text-white font-ui font-medium hover:bg-[var(--color-accent-hover)] transition-colors disabled:bg-gray-400 disabled:hover:bg-gray-400"
         >
-          {busy ? "Saving…" : "Save as draft"}
+          {busy ? "Saving…" : storyId ? "Save changes" : "Save as draft"}
         </button>
       </form>
       <p className="mt-8 text-sm font-ui">
-        <Link href="/dashboard" className="underline underline-offset-2 hover:no-underline">
-          ← Back to my stories
+        <Link
+          href={fromPage === "home" ? "/" : "/dashboard"}
+          className="underline underline-offset-2 hover:no-underline"
+        >
+          {fromPage === "home" ? "← Back to the front page" : "← Back to my stories"}
         </Link>
       </p>
     </div>

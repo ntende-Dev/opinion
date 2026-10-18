@@ -23,27 +23,16 @@ function initials(name: string) {
   );
 }
 
-/** Dummy leaderboard ad — placeholder until a real ad slot exists. */
+/** Leaderboard ad just below the navbar (728×90 creative). */
 function AdBanner() {
   return (
     <div className="mt-4 pb-4" aria-label="Advertisement">
-      <p className="text-center font-ui text-[10px] tracking-[0.25em] uppercase text-[var(--color-muted)]">
-        Advertisement
-      </p>
-      <div className="mt-2 rounded border border-dashed border-[var(--color-line)] px-6 py-5 text-center">
-        <p className="font-display text-lg text-[var(--color-muted)]">
-          There is room for your message here.
-        </p>
-        <p className="mt-1 font-ui text-xs text-[var(--color-muted)]">
-          728 × 90 · every page ·{" "}
-          <Link
-            href="/contact"
-            className="underline text-[var(--color-accent)]"
-          >
-            get in touch
-          </Link>
-        </p>
-      </div>
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src="/images/topBanner.png"
+        alt="Advertisement"
+        className="block w-full h-auto rounded border border-[var(--color-line)]"
+      />
     </div>
   );
 }

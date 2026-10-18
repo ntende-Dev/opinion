@@ -2,6 +2,10 @@
 import { createPortal } from "react-dom";
 import { useEffect, useId, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
+import { EDITORS } from "@/lib/roles";
+import { toast } from "sonner";
 
 export type CardStory = {
   id: number;
@@ -47,7 +51,58 @@ function timeAgo(iso: string | null) {
  */
 export default function StoryCard({ story }: { story: CardStory }) {
   const [open, setOpen] = useState(false);
+  const [working, setWorking] = useState<string | null>(null);
   const titleId = useId();
+  const router = useRouter();
+  const { data: session } = useSession();
+
+  // Management privileges: admins and editors only (contributors revise
+  // their own work through the review queue instead).
+  const canManage = EDITORS.includes(
+    ((session?.user as any)?.role as string | undefined) ?? "",
+  );
+
+  /** PATCH status published → draft. The card disappears on refresh. */
+  async function unpublish() {
+    setWorking("unpublish");
+    try {
+      const res = await fetch(`/api/stories/${story.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: "draft" }),
+      });
+      if (!res.ok) throw new Error(((await res.json().catch(() => ({}))) as { error?: string }).error || "Could not unpublish");
+      toast.success("Story unpublished — it's back in the editor's drafts.");
+      setOpen(false);
+      router.refresh();
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Could not unpublish");
+    } finally {
+      setWorking(null);
+    }
+  }
+
+  /** DELETE is permanent — confirm first. */
+  async function remove() {
+    if (
+      !window.confirm(
+        `Delete "${story.title}" permanently? This cannot be undone.`,
+      )
+    )
+      return;
+    setWorking("delete");
+    try {
+      const res = await fetch(`/api/stories/${story.id}`, { method: "DELETE" });
+      if (!res.ok) throw new Error(((await res.json().catch(() => ({}))) as { error?: string }).error || "Could not delete");
+      toast.success("Story deleted.");
+      setOpen(false);
+      router.refresh();
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Could not delete");
+    } finally {
+      setWorking(null);
+    }
+  }
 
   // ESC closes; body scroll is locked while the modal is up.
   useEffect(() => {
@@ -170,6 +225,36 @@ export default function StoryCard({ story }: { story: CardStory }) {
                 className="prose-content leading-relaxed"
                 dangerouslySetInnerHTML={{ __html: story.content }}
               />
+              {canManage && (
+                <div className="mt-8 flex flex-wrap items-center gap-3 font-ui text-sm">
+                  <span className="text-xs tracking-wide uppercase text-[var(--color-muted)]">
+                    Manage
+                  </span>
+                  <Link
+                    href={`/dashboard/write?story=${story.id}&from=home`}
+                    onClick={() => setOpen(false)}
+                    className="rounded border border-[var(--color-line)] px-3 py-1.5 no-underline hover:border-[var(--color-muted)] transition-colors"
+                  >
+                    Edit
+                  </Link>
+                  <button
+                    type="button"
+                    onClick={unpublish}
+                    disabled={working !== null}
+                    className="rounded border border-[var(--color-line)] px-3 py-1.5 hover:bg-[var(--color-line)] transition-colors disabled:opacity-60"
+                  >
+                    {working === "unpublish" ? "Unpublishing…" : "Unpublish"}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={remove}
+                    disabled={working !== null}
+                    className="rounded bg-[var(--color-accent)] px-3 py-1.5 text-white hover:bg-[var(--color-accent-hover)] transition-colors disabled:opacity-60"
+                  >
+                    {working === "delete" ? "Deleting…" : "Delete"}
+                  </button>
+                </div>
+              )}
               <p className="mt-8 pt-4 border-t border-[var(--color-line)] font-ui text-sm">
                 <Link
                   href={`/story/${story.slug}`}
