@@ -54,7 +54,7 @@ function LogoMark() {
       loop
       playsInline
       aria-hidden="true"
-      className="block h-10 w-auto"
+      className="block h-[50px] w-auto"
     />
   );
 }
@@ -90,12 +90,20 @@ function MenuIcon({ open }: { open: boolean }) {
   );
 }
 
+const linkBase =
+  "font-ui text-sm font-medium hover:underline decoration-2 underline-offset-4";
+
 /**
  * Site header with live auth state. The client session decides auth; the
  * profile block (avatar, name, role, email) is fetched from /api/me while
  * signed in and stays there for as long as the session exists — sign-out
  * clears both at once. Avatar changes anywhere in the app re-broadcast the
  * `profile-updated` event to refresh this block immediately.
+ *
+ * Layout: padded full-width bar, navigation links on the left, the logo
+ * absolutely centered on the bar (the content column is `mx-auto`, so this
+ * is the same visual center as the page), and account actions on the right.
+ * Below md everything moves into the hamburger panel.
  */
 export default function SiteHeader({ initialAuthed }: { initialAuthed: boolean }) {
   const { status } = useSession();
@@ -146,24 +154,110 @@ export default function SiteHeader({ initialAuthed }: { initialAuthed: boolean }
     toast.success("You've been signed out.");
   }
 
-  const navLinks = (
-    close: () => void,
-    linkClass = "hover:underline"
-  ) => (
-    <>
-      <Link href="/" className={linkClass} onClick={close}>
-        Home
-      </Link>
-      <Link href="/contact" className={linkClass} onClick={close}>
-        Contact
-      </Link>
-      {authed ? (
-        <>
-          <Link href="/dashboard" className={linkClass} onClick={close}>
-            Dashboard
+  return (
+    <header className="mb-10 border-b border-[var(--color-line)] px-6">
+      <div className="relative flex items-center justify-between gap-4 pt-1 pb-5">
+        {/* Left — page links (desktop). Mobile gets these in the panel. */}
+        <nav className="hidden md:flex items-center gap-5">
+          <Link href="/" className={linkBase}>
+            Home
           </Link>
-          {profile && (
-            <div className="flex items-center gap-2 pl-2 border-l border-[var(--color-line)]">
+          <Link href="/contact" className={linkBase}>
+            Contact
+          </Link>
+          {authed && (
+            <Link href="/dashboard" className={linkBase}>
+              Dashboard
+            </Link>
+          )}
+        </nav>
+        {/* Spacer so flex space-between keeps the logo truly central even
+            when the left nav is hidden on mobile. */}
+        <span className="md:hidden" aria-hidden="true" />
+
+        {/* Center — the logo, justified center of the bar. */}
+        <Link
+          href="/"
+          aria-label="The Opinion Weekly — home"
+          className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center"
+        >
+          <LogoMark />
+        </Link>
+
+        {/* Right — account actions. */}
+        <div className="flex items-center gap-3">
+          {authed ? (
+            <>
+              {profile && (
+                <div className="hidden md:flex items-center gap-2">
+                  {profile.avatarUrl ? (
+                    <img
+                      src={profile.avatarUrl}
+                      alt=""
+                      className="h-9 w-9 rounded-full object-cover border border-[var(--color-line)]"
+                    />
+                  ) : (
+                    <span
+                      aria-hidden="true"
+                      className="flex h-9 w-9 items-center justify-center rounded-full bg-[var(--color-accent)] text-white font-display font-bold text-sm"
+                    >
+                      {initials(profile.name)}
+                    </span>
+                  )}
+                  <span className="hidden xl:flex flex-col leading-tight">
+                    <span className="font-ui text-sm font-normal text-[var(--color-ink)]">
+                      {profile.name}
+                      <span className="ml-1.5 rounded-full border border-[var(--color-line)] px-1.5 py-px text-[11px] font-medium text-[var(--color-muted)]">
+                        {profile.role}
+                      </span>
+                    </span>
+                    <span className="font-ui text-[11px] text-[var(--color-muted)]">
+                      {profile.email}
+                    </span>
+                  </span>
+                </div>
+              )}
+              <button
+                onClick={signout}
+                className="hidden md:inline-flex font-ui text-sm rounded bg-[var(--color-accent)] px-3 py-1.5 text-white hover:bg-[var(--color-accent-hover)] transition-colors"
+              >
+                Sign out
+              </button>
+            </>
+          ) : (
+            <>
+              <Link href="/login" className={`${linkBase} hidden md:inline`}>
+                Login
+              </Link>
+              <Link
+                href="/signup"
+                className="hidden md:inline-flex font-ui text-sm rounded bg-[var(--color-accent)] px-3 py-1.5 text-white hover:bg-[var(--color-accent-hover)] transition-colors"
+              >
+                Sign up
+              </Link>
+            </>
+          )}
+          <button
+            type="button"
+            className="md:hidden p-2 -mr-2 rounded hover:bg-[var(--color-line)] transition-colors"
+            aria-label={menuOpen ? "Close menu" : "Open menu"}
+            aria-expanded={menuOpen}
+            aria-controls="mobile-menu"
+            onClick={() => setMenuOpen((o) => !o)}
+          >
+            <MenuIcon open={menuOpen} />
+          </button>
+        </div>
+      </div>
+
+      {/* Mobile drop-down panel. */}
+      {menuOpen && (
+        <nav
+          id="mobile-menu"
+          className="md:hidden flex flex-col items-start gap-4 pt-3 pb-5"
+        >
+          {authed && profile && (
+            <div className="flex items-center gap-2 pb-1 border-b border-[var(--color-line)] w-full">
               {profile.avatarUrl ? (
                 <img
                   src={profile.avatarUrl}
@@ -178,8 +272,8 @@ export default function SiteHeader({ initialAuthed }: { initialAuthed: boolean }
                   {initials(profile.name)}
                 </span>
               )}
-              <span className="hidden sm:flex flex-col leading-tight">
-                <span className="font-normal text-[var(--color-ink)]">
+              <span className="font-ui flex flex-col leading-tight">
+                <span className="text-sm font-normal text-[var(--color-ink)]">
                   {profile.name}
                   <span className="ml-1.5 rounded-full border border-[var(--color-line)] px-1.5 py-px text-[11px] font-medium text-[var(--color-muted)]">
                     {profile.role}
@@ -191,62 +285,46 @@ export default function SiteHeader({ initialAuthed }: { initialAuthed: boolean }
               </span>
             </div>
           )}
-          <button
-            onClick={signout}
-            className="rounded bg-[var(--color-accent)] px-3 py-1.5 text-sm text-white hover:bg-[var(--color-accent-hover)] transition-colors"
-          >
-            Sign out
-          </button>
-        </>
-      ) : (
-        <>
-          <Link href="/login" className={linkClass} onClick={close}>
-            Login
+          <Link href="/" className={linkBase} onClick={() => setMenuOpen(false)}>
+            Home
           </Link>
-          <Link
-            href="/signup"
-            className="rounded bg-[var(--color-accent)] px-3 py-1.5 text-white hover:bg-[var(--color-accent-hover)] transition-colors"
-            onClick={close}
-          >
-            Sign up
+          <Link href="/contact" className={linkBase} onClick={() => setMenuOpen(false)}>
+            Contact
           </Link>
-        </>
-      )}
-    </>
-  );
-
-  return (
-    <header className="mb-10 border-b border-[var(--color-line)]">
-      <div className="flex items-center justify-between pb-5 pt-1">
-        <Link
-          href="/"
-          aria-label="The Opinion Weekly — home"
-          className="flex items-center"
-        >
-          <LogoMark />
-        </Link>
-        <div className="flex items-center gap-2">
-          <nav className="hidden md:flex font-ui text-sm font-medium items-center gap-4">
-            {navLinks(() => {})}
-          </nav>
-          <button
-            type="button"
-            className="md:hidden p-2 -mr-2 rounded hover:bg-[var(--color-line)] transition-colors"
-            aria-label={menuOpen ? "Close menu" : "Open menu"}
-            aria-expanded={menuOpen}
-            aria-controls="mobile-menu"
-            onClick={() => setMenuOpen((o) => !o)}
-          >
-            <MenuIcon open={menuOpen} />
-          </button>
-        </div>
-      </div>
-      {menuOpen && (
-        <nav
-          id="mobile-menu"
-          className="md:hidden flex flex-col items-start gap-4 font-ui text-base font-medium pt-3 pb-5"
-        >
-          {navLinks(() => setMenuOpen(false))}
+          {authed ? (
+            <>
+              <Link
+                href="/dashboard"
+                className={linkBase}
+                onClick={() => setMenuOpen(false)}
+              >
+                Dashboard
+              </Link>
+              <button
+                onClick={signout}
+                className="self-stretch rounded bg-[var(--color-accent)] px-3 py-2 text-sm font-ui text-white hover:bg-[var(--color-accent-hover)] transition-colors"
+              >
+                Sign out
+              </button>
+            </>
+          ) : (
+            <>
+              <Link
+                href="/login"
+                className={linkBase}
+                onClick={() => setMenuOpen(false)}
+              >
+                Login
+              </Link>
+              <Link
+                href="/signup"
+                className="self-stretch rounded bg-[var(--color-accent)] px-3 py-2 text-sm font-ui text-white text-center hover:bg-[var(--color-accent-hover)] transition-colors"
+                onClick={() => setMenuOpen(false)}
+              >
+                Sign up
+              </Link>
+            </>
+          )}
         </nav>
       )}
     </header>
