@@ -1,45 +1,70 @@
 import nodemailer, { getTestMessageUrl } from "nodemailer";
 
-const FROM = process.env.SMTP_FROM || '"The Opinion Weekly" <no-reply@example.com>';
+/**
+ * Email transports.
+ *
+ * Production path (tested and working): Zoho SMTP mailbox
+ * `no-reply@opinionweekly.co.za`, authorized with the `OPINION_NOREPLY`
+ * app password. Falls back to an Ethereal test inbox in development when
+ * `OPINION_NOREPLY` is not configured, so local signup/contact flows still
+ * work without provider credentials.
+ */
+
+const FROM = '"Opinion Website Email" <no-reply@opinionweekly.co.za>';
+const EDITOR_INBOX = process.env.CONTACT_TO || "mvenda@opinionweekly.co.za";
+const BASE_URL = process.env.NEXTAUTH_URL || "http://localhost:3000";
 
 type MailTransporter = ReturnType<typeof nodemailer.createTransport>;
 
 let transporter: MailTransporter | null = null;
-let etherealPreview: string | null = null;
+let usingFallback = false;
 
 async function getTransporter(): Promise<MailTransporter> {
   if (transporter) return transporter;
 
-  const host = process.env.SMTP_HOST;
-  const port = process.env.SMTP_PORT ? Number(process.env.SMTP_PORT) : 587;
-  const user = process.env.SMTP_USER;
-  const pass = process.env.SMTP_PASS;
-
-  const options: Record<string, unknown> = {};
-
-  if (host && user && pass) {
-    options.host = host;
-    options.port = port;
-    options.secure = port === 465;
-    options.auth = { user, pass };
-  } else {
-    // Dev fallback: Ethereal test account. Logs the inbox URL once so you can
-    // inspect delivery without configuring real SMTP.
-    const testAccount = await nodemailer.createTestAccount();
-    options.host = "smtp.ethereal.email";
-    options.port = 587;
-    options.secure = false;
-    options.auth = { user: testAccount.user, pass: testAccount.pass };
-    etherealPreview = `Ethereal test inbox: https://ethereal.email/${testAccount.user}`;
+  const pass = process.env.OPINION_NOREPLY;
+  if (pass) {
+    // Production: the verified Zoho mailbox.
+    transporter = nodemailer.createTransport({
+      service: "Zoho",
+      host: "smtp.zoho.com",
+      port: 465,
+      secure: true,
+      auth: {
+        user: "no-reply@opinionweekly.co.za",
+        pass,
+      },
+    });
+    usingFallback = false;
+    return transporter;
   }
 
-  transporter = nodemailer.createTransport(options);
+  // Development fallback: disposable Ethereal inbox, preview URL logged below.
+  console.warn(
+    "OPINION_NOREPLY is not set — falling back to an Ethereal test inbox. Emails are not sent to real people.",
+  );
+  const testAccount = await nodemailer.createTestAccount();
+  transporter = nodemailer.createTransport({
+    host: "smtp.ethereal.email",
+    port: 587,
+    secure: false,
+    auth: { user: testAccount.user, pass: testAccount.pass },
+  });
+  usingFallback = true;
   return transporter;
+}
+
+function logDelivery(info: Parameters<typeof getTestMessageUrl>[0], label: string) {
+  if (usingFallback) {
+    console.log(`${label} preview: ${getTestMessageUrl(info)}`);
+  } else {
+    console.log(`${label} sent via Zoho`);
+  }
 }
 
 export async function sendVerificationEmail(email: string, token: string, name: string) {
   const transport = await getTransporter();
-  const verifyUrl = `${process.env.NEXTAUTH_URL || "http://localhost:3000"}/verify-email?token=${token}`;
+  const verifyUrl = `${BASE_URL}/verify-email?token=${token}`;
 
   const info = await transport.sendMail({
     from: FROM,
@@ -47,50 +72,23 @@ export async function sendVerificationEmail(email: string, token: string, name: 
     subject: "Verify your email — The Opinion Weekly",
     text: `Hi ${name},\n\nThanks for signing up. Verify your email address:\n\n${verifyUrl}\n\nThis link expires in 24 hours.\n\n— The Opinion Weekly`,
     html: `
-      <p>Hi ${name},</p>
-      <p>Thanks for signing up for The Opinion Weekly. Verify your email address:</p>
-      <p><a href="${verifyUrl}" style="background:#7f1d1d;color:#ffffff;padding:10px 16px;border-radius:4px;text-decoration:none;">Verify email</a></p>
-      <p>This link expires in 24 hours.</p>
-      <p>— The Opinion Weekly</p>
+      <p style="font-family: Arial, Helvetica, sans-serif;">Hi ${name},</p>
+      <p style="font-family: Arial, Helvetica, sans-serif;">
+        Thanks for signing up for The Opinion Weekly. Verify your email address:
+      </p>
+      <p>
+        <a href="${verifyUrl}"
+           style="background:#7f1d1d;color:#ffffff;padding:10px 16px;border-radius:4px;
+                  text-decoration:none;font-family:Arial, Helvetica, sans-serif;">
+          Verify email
+        </a>
+      </p>
+      <p style="font-family: Arial, Helvetica, sans-serif;">This link expires in 24 hours.</p>
+      <p style="font-family: Arial, Helvetica, sans-serif;">— The Opinion Weekly</p>
     `,
   });
 
-  if (etherealPreview) {
-    console.log(etherealPreview);
-    console.log("Verification link:", verifyUrl);
-  } else {
-    console.log("Verification email sent:", getTestMessageUrl(info));
-  }
-
-  return info;
-}
-
-export async function sendContactEmail(
-  name: string,
-  email: string,
-  subject: string,
-  message: string,
-) {
-  const transport = await getTransporter();
-  const to = process.env.CONTACT_TO || "editors@example.com";
-
-  const info = await transport.sendMail({
-    from: FROM,
-    to,
-    replyTo: email,
-    subject: `[Contact] ${subject}`,
-    text: `${name} <${email}> wrote:\n\n${message}\n\nReply directly to this email or in the Message inbox: ${process.env.NEXTAUTH_URL || "http://localhost:3000"}/dashboard/messages`,
-    html: `
-      <p><b>${name}</b> &lt;${email}&gt; wrote:</p>
-      <blockquote style="border-left:3px solid #7f1d1d;padding-left:12px;">${message.replace(/\n/g, "<br />")}</blockquote>
-      <p style="color:#475569;font-size:12px;">Reply directly or open the Message inbox.</p>
-    `,
-  });
-
-  if (etherealPreview) {
-    console.log(etherealPreview);
-    console.log("Contact notification link:", getTestMessageUrl(info));
-  }
+  logDelivery(info, "Verification email");
   return info;
 }
 
@@ -103,17 +101,48 @@ export async function sendWelcomeEmail(email: string, name: string) {
     subject: "Welcome to The Opinion Weekly",
     text: `Hi ${name},\n\nYour email is verified. You can now sign in and start writing stories.\n\n— The Opinion Weekly`,
     html: `
-      <p>Hi ${name},</p>
-      <p>Your email is verified. You can now <a href="${process.env.NEXTAUTH_URL || "http://localhost:3000"}/login">sign in</a> and start writing stories.</p>
-      <p>— The Opinion Weekly</p>
+      <p style="font-family: Arial, Helvetica, sans-serif;">Hi ${name},</p>
+      <p style="font-family: Arial, Helvetica, sans-serif;">
+        Your email is verified. You can now
+        <a href="${BASE_URL}/login">sign in</a> and start writing stories.
+      </p>
+      <p style="font-family: Arial, Helvetica, sans-serif;">— The Opinion Weekly</p>
     `,
   });
 
-  if (etherealPreview) {
-    console.log("Welcome email:", getTestMessageUrl(info));
-  } else {
-    console.log("Welcome email sent:", getTestMessageUrl(info));
-  }
+  logDelivery(info, "Welcome email");
+  return info;
+}
 
+/**
+ * Notify the editors of a new contact-form message.
+ * Mirrors the tested contact email: from the noreply mailbox,
+ * to the editor inbox, reply-to the person who wrote in.
+ */
+export async function sendContactEmail(
+  name: string,
+  email: string,
+  subject: string,
+  message: string,
+) {
+  const transport = await getTransporter();
+
+  const info = await transport.sendMail({
+    from: FROM,
+    to: EDITOR_INBOX,
+    replyTo: email,
+    subject: `New message from ${name}: ${subject}`,
+    html: `
+      <p style="font-family: Arial, Helvetica, sans-serif;"><b>Name:</b> ${name}</p>
+      <p style="font-family: Arial, Helvetica, sans-serif;"><b>Email:</b> ${email}</p>
+      <p style="font-family: Arial, Helvetica, sans-serif;"><b>Subject:</b> ${subject}</p>
+      <p style="font-family: Arial, Helvetica, sans-serif;"><b>Message:</b> ${message.replace(/\n/g, "<br />")}</p>
+      <p style="font-family: Arial, Helvetica, sans-serif; color:#475569; font-size:12px;">
+        Reply directly to this email, or manage it in the Message inbox: ${BASE_URL}/dashboard/messages
+      </p>
+    `,
+  });
+
+  logDelivery(info, "Contact notification");
   return info;
 }
