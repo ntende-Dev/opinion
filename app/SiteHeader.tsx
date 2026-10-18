@@ -2,7 +2,7 @@
 import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 type Profile = {
@@ -23,39 +23,28 @@ function initials(name: string) {
   );
 }
 
-/**
- * Animated navbar logo: the Remotion-rendered alpha webm (see
- * remotion-logo/) loops once every 7s — a short entrance, then a long hold.
- * The static opinionLogo.svg rides along as the poster, so browsers without
- * webm (Safari) show the still logo instead. Users who prefer reduced
- * motion get the still logo paused on its final frame.
- */
-function LogoMark() {
-  const ref = useRef<HTMLVideoElement>(null);
-  useEffect(() => {
-    const video = ref.current;
-    if (!video) return;
-    const media = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const apply = () => {
-      if (media.matches) video.pause();
-      else video.play().catch(() => {});
-    };
-    apply();
-    media.addEventListener("change", apply);
-    return () => media.removeEventListener("change", apply);
-  }, []);
+/** Dummy leaderboard ad — placeholder until a real ad slot exists. */
+function AdBanner() {
   return (
-    <video
-      ref={ref}
-      src="/opinion-logo.webm"
-      poster="/opinionLogo.svg"
-      autoPlay
-      muted
-      loop
-      playsInline
-      aria-hidden="true"
-      className="block h-[50px] w-auto"
-    />
+    <div className="mt-4 pb-4" aria-label="Advertisement">
+      <p className="text-center font-ui text-[10px] tracking-[0.25em] uppercase text-[var(--color-muted)]">
+        Advertisement
+      </p>
+      <div className="mt-2 rounded border border-dashed border-[var(--color-line)] px-6 py-5 text-center">
+        <p className="font-display text-lg text-[var(--color-muted)]">
+          There is room for your message here.
+        </p>
+        <p className="mt-1 font-ui text-xs text-[var(--color-muted)]">
+          728 × 90 · every page ·{" "}
+          <Link
+            href="/contact"
+            className="underline text-[var(--color-accent)]"
+          >
+            get in touch
+          </Link>
+        </p>
+      </div>
+    </div>
   );
 }
 
@@ -156,7 +145,7 @@ export default function SiteHeader({ initialAuthed }: { initialAuthed: boolean }
 
   return (
     <header className="mt-5 mb-10 border-b border-[var(--color-line)] px-6">
-      <div className="relative flex items-center justify-between gap-4 pt-1 pb-5">
+      <div className="relative flex items-center justify-between gap-4 pt-1 pb-5 border-b border-[var(--color-line)]">
         {/* Left — page links (desktop). Mobile gets these in the panel. */}
         <nav className="hidden md:flex items-center gap-5">
           <Link href="/" className={linkBase}>
@@ -175,13 +164,19 @@ export default function SiteHeader({ initialAuthed }: { initialAuthed: boolean }
             when the left nav is hidden on mobile. */}
         <span className="md:hidden" aria-hidden="true" />
 
-        {/* Center — the logo, justified center of the bar. */}
+        {/* Center — the logo, justified center of the bar. Static by
+            request: the same SVG at the same size, no animation. */}
         <Link
           href="/"
           aria-label="The Opinion Weekly — home"
           className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center"
         >
-          <LogoMark />
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/opinionLogo.svg"
+            alt=""
+            className="block h-[50px] w-auto"
+          />
         </Link>
 
         {/* Right — account actions. */}
@@ -327,6 +322,9 @@ export default function SiteHeader({ initialAuthed }: { initialAuthed: boolean }
           )}
         </nav>
       )}
+
+      {/* Dummy ad strip lives under the navbar, above the closing rule. */}
+      <AdBanner />
     </header>
   );
 }

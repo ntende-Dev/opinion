@@ -103,8 +103,9 @@ export default async function Home() {
           <h2 className="font-display font-semibold mb-8 text-[var(--step-2)]">
             Latest
           </h2>
-          {/* Front-page story cards — click opens the story in a modal */}
-          <ul className="space-y-5">
+          {/* Front-page story cards — 2-up side by side, stacked on mobile;
+              click opens the story in a modal */}
+          <ul className="grid gap-5 sm:grid-cols-2 items-stretch">
             {published.map((s) => (
               <li key={s.id}>
                 <StoryCard story={s} />

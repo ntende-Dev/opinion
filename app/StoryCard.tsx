@@ -88,21 +88,21 @@ export default function StoryCard({ story }: { story: CardStory }) {
 
   return (
     <>
-      <article className="group relative flex gap-4 rounded-lg border border-[var(--color-line)] bg-[var(--color-paper)] p-3 sm:p-4 transition-colors hover:border-[var(--color-muted)]">
+      <article className="group relative flex flex-col rounded-lg border border-[var(--color-line)] bg-[var(--color-paper)] overflow-hidden transition-colors hover:border-[var(--color-muted)]">
         {story.coverImage && (
           <img
             src={story.coverImage}
             alt=""
-            className="w-24 sm:w-40 md:w-52 shrink-0 aspect-[4/3] object-cover rounded border border-[var(--color-line)]"
+            className="w-full aspect-[16/9] object-cover border-b border-[var(--color-line)]"
           />
         )}
-        <div className="min-w-0 py-1">
-          <h3 className="font-display font-bold text-[1.05rem] sm:text-[1.35rem] leading-[1.25] clamp-3">
+        <div className="p-4 sm:p-5 flex flex-col grow">
+          <h3 className="font-display font-bold text-[1.05rem] sm:text-[1.15rem] leading-[1.3] clamp-3">
             {story.title}
           </h3>
           <Byline />
           {story.excerpt && (
-            <p className="mt-2 hidden sm:block text-sm text-[var(--color-muted)] leading-relaxed clamp-3">
+            <p className="mt-2 text-sm text-[var(--color-muted)] leading-relaxed clamp-3 grow">
               {story.excerpt}
             </p>
           )}
@@ -111,7 +111,7 @@ export default function StoryCard({ story }: { story: CardStory }) {
         <button
           type="button"
           onClick={() => setOpen(true)}
-          className="absolute inset-0 rounded-lg"
+          className="absolute inset-0"
           aria-label={`Read ${story.title}`}
         />
       </article>
