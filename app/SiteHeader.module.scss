@@ -40,12 +40,18 @@
 .logoLink {
   display: flex;
   align-items: center;
+  /* Lets the mark give way on a narrow phone instead of holding the row open. */
+  min-width: 0;
 }
 
 .logo {
   display: block;
   height: 64px;
   width: auto;
+  /* The mark is cut wider than the row a small phone has: beside the menu
+     button it must yield, not push the button off the edge. The SVG letterboxes
+     itself inside the narrower box, so it shrinks rather than distorts. */
+  max-width: 100%;
 }
 
 .tools {
