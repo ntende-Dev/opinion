@@ -1,0 +1,150 @@
+@use "./styles/mixins" as m;
+
+// ─────────────────────────────────────────────────────────────────────────
+// The colophon. Four columns over a heavy rule: masthead + socials, then the
+// three navigable indexes. .font-display / .font-body / .font-ui stay global.
+// ─────────────────────────────────────────────────────────────────────────
+
+.footer {
+  margin-top: 5rem; // mt-20
+  @include m.hairline(top, 2px, var(--color-ink)); // border-t-2 + ink
+  padding-inline: 1.5rem; // px-6
+  padding-bottom: 2.5rem; // pb-10
+  padding-top: 3rem; // pt-12
+}
+
+.inner {
+  margin-inline: auto; // mx-auto
+  max-width: 56rem; // max-w-4xl
+}
+
+.grid {
+  display: grid;
+  gap: 2.5rem; // gap-10
+
+  @media (min-width: m.$bp-sm) {
+    grid-template-columns: repeat(2, minmax(0, 1fr)); // sm:grid-cols-2
+  }
+
+  @media (min-width: m.$bp-lg) {
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+  }
+}
+
+.mastheadColumn {
+  @media (min-width: m.$bp-sm) {
+    grid-column: span 2 / span 2; // sm:col-span-2
+  }
+
+  @media (min-width: m.$bp-lg) {
+    grid-column: span 1 / span 1; // lg:col-span-1
+  }
+}
+
+.masthead {
+  // NOTE: the original also carried `text-[var(--step-2)]`, which Tailwind
+  // emitted as an invalid colour and dropped, so the wordmark keeps the
+  // inherited body size. Only the colour is set here.
+  color: var(--color-ink);
+  font-weight: 600; // font-semibold
+  text-decoration: none; // no-underline
+}
+
+.mastheadStop {
+  color: var(--color-accent);
+}
+
+.blurb {
+  margin-top: 0.75rem; // mt-3
+  max-width: 20rem; // max-w-xs
+  line-height: 1.625; // leading-relaxed
+  // The original `text-[var(--step--1)] … text-[var(--color-muted)]` pair both
+  // wrote to `color`, and the compressed-to-invalid one won — so the blurb
+  // inherits ink rather than the muted grey the markup appears to ask for.
+  color: inherit;
+  text-decoration: none; // no-underline
+}
+
+.socials {
+  margin-top: 1.25rem; // mt-5
+  display: flex;
+  align-items: center;
+  gap: 0.625rem; // gap-2.5
+}
+
+.social {
+  display: inline-flex;
+  height: 2.25rem; // h-9
+  width: 2.25rem; // w-9
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px; // rounded-full
+  @include m.hairline;
+  color: var(--color-muted);
+  text-decoration: none;
+
+  @include m.transition-colors;
+
+  &:hover {
+    border-color: var(--color-accent);
+    color: var(--color-accent);
+  }
+}
+
+.columnTitle {
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.2em; // tracking-[0.2em]
+  color: var(--color-ink);
+}
+
+.columnList {
+  margin-top: 1rem; // mt-4
+}
+
+.columnList > * + * {
+  margin-top: 0.625rem; // space-y-2.5
+}
+
+.columnLink {
+  // Same quirk as .blurb: the link's colour utilities cancel out, leaving
+  // `color: inherit` (ink) rather than muted — and it must be stated
+  // explicitly here to beat the site-wide `a { color: var(--color-accent) }`.
+  color: inherit;
+  text-decoration: none;
+
+  @include m.transition-colors;
+
+  &:hover {
+    color: var(--color-accent);
+  }
+}
+
+.colophon {
+  margin-top: 3rem; // mt-12
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem; // gap-2
+  @include m.hairline(top);
+  padding-top: 1.5rem; // pt-6
+
+  @media (min-width: m.$bp-sm) {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+
+.copyright {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.14em; // tracking-[0.14em]
+  color: var(--color-muted);
+}
+
+.tagline {
+  font-size: 0.75rem;
+  font-style: italic;
+  color: var(--color-muted);
+}

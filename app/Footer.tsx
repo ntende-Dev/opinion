@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { SITE, SOCIALS } from "@/lib/site";
+import styles from "./Footer.module.scss";
 
-const colLink =
-  "font-ui text-[var(--step--1)] text-[var(--color-muted)] no-underline transition-colors hover:text-[var(--color-accent)]";
+const colLink = `${styles.columnLink} font-ui`;
 
 /** Column heading — small caps sans, held above the global serif h2 scale. */
 function Column({
@@ -14,10 +14,8 @@ function Column({
 }) {
   return (
     <nav aria-label={title}>
-      <h2 className="font-ui text-[0.7rem] font-semibold uppercase tracking-[0.2em] text-[var(--color-ink)]">
-        {title}
-      </h2>
-      <ul className="mt-4 space-y-2.5">{children}</ul>
+      <h2 className={`${styles.columnTitle} font-ui`}>{title}</h2>
+      <ul className={styles.columnList}>{children}</ul>
     </nav>
   );
 }
@@ -33,22 +31,20 @@ export default function Footer({ isAuthed }: { isAuthed: boolean }) {
   const year = new Date().getFullYear();
 
   return (
-    <footer className="mt-20 border-t-2 border-[var(--color-ink)] px-6 pb-10 pt-12">
-      <div className="mx-auto max-w-4xl">
-        <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-[2fr_1fr_1fr_1fr]">
+    <footer className={styles.footer}>
+      <div className={styles.inner}>
+        <div className={styles.grid}>
           {/* Masthead */}
-          <div className="sm:col-span-2 lg:col-span-1">
+          <div className={styles.mastheadColumn}>
             <Link
               href="/"
-              className="font-display text-[var(--step-2)] font-semibold no-underline text-[var(--color-ink)]"
+              className={`${styles.masthead} font-display`}
             >
               {SITE.name}
-              <span className="text-[var(--color-accent)]">.</span>
+              <span className={styles.mastheadStop}>.</span>
             </Link>
-            <p className="mt-3 max-w-xs font-body text-[var(--step--1)] leading-relaxed text-[var(--color-muted)] no-underline">
-              {SITE.description}
-            </p>
-            <ul className="mt-5 flex items-center gap-2.5">
+            <p className={`${styles.blurb} font-body`}>{SITE.description}</p>
+            <ul className={styles.socials}>
               {SOCIALS.map((s) => (
                 <li key={s.label}>
                   <a
@@ -57,7 +53,7 @@ export default function Footer({ isAuthed }: { isAuthed: boolean }) {
                     rel="noopener noreferrer"
                     aria-label={s.label}
                     title={s.label}
-                    className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-[var(--color-line)] text-[var(--color-muted)] no-underline transition-colors hover:border-[var(--color-accent)] hover:text-[var(--color-accent)]"
+                    className={styles.social}
                   >
                     <svg
                       viewBox="0 0 24 24"
@@ -138,13 +134,11 @@ export default function Footer({ isAuthed }: { isAuthed: boolean }) {
         </div>
 
         {/* Colophon */}
-        <div className="mt-12 flex flex-col gap-2 border-t border-[var(--color-line)] pt-6 sm:flex-row sm:items-center sm:justify-between">
-          <p className="font-ui text-[0.7rem] uppercase tracking-[0.14em] text-[var(--color-muted)]">
+        <div className={styles.colophon}>
+          <p className={`${styles.copyright} font-ui`}>
             © {year} {SITE.name} · All opinions are the authors&apos; own.
           </p>
-          <p className="font-body text-[0.75rem] italic text-[var(--color-muted)]">
-            {SITE.tagline}
-          </p>
+          <p className={`${styles.tagline} font-body`}>{SITE.tagline}</p>
         </div>
       </div>
     </footer>

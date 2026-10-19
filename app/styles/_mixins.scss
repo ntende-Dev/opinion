@@ -25,13 +25,13 @@ $bp-xl: 1280px;
 /// Tailwind emitted for `border-b border-[var(--color-line)]`. The solid style
 /// comes from the reset (`border-style: solid` on everything), which is also
 /// where Tailwind got it.
-@mixin hairline($sides: all) {
-  border-color: var(--color-line);
+@mixin hairline($sides: all, $width: 1px, $color: var(--color-line)) {
+  border-color: $color;
 
   @if $sides == all {
-    border-width: 1px;
+    border-width: $width;
   } @else {
-    border-#{$sides}-width: 1px;
+    border-#{$sides}-width: $width;
   }
 }
 
