@@ -82,6 +82,36 @@ the slug keyed correctly. Re-rendering overwrites the same key: the media route
 sends `Cache-Control: max-age=300`, so give the CDN about five minutes to serve
 the new cut.
 
+## What is in the bucket
+
+```bash
+npm run cards:list
+```
+
+Read-only. Groups what is under `quote-cards/` by story slug and prints the URL
+each cut is served from:
+
+```
+  quote-cards/ — 1 story(s), 2 object(s), 4.39 MB
+
+  mystory
+    vertical (9:16)          2.41 MB  19 Oct 2026
+      https://www.opinionweekly.co.za/api/media/quote-cards/mystory.vertical.mp4
+    square (1:1)             1.98 MB  19 Oct 2026
+      https://www.opinionweekly.co.za/api/media/quote-cards/mystory.square.mp4
+```
+
+Anything named outside `<slug>.<format>.mp4` under that prefix is flagged as not
+served, because the media route only accepts that shape.
+
+The URLs are built from `SITE_URL`, falling back to the same `NEXTAUTH_URL` the
+app builds its feed and sitemap from. A development `.env` points that at
+`localhost`, so the printed links are local ones — the scripts say so when that
+happens. Put `SITE_URL=https://www.opinionweekly.co.za` in the `.env` to get the
+live links instead.
+
+## What the card is made of
+
 The quote is taken from the first paragraph of the story body, trimmed to the
 last sentence boundary before 240 characters. Be aware that "first paragraph"
 is not always the line you would choose by hand — the sports reports in

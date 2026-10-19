@@ -15,10 +15,10 @@ import { spawnSync } from "node:child_process";
 import { mkdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { BUCKET, createS3, linksAreLocal, publicUrl } from "./storage.mjs";
 
 const projectRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const repoRoot = path.resolve(projectRoot, "..");
-const BUCKET = process.env.S3_BUCKET ?? "assets";
 
 const FLAGS = new Set(["upload", "skip-render", "help", "h"]);
 
@@ -33,12 +33,6 @@ function slugify(input = "") {
     .replace(/\s+/g, "-")
     .replace(/-+/g, "-")
     .replace(/^-+|-+$/g, "");
-}
-
-/** The URL the site serves the uploaded card from. */
-function publicUrl(key) {
-  const base = (process.env.NEXTAUTH_URL ?? "").replace(/\/+$/, "");
-  return `${base}/api/media/${key}`;
 }
 
 function parseArgs(argv) {
@@ -156,20 +150,8 @@ async function loadStory(selector) {
 }
 
 async function upload(file, key) {
-  const { S3Client, PutObjectCommand } = await import("@aws-sdk/client-s3");
-  const required = ["AWS_ENDPOINT_URL_S3", "AWS_REGION", "AWS_ACCESS_KEY_ID", "AWS_SECRET_ACCESS_KEY"];
-  const missing = required.filter((k) => !process.env[k]);
-  if (missing.length > 0) throw new Error(`missing credentials: ${missing.join(", ")}`);
-
-  const s3 = new S3Client({
-    endpoint: process.env.AWS_ENDPOINT_URL_S3,
-    region: process.env.AWS_REGION,
-    credentials: {
-      accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-      secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-    },
-    forcePathStyle: true,
-  });
+  const { PutObjectCommand } = await import("@aws-sdk/client-s3");
+  const s3 = await createS3();
 
   const body = readFileSync(file);
   await s3.send(
@@ -181,10 +163,8 @@ async function upload(file, key) {
     }),
   );
 
-  // No share link is printed on purpose: the storage host answers every
-  // browser-style GET with the Neon console page, signature or not, so a
-  // presigned URL is not a viewable link. The object is read back with the
-  // S3 API (or through an app route, once one exists for video).
+  // The stored Content-Type is for anything reading the bucket directly: the
+  // site decides video/mp4 from the key's extension, never from metadata.
   return { key, bytes: body.length };
 }
 
@@ -260,8 +240,14 @@ async function main() {
     console.log(`  uploaded  s3://${BUCKET}/${key}  (${(uploaded / 1e6).toFixed(2)} MB)`);
     console.log(`  on site   ${publicUrl(key)}`);
     console.log(
-      "  note      the story page shows the card automatically; a re-render\n            reuses the key, so give the CDN five minutes to catch up\n",
+      "  note      the story page shows the card automatically; a re-render\n            reuses the key, so give the CDN five minutes to catch up",
     );
+    if (linksAreLocal()) {
+      console.log(
+        "  local     that link is this machine's dev host — set\n            SITE_URL=https://www.opinionweekly.co.za for the live one",
+      );
+    }
+    console.log("");
   } else {
     console.log("  (not uploaded — pass --upload to put it in Object Storage)\n");
   }
