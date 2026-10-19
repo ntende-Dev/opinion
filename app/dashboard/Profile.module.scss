@@ -1,0 +1,128 @@
+@use "../styles/mixins" as m;
+
+// ─────────────────────────────────────────────────────────────────────────
+// The user block. The profile card and the admin rows share the avatar, the
+// truncating name/email pair and the small role chip.
+//
+// Global helpers still carried in the markup: .font-display, .font-ui,
+// .text-muted.
+// ─────────────────────────────────────────────────────────────────────────
+
+/* The profile card ------------------------------------------------------ */
+
+/** `mb-10 flex items-center gap-4 border border-[var(--color-line)] rounded-lg p-4` */
+.card {
+  margin-bottom: 2.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  border-radius: 0.5rem;
+  padding: 1rem;
+
+  @include m.hairline;
+}
+
+/** `h-16 w-16 shrink-0 animate-pulse rounded-full bg-[var(--color-line)]` */
+.avatarPulse {
+  height: 4rem;
+  width: 4rem;
+  flex-shrink: 0;
+  border-radius: 9999px;
+  background-color: var(--color-line);
+  animation: 2s cubic-bezier(0.4, 0, 0.6, 1) infinite pulse;
+}
+
+/** Tailwind's `pulse` keyframes, so the placeholder keeps breathing. */
+@keyframes pulse {
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/** `h-16 w-16 shrink-0 rounded-full object-cover border border-[var(--color-line)]` */
+.avatarImage {
+  height: 4rem;
+  width: 4rem;
+  flex-shrink: 0;
+  border-radius: 9999px;
+  object-fit: cover;
+
+  @include m.hairline;
+}
+
+/**
+ * `flex h-16 w-16 shrink-0 items-center justify-center rounded-full
+ *  bg-[var(--color-accent)] text-white font-display font-bold text-xl`
+ */
+.avatarInitials {
+  display: flex;
+  height: 4rem;
+  width: 4rem;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  background-color: var(--color-accent);
+  color: #fff;
+  font-weight: 700;
+  font-size: var(--step-1); // text-xl
+  line-height: 1.75rem;
+}
+
+/** `min-w-0 flex-1` — shared with the admin rows. */
+.main {
+  min-width: 0;
+  flex: 1;
+}
+
+/** `font-display font-semibold truncate` */
+.name {
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/** `text-sm text-muted truncate` */
+.email {
+  font-size: var(--step--1);
+  line-height: 1.25rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/** `mt-1 font-ui text-xs` */
+.roleLine {
+  margin-top: 0.25rem;
+  font-size: 0.75rem;
+  line-height: 1rem;
+}
+
+/** `rounded-full border border-[var(--color-line)] px-2 py-0.5 font-medium text-[var(--color-muted)]` */
+.roleChip {
+  border-radius: 9999px;
+  padding: 0.125rem 0.5rem;
+  font-weight: 500;
+  color: var(--color-muted);
+
+  @include m.hairline;
+}
+
+/** `shrink-0 flex flex-col items-end gap-2` */
+.actions {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.5rem;
+}
+
+/** `font-ui text-xs text-[var(--color-muted)] underline underline-offset-2 hover:no-underline` */
+.remove {
+  font-size: 0.75rem;
+  line-height: 1rem;
+  color: var(--color-muted);
+
+  @include m.text-link;
+}

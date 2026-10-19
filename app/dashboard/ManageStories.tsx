@@ -4,6 +4,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import type { Status } from "@/lib/roles";
+import d from "./Dashboard.module.scss";
+import c from "./Chip.module.scss";
 
 type Row = {
   id: number;
@@ -14,9 +16,9 @@ type Row = {
 };
 
 const chip: Record<Status, string> = {
-  draft: "bg-gray-200 text-gray-700",
-  pending: "bg-amber-200 text-amber-800",
-  published: "bg-green-200 text-green-800",
+  draft: c.draft,
+  pending: c.pending,
+  published: c.published,
 };
 
 /**
@@ -74,32 +76,32 @@ export default function ManageStories({ rows }: { rows: Row[] }) {
   }
 
   return (
-    <ul className="space-y-4">
+    <ul className={d.manageList}>
       {rows.map((r) => (
         <li
           key={r.id}
-          className="border border-[var(--color-line)] rounded p-3 sm:p-4 flex flex-wrap items-center gap-3"
+          className={d.manageRow}
         >
-          <div className="min-w-0 flex-1">
+          <div className={d.manageMain}>
             <Link
               href={`/story/${r.slug}`}
-              className="font-display font-semibold hover:underline decoration-2 underline-offset-4"
+              className={`${d.manageTitle} font-display`}
             >
               {r.title}
             </Link>
-            <p className="mt-1 font-ui text-xs text-[var(--color-muted)]">
+            <p className={`${d.manageAuthor} font-ui`}>
               {r.authorName ?? "Unknown author"}
             </p>
           </div>
           <span
-            className={`font-sans inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium uppercase tracking-wider ${chip[r.status]}`}
+            className={`${c.chip} ${c.chipFlex} ${chip[r.status]}`}
           >
             {r.status}
           </span>
-          <div className="flex items-center gap-2 font-ui text-sm">
+          <div className={`${d.manageActions} font-ui`}>
             <Link
               href={`/dashboard/write?story=${r.id}`}
-              className="rounded border border-[var(--color-line)] px-3 py-1.5 no-underline hover:border-[var(--color-muted)] transition-colors"
+              className={d.manageEdit}
             >
               Edit
             </Link>
@@ -107,7 +109,7 @@ export default function ManageStories({ rows }: { rows: Row[] }) {
               type="button"
               disabled={busyId === r.id || removing === r.id}
               onClick={() => toggleStatus(r)}
-              className="rounded border border-[var(--color-line)] px-3 py-1.5 hover:bg-[var(--color-line)] transition-colors disabled:opacity-60"
+              className={d.manageStatus}
             >
               {busyId === r.id
                 ? "Working…"
@@ -119,7 +121,7 @@ export default function ManageStories({ rows }: { rows: Row[] }) {
               type="button"
               disabled={busyId === r.id || removing === r.id}
               onClick={() => remove(r)}
-              className="rounded bg-[var(--color-accent)] px-3 py-1.5 text-white hover:bg-[var(--color-accent-hover)] transition-colors disabled:opacity-60"
+              className={d.manageDelete}
             >
               {removing === r.id ? "Deleting…" : "Delete"}
             </button>
@@ -127,7 +129,7 @@ export default function ManageStories({ rows }: { rows: Row[] }) {
         </li>
       ))}
       {rows.length === 0 && (
-        <li className="text-sm text-[var(--color-muted)]">
+        <li className={d.manageEmpty}>
           No stories in the system yet.
         </li>
       )}

@@ -112,12 +112,7 @@
 
 /** `underline underline-offset-2 hover:no-underline` over the global link colour. */
 .link {
-  text-decoration-line: underline;
-  text-underline-offset: 2px;
-
-  &:hover {
-    text-decoration-line: none;
-  }
+  @include m.text-link;
 }
 
 /** Honeypot fields — `hidden`, present for bots only. */

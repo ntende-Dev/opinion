@@ -6,13 +6,15 @@ import SubmitButton from "./SubmitButton";
 import ProfileCard from "./ProfileCard";
 import ManageStories from "./ManageStories";
 import { EDITORS, type Status } from "@/lib/roles";
+import d from "./Dashboard.module.scss";
+import c from "./Chip.module.scss";
 
 export const dynamic = "force-dynamic";
 
 const badge: Record<Status, string> = {
-  draft: "bg-gray-200 text-gray-700",
-  pending: "bg-amber-200 text-amber-800",
-  published: "bg-green-200 text-green-800",
+  draft: c.draft,
+  pending: c.pending,
+  published: c.published,
 };
 
 export default async function MyStories() {
@@ -61,35 +63,35 @@ export default async function MyStories() {
       <div className="measure">
         <ProfileCard />
       </div>
-      <h1 className="font-display mb-6">My stories</h1>
+      <h1 className={`${d.title} font-display`}>My stories</h1>
       {mine.length === 0 && (
-        <p className="text-muted measure mb-10">
+        <p className={`${d.empty} text-muted measure`}>
           You haven't written any stories yet.{" "}
-          <a href="/dashboard/write" className="underline underline-offset-2 hover:no-underline">
+          <a href="/dashboard/write" className={d.link}>
             Start writing
           </a>
           .
         </p>
       )}
-      <ul className="space-y-6 measure">
+      <ul className={`${d.list} measure`}>
         {mine.map((s) => (
-          <li key={s.id} className="border-b border-[var(--color-line)] pb-6 last:border-0">
-            <div className="flex items-start justify-between gap-3">
+          <li key={s.id} className={d.item}>
+            <div className={d.itemHead}>
               <div>
                 <a
                   href={`/story/${s.slug}`}
-                  className="font-display font-bold hover:underline"
+                  className={`${d.itemTitle} font-display`}
                 >
                   {s.title}
                 </a>
-                <div className="mt-2 flex items-center gap-2">
+                <div className={d.itemMeta}>
                   <span
-                    className={`font-sans inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium uppercase tracking-wider ${badge[s.status]}`}
+                    className={`${c.chip} ${c.chipFlex} ${badge[s.status]}`}
                   >
                     {s.status}
                   </span>
                   {s.status === "draft" && s.reviewNote && (
-                    <span className="text-xs text-[var(--color-accent)] font-ui font-medium">
+                    <span className={`${d.note} font-ui`}>
                       Editor: {s.reviewNote}
                     </span>
                   )}
@@ -101,11 +103,11 @@ export default async function MyStories() {
         ))}
       </ul>
       {isEditor && (
-        <section className="mt-12">
-          <h2 className="font-display font-semibold mb-5 text-[var(--step-2)]">
+        <section className={d.section}>
+          <h2 className={`${d.sectionTitle} font-display`}>
             All stories
           </h2>
-          <p className="text-muted text-sm mb-5">
+          <p className={`${d.sectionIntro} text-muted`}>
             Every story in the system — published, pending or draft. Admin and
             editor tools: edit, publish/unpublish, delete.
           </p>

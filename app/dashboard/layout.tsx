@@ -6,6 +6,7 @@ import { stories } from "@/drizzle/schema";
 import { eq, count } from "drizzle-orm";
 import { EDITORS } from "@/lib/roles";
 import SessionGuard from "./SessionGuard";
+import d from "./Dashboard.module.scss";
 
 export default async function DashboardLayout({
   children,
@@ -25,17 +26,16 @@ export default async function DashboardLayout({
   return (
     <div className="container font-body">
       <SessionGuard />
-      <nav className="mb-10 flex items-center gap-4 border-b border-[var(--color-line)] pb-4 text-sm font-ui">
-        <Link href="/dashboard" className="hover:underline">
+      <nav className={`${d.nav} font-ui`}>
+        <Link href="/dashboard">
           My stories
         </Link>
-        <Link href="/dashboard/write" className="hover:underline">
+        <Link href="/dashboard/write">
           Write
         </Link>
         {isEditor && (
           <Link
             href="/dashboard/messages"
-            className="hover:underline"
           >
             Messages
           </Link>
@@ -43,18 +43,18 @@ export default async function DashboardLayout({
         {isEditor && (
           <Link
             href="/dashboard/review"
-            className="font-semibold text-[var(--color-accent)] hover:underline"
+            className={d.reviewLink}
           >
             Review queue
             {pendingCount > 0 && (
-              <span className="ml-2 px-2 py-0.5 rounded text-xs font-medium bg-[var(--color-accent)] text-white">
+              <span className={d.reviewCount}>
                 ({pendingCount})
               </span>
             )}
           </Link>
         )}
         {isAdmin && (
-          <Link href="/dashboard/admin" className="hover:underline">
+          <Link href="/dashboard/admin">
             Users
           </Link>
         )}

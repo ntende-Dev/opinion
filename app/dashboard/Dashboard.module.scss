@@ -1,0 +1,270 @@
+@use "../styles/mixins" as m;
+
+// ─────────────────────────────────────────────────────────────────────────
+// The dashboard shell and "My stories": the section nav, the story list, the
+// management rows and the submit-for-review button.
+//
+// Global helpers still carried in the markup: .container, .font-body,
+// .font-display, .font-ui, .text-muted, .measure.
+// ─────────────────────────────────────────────────────────────────────────
+
+/* The shell ------------------------------------------------------------- */
+
+/** `mb-10 flex items-center gap-4 border-b border-[var(--color-line)] pb-4 text-sm font-ui` */
+.nav {
+  margin-bottom: 2.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding-bottom: 1rem;
+  font-size: var(--step--1);
+  line-height: 1.25rem;
+
+  @include m.hairline(bottom);
+}
+
+/**
+ * The nav links carried `hover:underline`, which was already a no-op — the
+ * site-wide `a` rule underlines every anchor — so they need nothing of their
+ * own beyond the global colour and hover.
+ */
+
+/** `font-semibold text-[var(--color-accent)]` */
+.reviewLink {
+  font-weight: 600;
+  color: var(--color-accent);
+}
+
+/** `ml-2 px-2 py-0.5 rounded text-xs font-medium bg-[var(--color-accent)] text-white` */
+.reviewCount {
+  margin-left: 0.5rem;
+  border-radius: 0.25rem;
+  padding: 0.125rem 0.5rem;
+  font-size: 0.75rem;
+  line-height: 1rem;
+  font-weight: 500;
+  background-color: var(--color-accent);
+  color: #fff;
+}
+
+/* My stories ------------------------------------------------------------ */
+
+/** `font-display mb-6` */
+.title {
+  margin-bottom: 1.5rem;
+}
+
+/** `text-muted measure mb-10` — the size comes from the global .text-muted. */
+.empty {
+  margin-bottom: 2.5rem;
+}
+
+/** `underline underline-offset-2 hover:no-underline` over the global link colour. */
+.link {
+  @include m.text-link;
+}
+
+/** `space-y-6 measure` */
+.list > * + * {
+  margin-top: 1.5rem;
+}
+
+/** `border-b border-[var(--color-line)] pb-6 last:border-0` */
+.item {
+  padding-bottom: 1.5rem;
+
+  @include m.hairline(bottom);
+
+  &:last-child {
+    border-width: 0;
+  }
+}
+
+/** `flex items-start justify-between gap-3` */
+.itemHead {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+/** `font-display font-bold` — the hover underline is already the global one. */
+.itemTitle {
+  font-weight: 700;
+}
+
+/** `mt-2 flex items-center gap-2` */
+.itemMeta {
+  margin-top: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/** `text-xs text-[var(--color-accent)] font-ui font-medium` — the editor's note. */
+.note {
+  font-size: 0.75rem;
+  line-height: 1rem;
+  font-weight: 500;
+  color: var(--color-accent);
+}
+
+/** `mt-12` */
+.section {
+  margin-top: 3rem;
+}
+
+/**
+ * `font-display font-semibold mb-5 text-[var(--step-2)]`
+ *
+ * Another no-op size: `text-[var(--step-2)]` is emitted as an invalid colour,
+ * so the heading keeps the global h2 size. See the long note in
+ * Footer.module.scss.
+ */
+.sectionTitle {
+  margin-bottom: 1.25rem;
+  font-weight: 600;
+}
+
+/** `text-muted text-sm mb-5` — .text-muted wins the size, .text-sm the leading. */
+.sectionIntro {
+  margin-bottom: 1.25rem;
+  font-size: var(--step--1);
+  line-height: 1.25rem;
+}
+
+/* The management list (admin & editors) --------------------------------- */
+
+/** `space-y-4` */
+.manageList > * + * {
+  margin-top: 1rem;
+}
+
+/** `border border-[var(--color-line)] rounded p-3 sm:p-4 flex flex-wrap items-center gap-3` */
+.manageRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  border-radius: 0.25rem;
+  padding: 0.75rem;
+
+  @include m.hairline;
+
+  @media (min-width: m.$bp-sm) {
+    padding: 1rem;
+  }
+}
+
+/** `min-w-0 flex-1` */
+.manageMain {
+  min-width: 0;
+  flex: 1;
+}
+
+/** `font-display font-semibold decoration-2 underline-offset-4` */
+.manageTitle {
+  font-weight: 600;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 4px;
+}
+
+/** `mt-1 font-ui text-xs text-[var(--color-muted)]` */
+.manageAuthor {
+  margin-top: 0.25rem;
+  font-size: 0.75rem;
+  line-height: 1rem;
+  color: var(--color-muted);
+}
+
+/** `flex items-center gap-2 font-ui text-sm` */
+.manageActions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: var(--step--1);
+  line-height: 1.25rem;
+}
+
+/**
+ * `rounded border border-[var(--color-line)] px-3 py-1.5 no-underline
+ *  hover:border-[var(--color-muted)] transition-colors`
+ */
+.manageEdit {
+  @include m.control;
+
+  text-decoration-line: none;
+
+  &:hover {
+    border-color: var(--color-muted);
+  }
+}
+
+/**
+ * `rounded border border-[var(--color-line)] px-3 py-1.5
+ *  hover:bg-[var(--color-line)] transition-colors disabled:opacity-60`
+ */
+.manageStatus {
+  @include m.control;
+
+  &:hover {
+    background-color: var(--color-line);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+  }
+}
+
+/**
+ * `rounded bg-[var(--color-accent)] px-3 py-1.5 text-white
+ *  hover:bg-[var(--color-accent-hover)] transition-colors disabled:opacity-60`
+ */
+.manageDelete {
+  border-width: 0;
+  border-radius: 0.25rem;
+  padding: 0.375rem 0.75rem;
+
+  @include m.accent-surface;
+
+  &:disabled {
+    opacity: 0.6;
+  }
+}
+
+/** `text-sm text-[var(--color-muted)]` */
+.manageEmpty {
+  font-size: var(--step--1);
+  line-height: 1.25rem;
+  color: var(--color-muted);
+}
+
+/* Submit for review ----------------------------------------------------- */
+
+/**
+ * `rounded bg-amber-600 px-3 py-1.5 text-sm text-white font-ui font-medium
+ *  disabled:bg-gray-400 hover:bg-amber-700 transition-colors`
+ *
+ * Hover is written before :disabled so a disabled button stays grey while the
+ * pointer is over it — the same order Tailwind emitted.
+ */
+.submitReview {
+  border-width: 0;
+  border-radius: 0.25rem;
+  padding: 0.375rem 0.75rem;
+  font-size: var(--step--1);
+  line-height: 1.25rem;
+  font-weight: 500;
+  background-color: rgb(217 119 6); // amber-600
+  color: #fff;
+
+  @include m.transition-colors;
+
+  &:hover {
+    background-color: rgb(180 83 9); // amber-700
+  }
+
+  &:disabled {
+    background-color: rgb(156 163 175); // gray-400
+  }
+}

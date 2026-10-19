@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import ImageUpload from "./write/ImageUpload";
 import { toast } from "sonner";
+import p from "./Profile.module.scss";
 
 type Profile = {
   name: string;
@@ -64,36 +65,36 @@ export default function ProfileCard() {
   if (!profile) return null;
 
   return (
-    <div className="mb-10 flex items-center gap-4 border border-[var(--color-line)] rounded-lg p-4">
+    <div className={p.card}>
       {saving ? (
         <span
           aria-hidden="true"
-          className="h-16 w-16 shrink-0 animate-pulse rounded-full bg-[var(--color-line)]"
+          className={p.avatarPulse}
         />
       ) : profile.avatarUrl ? (
         <img
           src={profile.avatarUrl}
           alt=""
-          className="h-16 w-16 shrink-0 rounded-full object-cover border border-[var(--color-line)]"
+          className={p.avatarImage}
         />
       ) : (
         <span
           aria-hidden="true"
-          className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-[var(--color-accent)] text-white font-display font-bold text-xl"
+          className={`${p.avatarInitials} font-display`}
         >
           {initials(profile.name)}
         </span>
       )}
-      <div className="min-w-0 flex-1">
-        <p className="font-display font-semibold truncate">{profile.name}</p>
-        <p className="text-sm text-muted truncate">{profile.email}</p>
-        <p className="mt-1 font-ui text-xs">
-          <span className="rounded-full border border-[var(--color-line)] px-2 py-0.5 font-medium text-[var(--color-muted)]">
+      <div className={p.main}>
+        <p className={`${p.name} font-display`}>{profile.name}</p>
+        <p className={`${p.email} text-muted`}>{profile.email}</p>
+        <p className={`${p.roleLine} font-ui`}>
+          <span className={p.roleChip}>
             {profile.role}
           </span>
         </p>
       </div>
-      <div className="shrink-0 flex flex-col items-end gap-2">
+      <div className={p.actions}>
         <ImageUpload label="Change avatar" onUploaded={changeAvatar} />
         {profile.avatarUrl && (
           <button
@@ -117,7 +118,7 @@ export default function ProfileCard() {
                 setSaving(false);
               }
             }}
-            className="font-ui text-xs text-[var(--color-muted)] underline underline-offset-2 hover:no-underline"
+            className={`${p.remove} font-ui`}
           >
             Remove
           </button>

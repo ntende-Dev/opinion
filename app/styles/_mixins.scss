@@ -75,6 +75,17 @@ $bp-xl: 1280px;
   @include transition-colors;
 }
 
+/// Editorial text link — `underline underline-offset-2 hover:no-underline`,
+/// sitting on top of the site-wide anchor colour and hover.
+@mixin text-link {
+  text-decoration-line: underline;
+  text-underline-offset: 2px;
+
+  &:hover {
+    text-decoration-line: none;
+  }
+}
+
 /// Editorial UI link, underlined at 2px with a 4px offset.
 /// Reproduces `font-ui text-sm font-medium hover:underline decoration-2
 /// underline-offset-4` on top of the site-wide anchor colour.

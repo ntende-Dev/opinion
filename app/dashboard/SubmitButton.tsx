@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import d from "./Dashboard.module.scss";
 
 export default function SubmitButton({ id }: { id: number }) {
   const [busy, setBusy] = useState(false);
@@ -22,7 +23,7 @@ export default function SubmitButton({ id }: { id: number }) {
         }
         router.refresh();
       }}
-      className="rounded bg-amber-600 px-3 py-1.5 text-sm text-white font-ui font-medium disabled:bg-gray-400 hover:bg-amber-700 transition-colors"
+      className={`${d.submitReview} font-ui`}
     >
       {busy ? "Sending…" : "Submit for review"}
     </button>

@@ -1,0 +1,46 @@
+// ─────────────────────────────────────────────────────────────────────────
+// The status chip — draft / pending / published. Shared by "My stories", the
+// management list and the contact inbox.
+//
+// The type is Tailwind's default sans stack, not the paper's Outfit: the
+// markup asked for `font-sans`, and that is what production renders.
+// ─────────────────────────────────────────────────────────────────────────
+
+/** `font-sans rounded-full px-2.5 py-0.5 text-xs font-medium uppercase tracking-wider` */
+.chip {
+  border-radius: 9999px;
+  padding: 0.125rem 0.625rem;
+  font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
+    "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  font-size: 0.75rem;
+  line-height: 1rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/** `inline-flex items-center` — the dashboard chips are flex boxes. */
+.chipFlex {
+  display: inline-flex;
+  align-items: center;
+}
+
+/* Palette, read off the compiled stylesheet ------------------------------ */
+
+/** `bg-gray-200 text-gray-700` — the inbox's "handled" chip too. */
+.draft {
+  background-color: rgb(229 231 235);
+  color: rgb(55 65 81);
+}
+
+/** `bg-amber-200 text-amber-800` */
+.pending {
+  background-color: rgb(253 230 138);
+  color: rgb(146 64 14);
+}
+
+/** `bg-green-200 text-green-800` */
+.published {
+  background-color: rgb(187 247 208);
+  color: rgb(22 101 52);
+}
