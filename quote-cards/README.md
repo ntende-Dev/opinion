@@ -62,15 +62,20 @@ Full flag list: `node scripts/render-story.mjs --help`.
 ## Where a card shows up on the site
 
 `/story/<slug>` renders a **Share this piece** block — the vertical card in a
-player, a line of copy, and a download link — but only when the card exists in
-Object Storage. No flag to set, no column in the database: the key is *derived*
-from the slug on both sides.
+player, a line of copy, then a download link per cut that exists — but only when
+at least one card is in Object Storage. No flag to set, no column in the
+database: the key is *derived* from the slug on both sides.
 
 | | |
 | --- | --- |
 | Key the script writes | `quote-cards/<slugify(story.slug)>.<format>.mp4` |
 | Key the site looks for | the same, via `lib/quoteCards.ts` |
-| URL it is served from | `/api/media/quote-cards/<slug>.vertical.mp4` |
+| URL it is served from | `/api/media/quote-cards/<slug>.<format>.mp4` |
+
+The vertical cut is what plays. Both are offered as downloads — *Download
+vertical (9:16)* and *Download square (1:1)* — and if only the square has been
+rendered it plays instead. Either cut can be rendered on its own; running the
+script twice, once per `--format`, is how a story gets both.
 
 Both sides slugify with `lib/slug.ts`, so a numeric `--story 12` still lands on
 the slug keyed correctly. Re-rendering overwrites the same key: the media route

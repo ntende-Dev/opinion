@@ -1,4 +1,5 @@
 import { slugify } from "@/lib/slug";
+import { headObject } from "@/lib/storage";
 
 /**
  * Where a story's rendered quote card lives in Object Storage, and how the
@@ -28,4 +29,27 @@ export const QUOTE_CARD_KEY_RE =
 export function quoteCardUrl(slug: string, format: QuoteCardFormat = "vertical"): string | null {
   const key = quoteCardKey(slug, format);
   return QUOTE_CARD_KEY_RE.test(key) ? `/api/media/${key}` : null;
+}
+
+/** The card's public URL when it exists in storage, otherwise null. */
+export async function findQuoteCard(
+  slug: string,
+  format: QuoteCardFormat = "vertical",
+): Promise<string | null> {
+  const url = quoteCardUrl(slug, format);
+  if (!url) return null;
+  const head = await headObject(quoteCardKey(slug, format));
+  return head ? url : null;
+}
+
+/** Both cuts of a story's card, either of which may be missing. */
+export type QuoteCards = { vertical: string | null; square: string | null };
+
+/** Looks both cuts up at once. */
+export async function findQuoteCards(slug: string): Promise<QuoteCards> {
+  const [vertical, square] = await Promise.all([
+    findQuoteCard(slug, "vertical"),
+    findQuoteCard(slug, "square"),
+  ]);
+  return { vertical, square };
 }

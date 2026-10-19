@@ -5,8 +5,7 @@ import { notFound } from "next/navigation";
 import { auth } from "@/auth";
 import { eq } from "drizzle-orm";
 import { EDITORS } from "@/lib/roles";
-import { headObject } from "@/lib/storage";
-import { quoteCardKey, quoteCardUrl } from "@/lib/quoteCards";
+import { findQuoteCards } from "@/lib/quoteCards";
 import StoryQuoteCard from "@/app/StoryQuoteCard";
 import s from "@/app/Story.module.scss";
 
@@ -51,15 +50,10 @@ const loadStory = cache(async (slug: string): Promise<StoryRow | null> => {
 });
 
 /**
- * The rendered quote card for this slug, if one has been uploaded. Asked for
- * at the same time as the story itself, so the check costs no extra wait.
+ * The rendered cards for this slug, if any have been uploaded. Asked for at
+ * the same time as the story itself, so the check costs no extra wait.
  */
-const loadCard = cache(async (slug: string): Promise<string | null> => {
-  const url = quoteCardUrl(slug);
-  if (!url) return null;
-  const head = await headObject(quoteCardKey(slug));
-  return head ? url : null;
-});
+const loadCards = cache(findQuoteCards);
 
 export async function generateMetadata({
   params,
@@ -107,8 +101,8 @@ export default async function Story({
   // Legacy URLs may carry percent-encoded characters (spaces etc.).
   const slug = safeDecode(raw);
   if (!slug) notFound();
-  // Both are keyed by the same slug, so ask for the story and its card at once.
-  const [story, cardUrl] = await Promise.all([loadStory(slug), loadCard(slug)]);
+  // Both are keyed by the same slug, so ask for the story and its cards at once.
+  const [story, cards] = await Promise.all([loadStory(slug), loadCards(slug)]);
   if (!story) notFound();
 
   if (story.status !== "published") {
@@ -167,7 +161,9 @@ export default async function Story({
           className={`${s.content} prose-content`}
           dangerouslySetInnerHTML={{ __html: story.content }}
         />
-        {cardUrl && <StoryQuoteCard title={story.title} url={cardUrl} />}
+        {(cards.vertical !== null || cards.square !== null) && (
+          <StoryQuoteCard title={story.title} cards={cards} />
+        )}
       </article>
     </div>
   );
