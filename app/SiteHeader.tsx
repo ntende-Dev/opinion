@@ -405,6 +405,12 @@ export default function SiteHeader({
           {authed ? (
             <>
               {profile && <ProfileBlock profile={profile} />}
+              <Link
+                href="/dashboard"
+                className={`${styles.link} ${styles.desktopInline}`}
+              >
+                Dashboard
+              </Link>
               <button
                 onClick={signout}
                 className={`${styles.accentButton} ${styles.desktopInlineFlex}`}
