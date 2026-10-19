@@ -144,9 +144,12 @@ h3 { font-size: var(--step-2); }
 .u-text-center { text-align: center; }
 .u-text-left { text-align: left; }
 
-.block {
-  margin-bottom: 2rem;
-}
+/* NOTE: a `.block { margin-bottom: 2rem }` helper used to live here. It
+   collided with Tailwind's `block` (display) utility, so every element
+   using `class="block"` silently gained a 32px bottom margin — which also
+   overrode `mb-1` on form labels and pushed flex-centred items (the
+   masthead logo, the banner) 16px off centre. Use Tailwind spacing
+   utilities such as `mb-8` for equivalent space. */
 
 /* Article body typography */
 .prose-content {
