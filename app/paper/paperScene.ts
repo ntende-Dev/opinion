@@ -885,10 +885,9 @@ export function createPaperScene(o: PaperSceneOptions): PaperScene {
   };
   document.addEventListener("visibilitychange", onVisibility);
 
-  /* ── debug (local only, or ?paperDebug) ── */
+  /* ── debug (local only) ── */
   const debugOn =
-    typeof location !== "undefined" &&
-    (location.search.includes("paperDebug") || location.hostname === "localhost" || location.hostname === "127.0.0.1");
+    typeof location !== "undefined" && (location.hostname === "localhost" || location.hostname === "127.0.0.1");
 
   const debug: PaperScene["debug"] = {
     render: () => renderNow(),
