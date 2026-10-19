@@ -4,6 +4,7 @@ import { auth } from "@/auth";
 import Providers from "@/app/Providers";
 import { Toaster } from "sonner";
 import SiteHeader from "@/app/SiteHeader";
+import Footer from "@/app/Footer";
 
 const siteUrl = process.env.NEXTAUTH_URL || "http://localhost:3000";
 
@@ -20,6 +21,9 @@ export const metadata: Metadata = {
     title: "The Opinion Weekly",
     description: "Where every opinion matters. A journal of editorial argument.",
     url: siteUrl,
+  },
+  alternates: {
+    types: { "application/rss+xml": "/feed.xml" },
   },
 };
 
@@ -45,6 +49,7 @@ export default async function RootLayout({
         <Providers>
           <SiteHeader initialAuthed={isAuthed} />
           <main className="font-body">{children}</main>
+          <Footer isAuthed={isAuthed} />
         </Providers>
         <Toaster position="top-center" />
       </body>
