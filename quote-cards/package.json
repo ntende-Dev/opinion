@@ -8,9 +8,9 @@
     "render": "remotion render QuoteCard out/quote-card.mp4 --public-dir=../public",
     "still": "remotion still QuoteCard out/quote-card.png --frame=200 --public-dir=../public",
     "still:square": "remotion still QuoteCardSquare out/quote-card-square.png --frame=200 --public-dir=../public",
-    "render:story": "node --env-file=../.env scripts/render-story.mjs",
-    "render:story:upload": "node --env-file=../.env scripts/render-story.mjs --upload",
-    "cards:list": "node --env-file=../.env scripts/list-cards.mjs",
+    "render:story": "node --env-file=../.env --env-file-if-exists=../.env.local scripts/render-story.mjs",
+    "render:story:upload": "node --env-file=../.env --env-file-if-exists=../.env.local scripts/render-story.mjs --upload",
+    "cards:list": "node --env-file=../.env --env-file-if-exists=../.env.local scripts/list-cards.mjs",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

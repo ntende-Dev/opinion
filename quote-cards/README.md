@@ -105,10 +105,11 @@ Anything named outside `<slug>.<format>.mp4` under that prefix is flagged as not
 served, because the media route only accepts that shape.
 
 The URLs are built from `SITE_URL`, falling back to the same `NEXTAUTH_URL` the
-app builds its feed and sitemap from. A development `.env` points that at
-`localhost`, so the printed links are local ones — the scripts say so when that
-happens. Put `SITE_URL=https://www.opinionweekly.co.za` in the `.env` to get the
-live links instead.
+app builds its feed and sitemap from. The scripts read `.env` and then
+`.env.local` (as Next does, the later file winning), so a development `.env`
+pointing at `localhost` can be overridden per machine by putting
+`SITE_URL=https://www.opinionweekly.co.za` in `.env.local`. When the links come
+out as local ones, the scripts say so.
 
 ## What the card is made of
 
