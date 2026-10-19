@@ -1,0 +1,235 @@
+@use "./styles/mixins" as m;
+
+// ─────────────────────────────────────────────────────────────────────────
+// Masthead — the whole header, hand-ported from the Tailwind utilities.
+// Every value below is the resolved equivalent of the class it replaced;
+// see the parity notes in the pilot report. Nothing here depends on Tailwind.
+// ─────────────────────────────────────────────────────────────────────────
+
+/* ── Shell ──────────────────────────────────────────────────────────── */
+.header {
+  margin-top: 1.25rem; // mt-5
+  margin-bottom: 0.75rem; // mb-3
+  padding-inline: 1.5rem; // px-6
+}
+
+.bar {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem; // gap-4
+  padding-top: 0.75rem; // pt-3
+  padding-bottom: 1.75rem; // pb-7
+  border-bottom: 1px solid var(--color-line);
+}
+
+/* ── Left: page links ───────────────────────────────────────────────── */
+.nav {
+  display: none;
+  align-items: center;
+  gap: 1.25rem; // gap-5
+
+  @media (min-width: m.$bp-md) {
+    display: flex;
+  }
+}
+
+/** Shared by the nav links, the Login link and the mobile panel links. */
+.link {
+  @include m.ui-link;
+}
+
+/** Was `hidden md:inline` — hidden below md, natural inline flow above. */
+.desktopInline {
+  display: none;
+
+  @media (min-width: m.$bp-md) {
+    display: inline;
+  }
+}
+
+/** Left-hand spacer so `space-between` keeps the mark truly centred while the
+ *  nav is hidden on small screens (was `md:hidden`). */
+.spacer {
+  @media (min-width: m.$bp-md) {
+    display: none;
+  }
+}
+
+/* ── Centre: the mark ───────────────────────────────────────────────── */
+.logoLink {
+  position: absolute;
+  inset-block: 0; // inset-y-0 — pins to the bar, so the mark centres itself
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+}
+
+.logo {
+  display: block;
+  height: 64px;
+  width: auto;
+}
+
+/* ── Right: account ─────────────────────────────────────────────────── */
+.account {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem; // gap-3
+}
+
+.avatar {
+  height: 2.25rem; // h-9
+  width: 2.25rem; // w-9
+  border-radius: 9999px; // rounded-full
+  object-fit: cover;
+  @include m.hairline;
+}
+
+.avatarFallback {
+  display: flex;
+  height: 2.25rem;
+  width: 2.25rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  background-color: var(--color-accent);
+  color: #fff;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--step--1);
+}
+
+/** Desktop profile block (was `hidden md:flex items-center gap-2`). */
+.profile {
+  display: none;
+  align-items: center;
+  gap: 0.5rem; // gap-2
+
+  @media (min-width: m.$bp-md) {
+    display: flex;
+  }
+}
+
+/** Desktop name/email column (was `hidden xl:flex flex-col leading-tight`). */
+.profileText {
+  display: none;
+  flex-direction: column;
+  line-height: 1.25; // leading-tight
+
+  @media (min-width: m.$bp-xl) {
+    display: flex;
+  }
+}
+
+.profileName {
+  font-family: var(--font-ui);
+  font-size: var(--step--1);
+  font-weight: 400;
+  color: var(--color-ink);
+}
+
+.role {
+  margin-left: 0.375rem; // ml-1.5
+  border-radius: 9999px;
+  @include m.hairline;
+  padding: 1px 0.375rem; // py-px px-1.5
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--color-muted);
+}
+
+.profileEmail {
+  font-family: var(--font-ui);
+  font-size: 11px;
+  color: var(--color-muted);
+}
+
+.accentButton {
+  @include m.accent-button;
+}
+
+/** Was `hidden md:inline-flex` on the desktop buttons. */
+.desktopInlineFlex {
+  display: none;
+
+  @media (min-width: m.$bp-md) {
+    display: inline-flex;
+  }
+}
+
+/* ── Hamburger ──────────────────────────────────────────────────────── */
+.menuButton {
+  padding: 0.5rem; // p-2
+  margin-right: -0.5rem; // -mr-2
+  border: 0;
+  border-radius: 0.25rem;
+  background-color: transparent;
+  color: inherit;
+
+  @include m.transition-colors;
+
+  &:hover {
+    background-color: var(--color-line);
+  }
+
+  @media (min-width: m.$bp-md) {
+    display: none;
+  }
+}
+
+/* ── Mobile panel ───────────────────────────────────────────────────── */
+.panel {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1rem; // gap-4
+  padding-top: 0.75rem; // pt-3
+  padding-bottom: 1.25rem; // pb-5
+
+  @media (min-width: m.$bp-md) {
+    display: none;
+  }
+}
+
+.panelProfile {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding-bottom: 0.25rem; // pb-1
+  @include m.hairline(bottom);
+  width: 100%;
+}
+
+.panelProfileText {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.25;
+}
+
+/** Panel actions stretch the full width (was `self-stretch` + `px-3 py-2`). */
+.panelButton {
+  @include m.accent-button;
+  align-self: stretch;
+  padding: 0.5rem 0.75rem; // px-3 py-2
+  text-align: center;
+}
+
+/* ── Leaderboard strip ──────────────────────────────────────────────── */
+.adStrip {
+  display: flex;
+  height: 100px;
+  align-items: center;
+  justify-content: center;
+}
+
+.ad {
+  display: block;
+  height: auto;
+  width: 100%;
+  max-width: 600px;
+  border-radius: 0.25rem;
+  @include m.hairline;
+}

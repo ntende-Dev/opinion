@@ -1,0 +1,73 @@
+// ─────────────────────────────────────────────────────────────────────────
+// Shared SCSS primitives for the masthead (and, as the migration continues,
+// the rest of the paper).
+//
+// Breakpoints deliberately mirror Tailwind's defaults — the site's responsive
+// behaviour (2-up story cards, the hamburger, the profile block) depends on
+// these exact numbers, so they are named here once and never guessed at.
+// ─────────────────────────────────────────────────────────────────────────
+
+$bp-sm: 640px;
+$bp-md: 768px;
+$bp-lg: 1024px;
+$bp-xl: 1280px;
+
+/// Tailwind's `transition-colors`, verbatim.
+@mixin transition-colors {
+  transition-property: color, background-color, border-color,
+    text-decoration-color, fill, stroke;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+
+/// 1px hairline in the house rule colour (was `border border-[var(--color-line)]`).
+@mixin hairline($sides: all) {
+  @if $sides == all {
+    border: 1px solid var(--color-line);
+  } @else {
+    border-#{$sides}: 1px solid var(--color-line);
+  }
+}
+
+/// The primary action: deep-red ground, white type, quiet hover.
+/// Reproduces `font-ui text-sm rounded bg-[var(--color-accent)] px-3 py-1.5
+/// text-white hover:bg-[var(--color-accent-hover)] transition-colors`.
+/// Deliberately inherits font-weight (400) and the anchor underline, exactly
+/// as the utility version did.
+@mixin accent-button {
+  border: 0;
+  border-radius: 0.25rem;
+  background-color: var(--color-accent);
+  color: #fff;
+  padding: 0.375rem 0.75rem;
+  font-family: var(--font-ui);
+  font-size: var(--step--1);
+  line-height: 1.25rem;
+  cursor: pointer;
+
+  @include transition-colors;
+
+  &:hover {
+    background-color: var(--color-accent-hover);
+  }
+}
+
+/// Editorial UI link, underlined at 2px with a 4px offset.
+/// Reproduces `font-ui text-sm font-medium hover:underline decoration-2
+/// underline-offset-4` on top of the site-wide anchor colour.
+@mixin ui-link {
+  font-family: var(--font-ui);
+  font-size: var(--step--1);
+  line-height: 1.25rem;
+  font-weight: 500;
+  color: var(--color-accent);
+  text-decoration-line: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 4px;
+
+  @include transition-colors;
+
+  &:hover {
+    color: var(--color-accent-hover);
+  }
+}

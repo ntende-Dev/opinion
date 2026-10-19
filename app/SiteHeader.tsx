@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import styles from "./SiteHeader.module.scss";
 
 type Profile = {
   name: string;
@@ -30,17 +31,14 @@ function initials(name: string) {
  *  serves it as compressed WebP/AVIF per device. */
 function AdBanner() {
   return (
-    <div
-      className="flex h-[100px] items-center justify-center"
-      aria-label="Advertisement"
-    >
+    <div className={styles.adStrip} aria-label="Advertisement">
       <Image
         src="/images/topBanner.png"
         alt="Advertisement"
         width={728}
         height={90}
         priority
-        className="block h-auto w-full max-w-[600px] rounded border border-[var(--color-line)]"
+        className={styles.ad}
       />
     </div>
   );
@@ -77,8 +75,38 @@ function MenuIcon({ open }: { open: boolean }) {
   );
 }
 
-const linkBase =
-  "font-ui text-sm font-medium hover:underline decoration-2 underline-offset-4";
+/**
+ * Avatar, name, role chip and email. The desktop bar shows this from `md`
+ * up (with the name column appearing at `xl`); the mobile panel shows a
+ * full-width variant under a hairline.
+ */
+function ProfileBlock({
+  profile,
+  inPanel = false,
+}: {
+  profile: Profile;
+  inPanel?: boolean;
+}) {
+  return (
+    <div className={inPanel ? styles.panelProfile : styles.profile}>
+      {profile.avatarUrl ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img src={profile.avatarUrl} alt="" className={styles.avatar} />
+      ) : (
+        <span aria-hidden="true" className={styles.avatarFallback}>
+          {initials(profile.name)}
+        </span>
+      )}
+      <span className={inPanel ? styles.panelProfileText : styles.profileText}>
+        <span className={styles.profileName}>
+          {profile.name}
+          <span className={styles.role}>{profile.role}</span>
+        </span>
+        <span className={styles.profileEmail}>{profile.email}</span>
+      </span>
+    </div>
+  );
+}
 
 /**
  * Site header with live auth state. The client session decides auth; the
@@ -91,6 +119,8 @@ const linkBase =
  * absolutely centered on the bar (the content column is `mx-auto`, so this
  * is the same visual center as the page), and account actions on the right.
  * Below md everything moves into the hamburger panel.
+ *
+ * Styling lives in SiteHeader.module.scss — no Tailwind utilities.
  */
 export default function SiteHeader({ initialAuthed }: { initialAuthed: boolean }) {
   const { status } = useSession();
@@ -142,91 +172,62 @@ export default function SiteHeader({ initialAuthed }: { initialAuthed: boolean }
   }
 
   return (
-    <header className="mt-5 mb-3 px-6">
-      <div className="relative flex items-center justify-between gap-4 pt-3 pb-7 border-b border-[var(--color-line)]">
+    <header className={styles.header}>
+      <div className={styles.bar}>
         {/* Left — page links (desktop). Mobile gets these in the panel. */}
-        <nav className="hidden md:flex items-center gap-5">
-          <Link href="/" className={linkBase}>
+        <nav className={styles.nav}>
+          <Link href="/" className={styles.link}>
             Home
           </Link>
-          <Link href="/contact" className={linkBase}>
+          <Link href="/contact" className={styles.link}>
             Contact
           </Link>
           {authed && (
-            <Link href="/dashboard" className={linkBase}>
+            <Link href="/dashboard" className={styles.link}>
               Dashboard
             </Link>
           )}
         </nav>
         {/* Spacer so flex space-between keeps the logo truly central even
             when the left nav is hidden on mobile. */}
-        <span className="md:hidden" aria-hidden="true" />
+        <span className={styles.spacer} aria-hidden="true" />
 
         {/* Center — the logo, justified center of the bar. Static by
-            request: the same SVG, larger, with no animation. `inset-y-0`
-            plus `items-center` pins it to the bar's true vertical centre
-            regardless of how the SVG measures itself. */}
+            request: the same SVG, larger, with no animation. `inset-block: 0`
+            plus centring pins it to the bar's true vertical centre regardless
+            of how the SVG measures itself. */}
         <Link
           href="/"
           aria-label="The Opinion Weekly — home"
-          className="absolute inset-y-0 left-1/2 -translate-x-1/2 flex items-center"
+          className={styles.logoLink}
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="/opinionLogo.svg"
-            alt=""
-            className="block h-[64px] w-auto"
-          />
+          <img src="/opinionLogo.svg" alt="" className={styles.logo} />
         </Link>
 
         {/* Right — account actions. */}
-        <div className="flex items-center gap-3">
+        <div className={styles.account}>
           {authed ? (
             <>
-              {profile && (
-                <div className="hidden md:flex items-center gap-2">
-                  {profile.avatarUrl ? (
-                    <img
-                      src={profile.avatarUrl}
-                      alt=""
-                      className="h-9 w-9 rounded-full object-cover border border-[var(--color-line)]"
-                    />
-                  ) : (
-                    <span
-                      aria-hidden="true"
-                      className="flex h-9 w-9 items-center justify-center rounded-full bg-[var(--color-accent)] text-white font-display font-bold text-sm"
-                    >
-                      {initials(profile.name)}
-                    </span>
-                  )}
-                  <span className="hidden xl:flex flex-col leading-tight">
-                    <span className="font-ui text-sm font-normal text-[var(--color-ink)]">
-                      {profile.name}
-                      <span className="ml-1.5 rounded-full border border-[var(--color-line)] px-1.5 py-px text-[11px] font-medium text-[var(--color-muted)]">
-                        {profile.role}
-                      </span>
-                    </span>
-                    <span className="font-ui text-[11px] text-[var(--color-muted)]">
-                      {profile.email}
-                    </span>
-                  </span>
-                </div>
-              )}
+              {profile && <ProfileBlock profile={profile} />}
               <button
                 onClick={signout}
-                className="hidden md:inline-flex font-ui text-sm rounded bg-[var(--color-accent)] px-3 py-1.5 text-white hover:bg-[var(--color-accent-hover)] transition-colors"
+                className={`${styles.accentButton} ${styles.desktopInlineFlex}`}
               >
                 Sign out
               </button>
             </>
           ) : (
             <>
-              <Link href="/login" className={`${linkBase} hidden md:inline`}>
+              <Link
+                href="/login"
+                className={`${styles.link} ${styles.desktopInline}`}
+              >
                 Login
               </Link>
               <Link
                 href="/signup"
-                className="hidden md:inline-flex font-ui text-sm rounded bg-[var(--color-accent)] px-3 py-1.5 text-white hover:bg-[var(--color-accent-hover)] transition-colors"
+                className={`${styles.accentButton} ${styles.desktopInlineFlex}`}
               >
                 Sign up
               </Link>
@@ -234,7 +235,7 @@ export default function SiteHeader({ initialAuthed }: { initialAuthed: boolean }
           )}
           <button
             type="button"
-            className="md:hidden p-2 -mr-2 rounded hover:bg-[var(--color-line)] transition-colors"
+            className={styles.menuButton}
             aria-label={menuOpen ? "Close menu" : "Open menu"}
             aria-expanded={menuOpen}
             aria-controls="mobile-menu"
@@ -247,58 +248,24 @@ export default function SiteHeader({ initialAuthed }: { initialAuthed: boolean }
 
       {/* Mobile drop-down panel. */}
       {menuOpen && (
-        <nav
-          id="mobile-menu"
-          className="md:hidden flex flex-col items-start gap-4 pt-3 pb-5"
-        >
-          {authed && profile && (
-            <div className="flex items-center gap-2 pb-1 border-b border-[var(--color-line)] w-full">
-              {profile.avatarUrl ? (
-                <img
-                  src={profile.avatarUrl}
-                  alt=""
-                  className="h-9 w-9 rounded-full object-cover border border-[var(--color-line)]"
-                />
-              ) : (
-                <span
-                  aria-hidden="true"
-                  className="flex h-9 w-9 items-center justify-center rounded-full bg-[var(--color-accent)] text-white font-display font-bold text-sm"
-                >
-                  {initials(profile.name)}
-                </span>
-              )}
-              <span className="font-ui flex flex-col leading-tight">
-                <span className="text-sm font-normal text-[var(--color-ink)]">
-                  {profile.name}
-                  <span className="ml-1.5 rounded-full border border-[var(--color-line)] px-1.5 py-px text-[11px] font-medium text-[var(--color-muted)]">
-                    {profile.role}
-                  </span>
-                </span>
-                <span className="text-[11px] text-[var(--color-muted)]">
-                  {profile.email}
-                </span>
-              </span>
-            </div>
-          )}
-          <Link href="/" className={linkBase} onClick={() => setMenuOpen(false)}>
+        <nav id="mobile-menu" className={styles.panel}>
+          {authed && profile && <ProfileBlock profile={profile} inPanel />}
+          <Link href="/" className={styles.link} onClick={() => setMenuOpen(false)}>
             Home
           </Link>
-          <Link href="/contact" className={linkBase} onClick={() => setMenuOpen(false)}>
+          <Link href="/contact" className={styles.link} onClick={() => setMenuOpen(false)}>
             Contact
           </Link>
           {authed ? (
             <>
               <Link
                 href="/dashboard"
-                className={linkBase}
+                className={styles.link}
                 onClick={() => setMenuOpen(false)}
               >
                 Dashboard
               </Link>
-              <button
-                onClick={signout}
-                className="self-stretch rounded bg-[var(--color-accent)] px-3 py-2 text-sm font-ui text-white hover:bg-[var(--color-accent-hover)] transition-colors"
-              >
+              <button onClick={signout} className={styles.panelButton}>
                 Sign out
               </button>
             </>
@@ -306,14 +273,14 @@ export default function SiteHeader({ initialAuthed }: { initialAuthed: boolean }
             <>
               <Link
                 href="/login"
-                className={linkBase}
+                className={styles.link}
                 onClick={() => setMenuOpen(false)}
               >
                 Login
               </Link>
               <Link
                 href="/signup"
-                className="self-stretch rounded bg-[var(--color-accent)] px-3 py-2 text-sm font-ui text-white text-center hover:bg-[var(--color-accent-hover)] transition-colors"
+                className={styles.panelButton}
                 onClick={() => setMenuOpen(false)}
               >
                 Sign up
