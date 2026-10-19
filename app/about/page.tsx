@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import e from "@/app/Editorial.module.scss";
 
 export const metadata: Metadata = {
   title: "About",
@@ -11,12 +12,12 @@ export default function About() {
   return (
     <div className="container font-body">
       <article className="measure">
-        <p className="font-ui text-[0.7rem] font-semibold uppercase tracking-[0.2em] text-[var(--color-accent)]">
+        <p className={`${e.eyebrow} font-ui`}>
           The paper
         </p>
-        <h1 className="mt-3 font-display">About The Opinion Weekly</h1>
+        <h1 className={`${e.title} font-display`}>About The Opinion Weekly</h1>
 
-        <div className="prose-content mt-8">
+        <div className={`${e.body} prose-content`}>
           <p>
             The Opinion Weekly is an independent journal of editorial argument.
             We publish essays, rebuttals and dispatches from writers who are

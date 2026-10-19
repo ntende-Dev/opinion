@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { auth } from "@/auth";
 import { eq } from "drizzle-orm";
 import { EDITORS } from "@/lib/roles";
+import s from "@/app/Story.module.scss";
 
 export const dynamic = "force-dynamic";
 
@@ -114,7 +115,7 @@ export default async function Story({
   return (
     <div className="container font-body">
       {story.status !== "published" && (
-        <div className="mb-8 px-6 py-3 bg-[var(--color-accent)] text-white text-sm font-ui font-medium">
+        <div className={`${s.preview} font-ui`}>
           Preview — this story is <b>{story.status}</b>, not yet public.
         </div>
       )}
@@ -123,12 +124,12 @@ export default async function Story({
           <img
             src={story.coverImage}
             alt={`Cover for ${story.title}`}
-            className="mb-8 w-full rounded border border-[var(--color-line)]"
+            className={s.cover}
           />
         )}
-        <header className="mb-8">
+        <header className={s.head}>
           <h1 className="font-display">{story.title}</h1>
-          <p className="mt-4 font-ui text-sm text-[var(--color-muted)]">
+          <p className={`${s.byline} font-ui`}>
             {story.status !== "published" ? (
               story.status
             ) : (
@@ -136,7 +137,7 @@ export default async function Story({
                 {story.authorName && (
                   <>
                     By {story.authorName}
-                    <span className="mx-2 text-[var(--color-line)]">
+                    <span className={s.dash}>
                       —
                     </span>
                   </>
@@ -146,9 +147,9 @@ export default async function Story({
             )}
           </p>
         </header>
-        <hr className="mb-8 border-[var(--color-line)]" />
+        <hr className={s.rule} />
         <div
-          className="prose-content leading-relaxed"
+          className={`${s.content} prose-content`}
           dangerouslySetInnerHTML={{ __html: story.content }}
         />
       </article>

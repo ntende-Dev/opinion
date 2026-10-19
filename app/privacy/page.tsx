@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import e from "@/app/Editorial.module.scss";
 
 export const metadata: Metadata = {
   title: "Privacy",
@@ -11,16 +12,16 @@ export default function Privacy() {
   return (
     <div className="container font-body">
       <article className="measure">
-        <p className="font-ui text-[0.7rem] font-semibold uppercase tracking-[0.2em] text-[var(--color-accent)]">
+        <p className={`${e.eyebrow} font-ui`}>
           Information
         </p>
-        <h1 className="mt-3 font-display">Privacy</h1>
-        <p className="mt-4 font-ui text-[var(--step--1)] text-[var(--color-muted)]">
+        <h1 className={`${e.title} font-display`}>Privacy</h1>
+        <p className={`${e.standfirst} font-ui`}>
           Plain language, not legal boilerplate. Here is everything we hold on
           you, and why.
         </p>
 
-        <div className="prose-content mt-8">
+        <div className={`${e.body} prose-content`}>
           <h2>What we collect</h2>
 
           <p>

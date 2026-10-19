@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import e from "@/app/Editorial.module.scss";
 
 export const metadata: Metadata = {
   title: "Terms",
@@ -11,15 +12,15 @@ export default function Terms() {
   return (
     <div className="container font-body">
       <article className="measure">
-        <p className="font-ui text-[0.7rem] font-semibold uppercase tracking-[0.2em] text-[var(--color-accent)]">
+        <p className={`${e.eyebrow} font-ui`}>
           Information
         </p>
-        <h1 className="mt-3 font-display">Terms</h1>
-        <p className="mt-4 font-ui text-[var(--step--1)] text-[var(--color-muted)]">
+        <h1 className={`${e.title} font-display`}>Terms</h1>
+        <p className={`${e.standfirst} font-ui`}>
           What you agree to when you write for, or read, this paper.
         </p>
 
-        <div className="prose-content mt-8">
+        <div className={`${e.body} prose-content`}>
           <h2>Your writing stays yours</h2>
 
           <p>

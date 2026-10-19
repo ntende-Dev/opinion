@@ -1,0 +1,40 @@
+// ─────────────────────────────────────────────────────────────────────────
+// The shell shared by the standing pages — about, privacy, terms: a small
+// accent eyebrow, the title, an optional standfirst, then prose.
+//
+// Global helpers still carried in the markup: .container, .font-body,
+// .font-display, .font-ui, .measure, .prose-content.
+// ─────────────────────────────────────────────────────────────────────────
+
+/** `font-ui text-[0.7rem] font-semibold uppercase tracking-[0.2em] text-[var(--color-accent)]` */
+.eyebrow {
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: var(--color-accent);
+}
+
+/** `mt-3 font-display` — the size itself comes from the global `h1` rule. */
+.title {
+  margin-top: 0.75rem;
+}
+
+/**
+ * `mt-4 font-ui text-[var(--step--1)] text-[var(--color-muted)]`
+ *
+ * The same cancellation as in the footer: `text-[var(--step--1)]` is emitted
+ * as an invalid colour and lands after the valid muted one, so the whole
+ * declaration is invalid at computed-value time. The standfirst therefore
+ * inherits ink and the 1rem body size, not the muted grey it appears to ask
+ * for — reproduced here as it renders on production.
+ */
+.standfirst {
+  margin-top: 1rem;
+  color: inherit;
+}
+
+/** `prose-content mt-8` */
+.body {
+  margin-top: 2rem;
+}

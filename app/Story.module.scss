@@ -1,0 +1,60 @@
+// ─────────────────────────────────────────────────────────────────────────
+// A single story page. Global helpers still carried in the markup:
+// .container, .font-body, .font-display, .font-ui, .measure, .prose-content.
+// ─────────────────────────────────────────────────────────────────────────
+
+/** `mb-8 px-6 py-3 bg-[var(--color-accent)] text-white text-sm font-ui font-medium` */
+.preview {
+  margin-bottom: 2rem;
+  padding: 0.75rem 1.5rem;
+  background-color: var(--color-accent);
+  color: #fff;
+  font-size: var(--step--1);
+  line-height: 1.25rem;
+  font-weight: 500;
+}
+
+/** `mb-8 w-full rounded border border-[var(--color-line)]` */
+.cover {
+  margin-bottom: 2rem;
+  width: 100%;
+  border-width: 1px;
+  border-color: var(--color-line);
+  border-radius: 0.25rem;
+}
+
+/** `mb-8` */
+.head {
+  margin-bottom: 2rem;
+}
+
+/** `mt-4 font-ui text-sm text-[var(--color-muted)]` */
+.byline {
+  margin-top: 1rem;
+  font-size: var(--step--1);
+  line-height: 1.25rem;
+  color: var(--color-muted);
+}
+
+/** `mx-2 text-[var(--color-line)]` — the em dash between author and date. */
+.dash {
+  margin-right: 0.5rem;
+  margin-left: 0.5rem;
+  color: var(--color-line);
+}
+
+/**
+ * `mb-8 border-[var(--color-line)]`
+ *
+ * Tailwind's `border-[…]` colours all four sides; only the top one has width,
+ * which comes from the reset (`hr { border-top-width: 1px }`).
+ */
+.rule {
+  margin-bottom: 2rem;
+  border-color: var(--color-line);
+}
+
+/** As `leading-relaxed` on the article body. */
+.content {
+  line-height: 1.625;
+}
