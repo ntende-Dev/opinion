@@ -24,19 +24,23 @@ function initials(name: string) {
   );
 }
 
-/** Leaderboard ad just below the navbar (728×90 creative, displayed at a
- *  modest 600px cap so it sits quietly under the masthead). next/image
+/** Leaderboard ad just below the navbar. The strip is held to a fixed
+ *  100px so the masthead has a stable, predictable rhythm, with the 728×90
+ *  creative (displayed at a modest 600px cap) centred inside it. next/image
  *  serves it as compressed WebP/AVIF per device. */
 function AdBanner() {
   return (
-    <div className="mt-3 pb-3" aria-label="Advertisement">
+    <div
+      className="flex h-[100px] items-center justify-center"
+      aria-label="Advertisement"
+    >
       <Image
         src="/images/topBanner.png"
         alt="Advertisement"
         width={728}
         height={90}
         priority
-        className="mx-auto block h-auto w-full max-w-[600px] rounded border border-[var(--color-line)]"
+        className="block h-auto w-full max-w-[600px] rounded border border-[var(--color-line)]"
       />
     </div>
   );
@@ -139,7 +143,7 @@ export default function SiteHeader({ initialAuthed }: { initialAuthed: boolean }
 
   return (
     <header className="mt-5 mb-10 border-b border-[var(--color-line)] px-6">
-      <div className="relative flex items-center justify-between gap-4 pt-1 pb-5 border-b border-[var(--color-line)]">
+      <div className="relative flex items-center justify-between gap-4 pt-3 pb-7 border-b border-[var(--color-line)]">
         {/* Left — page links (desktop). Mobile gets these in the panel. */}
         <nav className="hidden md:flex items-center gap-5">
           <Link href="/" className={linkBase}>
@@ -159,17 +163,19 @@ export default function SiteHeader({ initialAuthed }: { initialAuthed: boolean }
         <span className="md:hidden" aria-hidden="true" />
 
         {/* Center — the logo, justified center of the bar. Static by
-            request: the same SVG at the same size, no animation. */}
+            request: the same SVG, larger, with no animation. `inset-y-0`
+            plus `items-center` pins it to the bar's true vertical centre
+            regardless of how the SVG measures itself. */}
         <Link
           href="/"
           aria-label="The Opinion Weekly — home"
-          className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center"
+          className="absolute inset-y-0 left-1/2 -translate-x-1/2 flex items-center"
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src="/opinionLogo.svg"
             alt=""
-            className="block h-[50px] w-auto"
+            className="block h-[64px] w-auto"
           />
         </Link>
 
