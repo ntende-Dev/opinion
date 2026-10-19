@@ -11,12 +11,23 @@ $bp-md: 768px;
 $bp-lg: 1024px;
 $bp-xl: 1280px;
 
-/// Tailwind's `transition-colors`, verbatim.
+/// Tailwind's `transition-colors` — plus `transform`, so a control that presses
+/// or leans eases back on the same 150ms curve instead of snapping.
 @mixin transition-colors {
   transition-property: color, background-color, border-color,
-    text-decoration-color, fill, stroke;
+    text-decoration-color, fill, stroke, transform;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
   transition-duration: 150ms;
+}
+
+/// Press feedback for a control: the press itself lands at once (no transition
+/// while held), and the release eases back on the control's own transition.
+/// The scale is composited, so a press never nudges the layout around it.
+@mixin press {
+  &:active {
+    transform: scale(0.98);
+    transition: none;
+  }
 }
 
 /// 1px hairline in the house rule colour (was `border border-[var(--color-line)]`).
@@ -43,6 +54,7 @@ $bp-xl: 1280px;
   color: #fff;
 
   @include transition-colors;
+  @include press;
 
   &:hover {
     background-color: var(--color-accent-hover);
@@ -73,6 +85,7 @@ $bp-xl: 1280px;
   padding: 0.375rem 0.75rem;
 
   @include transition-colors;
+  @include press;
 }
 
 /// Editorial text link — `underline underline-offset-2 hover:no-underline`,

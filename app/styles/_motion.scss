@@ -1,0 +1,84 @@
+// ─────────────────────────────────────────────────────────────────────────
+// The paper's movement vocabulary.
+//
+// These are mixins rather than one global `@keyframes` block on purpose: a CSS
+// Module hashes every animation name it *and* every keyframe it emits, so a
+// module that names `paper-rise` must also emit `paper-rise` or the reference
+// points at a name that does not exist. `@include` one of these in the module
+// that uses it and both sides get the same hash.
+//
+// Entrances rise a few pixels and settle on the out-curve; exits leave the same
+// way, faster. Durations come from the tokens in globals.scss.
+// ─────────────────────────────────────────────────────────────────────────
+
+/// A block of type arriving: the general entrance.
+@mixin paper-rise {
+  @keyframes paper-rise {
+    from {
+      opacity: 0;
+      transform: translate3d(0, 10px, 0);
+    }
+  }
+}
+
+/// For anything that unfolds from the masthead — the "More" desks, the phone
+/// panel — so it reads as coming down out of the header rather than up off the
+/// page.
+@mixin paper-drop {
+  @keyframes paper-drop {
+    from {
+      opacity: 0;
+      transform: translate3d(0, -6px, 0);
+    }
+  }
+}
+
+/// A veil arriving.
+@mixin paper-fade {
+  @keyframes paper-fade {
+    from {
+      opacity: 0;
+    }
+  }
+}
+
+/// The same veil leaving.
+@mixin paper-fade-out {
+  @keyframes paper-fade-out {
+    to {
+      opacity: 0;
+    }
+  }
+}
+
+/// A photograph settling rather than fading: it is painted from the first frame
+/// (it is usually the largest thing on the page, and the LCP), so only the last
+/// couple of percent of scale move.
+@mixin paper-lean {
+  @keyframes paper-lean {
+    from {
+      transform: scale(1.025);
+    }
+  }
+}
+
+/// A dialog lifting the last few pixels and settling, so the eye follows the card
+/// it came from into the middle of the page.
+@mixin paper-settle {
+  @keyframes paper-settle {
+    from {
+      opacity: 0;
+      transform: translate3d(0, 10px, 0) scale(0.985);
+    }
+  }
+}
+
+/// The short exit a dialog and the phone panel share.
+@mixin paper-leave {
+  @keyframes paper-leave {
+    to {
+      opacity: 0;
+      transform: translate3d(0, 6px, 0) scale(0.99);
+    }
+  }
+}

@@ -284,6 +284,35 @@ export default function SiteHeader({
   useDismissableDetails(more);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
   const panelRef = useRef<HTMLElement>(null);
+  const [panelClosing, setPanelClosing] = useState(false);
+  const panelTimer = useRef<number | null>(null);
+
+  /**
+   * The panel leaves on the same short exit the story dialog uses (160ms,
+   * mirroring --dur-fast) instead of blinking out the moment the button is
+   * pressed. A reader who asked for less motion is spared the wait.
+   */
+  const closeMenu = () => {
+    if (!menuOpen) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      setMenuOpen(false);
+      return;
+    }
+    setPanelClosing(true);
+    if (panelTimer.current) window.clearTimeout(panelTimer.current);
+    panelTimer.current = window.setTimeout(() => {
+      setMenuOpen(false);
+      setPanelClosing(false);
+      panelTimer.current = null;
+    }, 160);
+  };
+
+  useEffect(
+    () => () => {
+      if (panelTimer.current) window.clearTimeout(panelTimer.current);
+    },
+    [],
+  );
 
   /**
    * The mobile panel is a navigation disclosure, so it behaves like the
@@ -296,7 +325,7 @@ export default function SiteHeader({
     panelRef.current?.focus();
     const onKey = (e: KeyboardEvent) => {
       if (e.key !== "Escape") return;
-      setMenuOpen(false);
+      closeMenu();
       menuButtonRef.current?.focus();
     };
     document.addEventListener("keydown", onKey);
@@ -337,7 +366,6 @@ export default function SiteHeader({
     toast.success("You've been signed out.");
   }
 
-  const closeMenu = () => setMenuOpen(false);
   const isHome = pathname === "/";
   const currentSection =
     pathname.startsWith("/section/") ? pathname.split("/")[2] : null;
@@ -412,7 +440,7 @@ export default function SiteHeader({
             aria-label={menuOpen ? "Close menu" : "Open menu"}
             aria-expanded={menuOpen}
             aria-controls={menuOpen ? "mobile-menu" : undefined}
-            onClick={() => setMenuOpen((o) => !o)}
+            onClick={() => (menuOpen ? closeMenu() : setMenuOpen(true))}
           >
             <MenuIcon open={menuOpen} />
           </button>
@@ -464,7 +492,10 @@ export default function SiteHeader({
           id="mobile-menu"
           ref={panelRef}
           tabIndex={-1}
-          className={styles.panel}
+          /* Still mounted while it leaves, so it must not take a tap or a tab
+             stop on the way out. */
+          inert={panelClosing}
+          className={`${styles.panel} ${panelClosing ? styles.panelClosing : ""}`}
         >
           {authed && profile && <ProfileBlock profile={profile} inPanel />}
           <SearchField variant="panel" onSubmit={closeMenu} />

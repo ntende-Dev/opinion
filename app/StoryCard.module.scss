@@ -1,4 +1,12 @@
 @use "./styles/mixins" as m;
+@use "./styles/motion" as mo;
+
+// Keyframes named below: emitted into this module so the name and the keyframes
+// are hashed together (a CSS Module scopes animation names to its own file).
+@include mo.paper-fade;
+@include mo.paper-fade-out;
+@include mo.paper-settle;
+@include mo.paper-leave;
 
 // ─────────────────────────────────────────────────────────────────────────
 // Front-page story card and the modal it expands into.
@@ -28,6 +36,20 @@
   aspect-ratio: 16 / 9;
   object-fit: cover;
   @include m.hairline(bottom);
+  transition: transform var(--dur-slow) var(--ease-out);
+}
+
+/* The cover leans in, clipped by the card's own edge. `hover: hover` keeps a
+   phone from keeping the zoom after a tap; `focus-within` gives a keyboard
+   reader the same sign that the card is live as a pointer reader gets. */
+@media (hover: hover) {
+  .card:hover .cardImage {
+    transform: scale(1.03);
+  }
+}
+
+.card:focus-within .cardImage {
+  transform: scale(1.03);
 }
 
 .cardBody {
@@ -100,10 +122,15 @@
   overscroll-behavior: contain;
   background-color: rgba(0, 0, 0, 0.6); // bg-black/60
   padding: 1rem;
+  animation: paper-fade var(--dur-fast) var(--ease-out) both;
 
   @media (min-width: m.$bp-sm) {
     padding: 2rem; // sm:p-8
   }
+}
+
+.modalOverlayClosing {
+  animation: paper-fade-out var(--dur-fast) var(--ease-in-out) both;
 }
 
 .dialog {
@@ -116,10 +143,15 @@
   @include m.hairline;
   background-color: var(--color-paper);
   padding: 1.25rem; // p-5
+  animation: paper-settle var(--dur-base) var(--ease-out) both;
 
   @media (min-width: m.$bp-sm) {
     padding: 2.5rem; // sm:p-10
   }
+}
+
+.dialogClosing {
+  animation: paper-leave var(--dur-fast) var(--ease-in-out) both;
 }
 
 .dialogClose {
@@ -133,6 +165,7 @@
   color: var(--color-muted);
 
   @include m.transition-colors;
+  @include m.press;
 
   &:hover {
     background-color: var(--color-line);

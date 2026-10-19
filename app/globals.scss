@@ -31,6 +31,17 @@
 
   --measure: 62ch;
   --line-height-body: 1.6;
+
+  /* Motion — one vocabulary for the whole paper. Entrances settle on the
+     out-curve; exits leave on the same curve but faster, so a thing never
+     dawdles on its way out. */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --dur-press: 100ms;
+  --dur-fast: 160ms;
+  --dur-base: 240ms;
+  --dur-slow: 420ms;
+  --dur-reveal: 560ms;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -269,5 +280,27 @@ h3 { font-size: var(--step-2); }
 @media (prefers-color-scheme: dark) {
   html {
     color-scheme: dark;
+  }
+}
+
+/* ── Motion ──────────────────────────────────────────────────────────────
+   The tokens above are the whole vocabulary; the keyframes themselves live in
+   styles/_motion.scss and are emitted by the module that names them (a CSS
+   Module hashes animation names, so both sides must be in the same file). */
+
+/* The backstop. A reader who asked their system for less motion arrives at the
+   destination, never the journey: every transition and animation is collapsed
+   to its end state in one place, so a component added later cannot quietly opt
+   out by omission. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-delay: 0ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-delay: 0ms !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }

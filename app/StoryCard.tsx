@@ -52,11 +52,39 @@ function timeAgo(iso: string | null) {
  */
 export default function StoryCard({ story }: { story: CardStory }) {
   const [open, setOpen] = useState(false);
+  const [closing, setClosing] = useState(false);
   const [working, setWorking] = useState<string | null>(null);
   const titleId = useId();
   const dialogRef = useRef<HTMLDivElement>(null);
+  const closeTimer = useRef<number | null>(null);
   const router = useRouter();
   const { data: session } = useSession();
+
+  /**
+   * Close the way it opened, only faster: the veil and the dialog leave on
+   * their short exit, then the portal unmounts (160ms, mirroring --dur-fast).
+   * A reader who asked for less motion gets the end state immediately.
+   */
+  function close() {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      setOpen(false);
+      return;
+    }
+    setClosing(true);
+    if (closeTimer.current) window.clearTimeout(closeTimer.current);
+    closeTimer.current = window.setTimeout(() => {
+      setOpen(false);
+      setClosing(false);
+      closeTimer.current = null;
+    }, 160);
+  }
+
+  useEffect(
+    () => () => {
+      if (closeTimer.current) window.clearTimeout(closeTimer.current);
+    },
+    [],
+  );
 
   // Management privileges: admins and editors only (contributors revise
   // their own work through the review queue instead).
@@ -120,7 +148,7 @@ export default function StoryCard({ story }: { story: CardStory }) {
 
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
-        setOpen(false);
+        close();
         return;
       }
       if (e.key !== "Tab" || !dialog) return;
@@ -208,8 +236,10 @@ export default function StoryCard({ story }: { story: CardStory }) {
           // The backdrop click is a mouse shortcut only: the keyboard paths are
           // Escape and the close button, and the dialog stops propagation.
           <div
-            className={styles.modalOverlay}
-            onClick={() => setOpen(false)}
+            className={`${styles.modalOverlay} ${
+              closing ? styles.modalOverlayClosing : ""
+            }`}
+            onClick={close}
           >
             <div
               role="dialog"
@@ -218,11 +248,11 @@ export default function StoryCard({ story }: { story: CardStory }) {
               ref={dialogRef}
               tabIndex={-1}
               onClick={(e) => e.stopPropagation()}
-              className={styles.dialog}
+              className={`${styles.dialog} ${closing ? styles.dialogClosing : ""}`}
             >
               <button
                 type="button"
-                onClick={() => setOpen(false)}
+                onClick={close}
                 aria-label="Close story"
                 className={styles.dialogClose}
               >

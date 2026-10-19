@@ -6,6 +6,7 @@ import { auth } from "@/auth";
 import { eq } from "drizzle-orm";
 import { EDITORS } from "@/lib/roles";
 import s from "@/app/Story.module.scss";
+import ReadingProgress from "@/app/ReadingProgress";
 
 export const dynamic = "force-dynamic";
 
@@ -117,6 +118,8 @@ export default async function Story({
 
   return (
     <div className="container font-body">
+      {/* How far through the piece the reader has come. */}
+      <ReadingProgress />
       {story.status !== "published" && (
         <div className={`${s.preview} measure-center font-ui`}>
           Preview — this story is <b>{story.status}</b>, not yet public.

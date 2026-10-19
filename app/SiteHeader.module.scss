@@ -1,4 +1,10 @@
 @use "./styles/mixins" as m;
+@use "./styles/motion" as mo;
+
+// Keyframes named below: emitted into this module so the name and the keyframes
+// are hashed together (a CSS Module scopes animation names to its own file).
+@include mo.paper-drop;
+@include mo.paper-leave;
 
 // ─────────────────────────────────────────────────────────────────────────
 // Masthead — two tiers.
@@ -361,6 +367,10 @@
   }
 }
 
+.more[open] .moreList {
+  animation: paper-drop var(--dur-fast) var(--ease-out) both;
+}
+
 /** Same as the search field: the layout `display` above would otherwise
  *  override the browser's hiding of a closed <details>. */
 .more:not([open]) .moreList {
@@ -383,6 +393,7 @@
   color: inherit;
 
   @include m.transition-colors;
+  @include m.press;
 
   &:hover {
     background-color: var(--color-line);
@@ -401,10 +412,15 @@
   gap: 1rem; // gap-4
   padding-top: 0.75rem; // pt-3
   padding-bottom: 1.25rem; // pb-5
+  animation: paper-drop var(--dur-base) var(--ease-out) both;
 
   @media (min-width: m.$bp-md) {
     display: none;
   }
+}
+
+.panelClosing {
+  animation: paper-leave var(--dur-fast) var(--ease-in-out) both;
 }
 
 .panelProfile {
