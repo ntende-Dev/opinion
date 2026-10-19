@@ -17,8 +17,13 @@ type Profile = {
 
 type NavSection = { id: SectionId; name: string };
 
-/** How many desks stay in the section row before the rest move behind More. */
-const ROW_LIMIT = 5;
+/**
+ * How many desks stay in the section row before the rest move behind More.
+ * The paper has seven desks and they fit the row side by side down to $bp-md,
+ * so all seven print; the limit is the overflow guard for anything filed
+ * beyond the current taxonomy, not a cap on the desks we already run.
+ */
+const ROW_LIMIT = 7;
 
 function initials(name: string) {
   return (
