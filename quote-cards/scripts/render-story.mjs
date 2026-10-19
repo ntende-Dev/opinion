@@ -22,6 +22,25 @@ const BUCKET = process.env.S3_BUCKET ?? "assets";
 
 const FLAGS = new Set(["upload", "skip-render", "help", "h"]);
 
+/** Same rule as lib/slug.ts in the app — both sides must agree on the key. */
+function slugify(input = "") {
+  return input
+    .toLowerCase()
+    .trim()
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9\s-]/g, "")
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
+/** The URL the site serves the uploaded card from. */
+function publicUrl(key) {
+  const base = (process.env.NEXTAUTH_URL ?? "").replace(/\/+$/, "");
+  return `${base}/api/media/${key}`;
+}
+
 function parseArgs(argv) {
   const out = { upload: false, skipRender: false };
   for (let i = 0; i < argv.length; i++) {
@@ -181,7 +200,10 @@ async function main() {
     story = await loadStory(args.story);
   }
 
-  const slug = args.story ?? story?.slug ?? "sample";
+  // The card is keyed by the story's slug — the same value the site looks it up
+  // by — so a numeric --story still lands on the right key.
+  const keySlug = slugify(story?.slug ?? "") || "sample";
+  const slug = story?.slug ?? args.story ?? "sample";
   const quote =
     args.quote ??
     clipQuote(firstParagraph(story?.content) || story?.excerpt || "");
@@ -233,10 +255,13 @@ async function main() {
   console.log(`\n  rendered  ${path.relative(repoRoot, outFile)}  ${(bytes / 1e6).toFixed(2)} MB`);
 
   if (args.upload) {
-    const key = `quote-cards/${slug}.${format}.mp4`;
+    const key = `quote-cards/${keySlug}.${format}.mp4`;
     const { bytes: uploaded } = await upload(outFile, key);
     console.log(`  uploaded  s3://${BUCKET}/${key}  (${(uploaded / 1e6).toFixed(2)} MB)`);
-    console.log("  note      the storage host does not serve objects to a browser,\n            so there is no viewable link — the object is read with the S3 API\n");
+    console.log(`  on site   ${publicUrl(key)}`);
+    console.log(
+      "  note      the story page shows the card automatically; a re-render\n            reuses the key, so give the CDN five minutes to catch up\n",
+    );
   } else {
     console.log("  (not uploaded — pass --upload to put it in Object Storage)\n");
   }

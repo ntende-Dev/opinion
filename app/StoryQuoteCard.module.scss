@@ -1,0 +1,44 @@
+@use "./styles/mixins" as m;
+
+// ─────────────────────────────────────────────────────────────────────────
+// The quote card a story can carry, shown under the article once one has been
+// rendered and uploaded (see quote-cards/ in the repository).
+// ─────────────────────────────────────────────────────────────────────────
+
+.card {
+  margin-top: 3rem;
+  padding-top: 1.5rem;
+  @include m.hairline(top);
+}
+
+.heading {
+  font-size: var(--step-1);
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.note {
+  margin-top: 0.5rem;
+  font-size: var(--step--1);
+  line-height: 1.25rem;
+  color: var(--color-muted);
+}
+
+/** 9:16, held to a phone-sized column so the type stays readable on paper. */
+.video {
+  display: block;
+  margin-top: 1.5rem;
+  width: 100%;
+  max-width: 20rem;
+  border-radius: 0.25rem;
+  background-color: var(--color-paper);
+  @include m.hairline;
+}
+
+.actions {
+  margin-top: 1rem;
+}
+
+.download {
+  @include m.ui-link;
+}
