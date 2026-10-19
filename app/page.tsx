@@ -39,7 +39,7 @@ export default async function Home() {
   return (
     <div className="container font-body">
       {/* Hero — typography left, masthead image right, per DESIGN.md */}
-      <section className="mt-6 mb-14">
+      <section className="mb-14">
         <p className="font-ui text-sm text-[var(--color-muted)] border-t border-[var(--color-line)] pt-3">
           {dateline()} — the week&apos;s provocation
         </p>
