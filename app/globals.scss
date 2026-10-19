@@ -1,6 +1,7 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+// The reset Tailwind's preflight used to provide, followed by the site's own
+// tokens and global helpers. Everything visual beyond these helpers now lives
+// in the per-component .module.scss files.
+@use "./styles/reset";
 
 :root {
   /* Palette — named per DESIGN.md */

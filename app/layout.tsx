@@ -1,4 +1,4 @@
-import "./globals.css";
+import "./globals.scss";
 import type { Metadata } from "next";
 import { auth } from "@/auth";
 import Providers from "@/app/Providers";
