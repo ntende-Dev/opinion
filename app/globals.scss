@@ -120,6 +120,17 @@ a:hover {
   max-width: var(--measure);
 }
 
+/* DESIGN.md's "Centered single column". `.measure` on its own caps the line
+   length but leaves the block at its container's left edge, so the 62ch story
+   column and the forms sat ~74px left of the masthead's centre line with all
+   the slack on the right. The pages whose whole content is that one column —
+   a story, the About/Terms/Privacy prose, the login/signup/contact forms —
+   use this so the reading column lands on the logo and banner's centre. */
+.measure-center {
+  max-width: var(--measure);
+  margin-inline: auto;
+}
+
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-display);
   line-height: 1.2;

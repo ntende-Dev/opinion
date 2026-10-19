@@ -115,11 +115,11 @@ export default async function Story({
   return (
     <div className="container font-body">
       {story.status !== "published" && (
-        <div className={`${s.preview} font-ui`}>
+        <div className={`${s.preview} measure-center font-ui`}>
           Preview — this story is <b>{story.status}</b>, not yet public.
         </div>
       )}
-      <article className="measure">
+      <article className="measure-center">
         {story.coverImage && (
           <img
             src={story.coverImage}

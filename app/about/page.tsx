@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 export default function About() {
   return (
     <div className="container font-body">
-      <article className="measure">
+      <article className="measure-center">
         <p className={`${e.eyebrow} font-ui`}>
           The paper
         </p>

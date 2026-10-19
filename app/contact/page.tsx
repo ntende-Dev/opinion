@@ -26,7 +26,7 @@ export default function Contact() {
 
   return (
     <div className="container font-body">
-      <div className="measure">
+      <div className="measure-center">
         <h1 className={`${f.title} font-display`}>Write to the editors</h1>
         <p className={`${f.intro} text-lead`}>
           Letters to the editor, corrections, pitches, questions — we read

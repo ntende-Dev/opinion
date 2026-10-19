@@ -33,7 +33,7 @@ export default function Signup() {
   if (created) {
     return (
       <div className="container font-body">
-        <div className="measure">
+        <div className="measure-center">
           <h1 className={`${f.title} font-display`}>Check your email</h1>
           <p className={`${f.subtitle} text-muted font-ui`}>
             We sent a verification link to{" "}
@@ -56,7 +56,7 @@ export default function Signup() {
 
   return (
     <div className="container font-body">
-      <div className="measure">
+      <div className="measure-center">
         <h1 className={`${f.title} font-display`}>Create account</h1>
         <p className={`${f.subtitle} text-muted font-ui`}>
           Join as a contributor and submit stories for review.

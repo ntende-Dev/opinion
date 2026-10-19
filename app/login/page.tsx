@@ -62,7 +62,7 @@ export default function Login() {
 
   return (
     <div className="container font-body">
-      <div className="measure">
+      <div className="measure-center">
         <h1 className={`${f.title} font-display`}>Login</h1>
         <p className={`${f.subtitle} text-muted font-ui`}>
           Sign in to the editorial dashboard.

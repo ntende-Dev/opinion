@@ -86,7 +86,7 @@ export default async function Home() {
       </section>
 
       {published.length === 0 ? (
-        <section className={`${styles.emptyState} measure`}>
+        <section className={`${styles.emptyState} measure-center`}>
           <h2 className={`${styles.emptyTitle} font-display`}>
             No published stories yet.
           </h2>
