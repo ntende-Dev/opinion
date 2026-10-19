@@ -1,0 +1,146 @@
+@use "./styles/mixins" as m;
+
+// ─────────────────────────────────────────────────────────────────────────
+// The paper's form vocabulary — labels, fields, the primary submit, and the
+// inline links that sit under them. Shared by login, signup, contact and the
+// dashboard forms so a field looks the same everywhere it appears.
+//
+// Global helpers still carried in the markup: .container, .measure,
+// .font-display / .font-body / .font-ui, .text-muted, .text-lead.
+// ─────────────────────────────────────────────────────────────────────────
+
+/** Page heading — `font-display mb-2`. */
+.title {
+  margin-bottom: 0.5rem;
+}
+
+/** The line under the heading — `mt-2 text-muted font-ui text-sm`. */
+.subtitle {
+  margin-top: 0.5rem;
+  font-size: var(--step--1);
+  line-height: 1.25rem;
+}
+
+/** `mt-2` above the global `.text-lead` intro paragraph (contact page). */
+.intro {
+  margin-top: 0.5rem;
+}
+
+/** Field stack — `mt-6 space-y-4`. */
+.form {
+  margin-top: 1.5rem;
+}
+
+.form > * + * {
+  margin-top: 1rem;
+}
+
+/** `block mb-1 text-sm font-ui font-medium text-[var(--color-muted)]` */
+.label {
+  display: block;
+  margin-bottom: 0.25rem;
+  font-size: var(--step--1);
+  line-height: 1.25rem;
+  font-weight: 500;
+  color: var(--color-muted);
+}
+
+/**
+ * `block w-full border border-[var(--color-line)] rounded px-3 py-2 text-base
+ *  font-body focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)]`
+ *
+ * The focus ring is Tailwind's `ring-2` resolved by hand: an offset shadow in
+ * white, a 2px accent ring, and a zero shadow. Written literally because the
+ * `--tw-ring-*` variables it used will not exist once Tailwind is removed.
+ */
+.input {
+  display: block;
+  width: 100%;
+  border-color: var(--color-line);
+  border-width: 1px;
+  border-radius: 0.25rem;
+  padding: 0.5rem 0.75rem;
+  font-size: var(--step-0);
+  line-height: 1.5rem;
+
+  &:focus {
+    outline: 2px solid rgba(0, 0, 0, 0); // Tailwind's `outline-none`
+    outline-offset: 2px;
+    box-shadow: 0 0 0 0 #fff, 0 0 0 2px var(--color-accent), 0 0 #0000;
+  }
+}
+
+/**
+ * `rounded bg-[var(--color-accent)] px-4 py-2 text-white font-ui font-medium
+ *  hover:bg-[var(--color-accent-hover)] transition-colors
+ *  disabled:bg-gray-400 disabled:hover:bg-gray-400`
+ */
+.submit {
+  border-width: 0;
+  border-radius: 0.25rem;
+  padding: 0.5rem 1rem;
+  font-weight: 500;
+  cursor: pointer;
+
+  @include m.accent-surface;
+
+  &:disabled {
+    background-color: rgb(156, 163, 175); // gray-400
+    // Tailwind's preflight pairs `button { cursor: pointer }` with
+    // `:disabled { cursor: default }`; the module needs the pair too.
+    cursor: default;
+  }
+
+  &:disabled:hover {
+    background-color: rgb(156, 163, 175);
+  }
+}
+
+/** `mt-6 text-sm font-ui` */
+.note {
+  margin-top: 1.5rem;
+  font-size: var(--step--1);
+  line-height: 1.25rem;
+}
+
+/** `mt-4 text-sm font-ui` */
+.noteTight {
+  margin-top: 1rem;
+  font-size: var(--step--1);
+  line-height: 1.25rem;
+}
+
+/** `underline underline-offset-2 hover:no-underline` over the global link colour. */
+.link {
+  text-decoration-line: underline;
+  text-underline-offset: 2px;
+
+  &:hover {
+    text-decoration-line: none;
+  }
+}
+
+/** Honeypot fields — `hidden`, present for bots only. */
+.honeypot {
+  display: none;
+}
+
+/* Contact's post-send confirmation ------------------------------------- */
+
+/** `mt-8` */
+.sent {
+  margin-top: 2rem;
+}
+
+/** `font-display text-xl` */
+.sentTitle {
+  font-size: var(--step-1); // text-xl
+  line-height: 1.75rem;
+}
+
+/** `mt-3 text-muted font-ui text-sm` */
+.sentNote {
+  margin-top: 0.75rem;
+  font-size: var(--step--1);
+  line-height: 1.25rem;
+}

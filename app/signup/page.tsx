@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { signup } from "./action";
 import Feedback from "@/app/Feedback";
+import f from "@/app/Form.module.scss";
 
 export default function Signup() {
   const router = useRouter();
@@ -33,24 +34,18 @@ export default function Signup() {
     return (
       <div className="container font-body">
         <div className="measure">
-          <h1 className="font-display mb-2">Check your email</h1>
-          <p className="mt-2 text-muted font-ui text-sm">
+          <h1 className={`${f.title} font-display`}>Check your email</h1>
+          <p className={`${f.subtitle} text-muted font-ui`}>
             We sent a verification link to{" "}
             <b>{createdEmail}</b>. Open it to activate your account, then sign in.
           </p>
-          <p className="mt-6 text-sm font-ui">
-            <Link
-              href="/login"
-              className="underline underline-offset-2 hover:no-underline"
-            >
+          <p className={`${f.note} font-ui`}>
+            <Link href="/login" className={f.link}>
               Go to sign in
             </Link>
           </p>
-          <p className="mt-4 text-sm font-ui">
-            <Link
-              href="/"
-              className="underline underline-offset-2 hover:no-underline"
-            >
+          <p className={`${f.noteTight} font-ui`}>
+            <Link href="/" className={f.link}>
               ← Back to home
             </Link>
           </p>
@@ -62,17 +57,14 @@ export default function Signup() {
   return (
     <div className="container font-body">
       <div className="measure">
-        <h1 className="font-display mb-2">Create account</h1>
-        <p className="mt-2 text-muted font-ui text-sm">
+        <h1 className={`${f.title} font-display`}>Create account</h1>
+        <p className={`${f.subtitle} text-muted font-ui`}>
           Join as a contributor and submit stories for review.
         </p>
         {error && <Feedback>{error}</Feedback>}
-        <form action={createAccount} className="mt-6 space-y-4">
+        <form action={createAccount} className={f.form}>
           <div>
-            <label
-              htmlFor="name"
-              className="block mb-1 text-sm font-ui font-medium text-[var(--color-muted)]"
-            >
+            <label htmlFor="name" className={`${f.label} font-ui`}>
               Name
             </label>
             <input
@@ -81,14 +73,11 @@ export default function Signup() {
               type="text"
               required
               autoComplete="name"
-              className="block w-full border border-[var(--color-line)] rounded px-3 py-2 text-base font-body focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)]"
+              className={f.input}
             />
           </div>
           <div>
-            <label
-              htmlFor="email"
-              className="block mb-1 text-sm font-ui font-medium text-[var(--color-muted)]"
-            >
+            <label htmlFor="email" className={`${f.label} font-ui`}>
               Email
             </label>
             <input
@@ -97,14 +86,11 @@ export default function Signup() {
               type="email"
               required
               autoComplete="email"
-              className="block w-full border border-[var(--color-line)] rounded px-3 py-2 text-base font-body focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)]"
+              className={f.input}
             />
           </div>
           <div>
-            <label
-              htmlFor="password"
-              className="block mb-1 text-sm font-ui font-medium text-[var(--color-muted)]"
-            >
+            <label htmlFor="password" className={`${f.label} font-ui`}>
               Password
             </label>
             <input
@@ -114,30 +100,21 @@ export default function Signup() {
               required
               minLength={8}
               autoComplete="new-password"
-              className="block w-full border border-[var(--color-line)] rounded px-3 py-2 text-base font-body focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)]"
+              className={f.input}
             />
           </div>
-          <button
-            disabled={busy}
-            className="rounded bg-[var(--color-accent)] px-4 py-2 text-white font-ui font-medium hover:bg-[var(--color-accent-hover)] transition-colors disabled:bg-gray-400 disabled:hover:bg-gray-400"
-          >
+          <button disabled={busy} className={`${f.submit} font-ui`}>
             {busy ? "Creating account…" : "Create account"}
           </button>
         </form>
-        <p className="mt-6 text-sm text-muted font-ui">
+        <p className={`${f.note} text-muted font-ui`}>
           Already have an account?{" "}
-          <Link
-            href="/login"
-            className="underline underline-offset-2 hover:no-underline"
-          >
+          <Link href="/login" className={f.link}>
             Sign in
           </Link>
         </p>
-        <p className="mt-4 text-sm font-ui">
-          <Link
-            href="/"
-            className="underline underline-offset-2 hover:no-underline"
-          >
+        <p className={`${f.noteTight} font-ui`}>
+          <Link href="/" className={f.link}>
             ← Back to home
           </Link>
         </p>

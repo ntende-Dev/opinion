@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Feedback from "@/app/Feedback";
+import f from "@/app/Form.module.scss";
 
 // Mirrors the thrown message in auth.ts (can't import auth.ts into a client component).
 const UNVERIFIED_ERROR = "Please verify your email before signing in.";
@@ -62,17 +63,14 @@ export default function Login() {
   return (
     <div className="container font-body">
       <div className="measure">
-        <h1 className="font-display mb-2">Login</h1>
-        <p className="mt-2 text-muted font-ui text-sm">
+        <h1 className={`${f.title} font-display`}>Login</h1>
+        <p className={`${f.subtitle} text-muted font-ui`}>
           Sign in to the editorial dashboard.
         </p>
         {error && <Feedback kind={kind}>{error}</Feedback>}
-        <form action={login} className="mt-6 space-y-4">
+        <form action={login} className={f.form}>
           <div>
-            <label
-              htmlFor="email"
-              className="block mb-1 text-sm font-ui font-medium text-[var(--color-muted)]"
-            >
+            <label htmlFor="email" className={`${f.label} font-ui`}>
               Email
             </label>
             <input
@@ -81,14 +79,11 @@ export default function Login() {
               type="email"
               required
               autoComplete="email"
-              className="block w-full border border-[var(--color-line)] rounded px-3 py-2 text-base font-body focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)]"
+              className={f.input}
             />
           </div>
           <div>
-            <label
-              htmlFor="password"
-              className="block mb-1 text-sm font-ui font-medium text-[var(--color-muted)]"
-            >
+            <label htmlFor="password" className={`${f.label} font-ui`}>
               Password
             </label>
             <input
@@ -97,40 +92,28 @@ export default function Login() {
               type="password"
               required
               autoComplete="current-password"
-              className="block w-full border border-[var(--color-line)] rounded px-3 py-2 text-base font-body focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)]"
+              className={f.input}
             />
           </div>
-          <button
-            disabled={busy}
-            className="rounded bg-[var(--color-accent)] px-4 py-2 text-white font-ui font-medium hover:bg-[var(--color-accent-hover)] transition-colors disabled:bg-gray-400 disabled:hover:bg-gray-400"
-          >
+          <button disabled={busy} className={`${f.submit} font-ui`}>
             {busy ? "Signing in…" : "Sign in"}
           </button>
         </form>
-        <p className="mt-6 text-sm text-muted font-ui">
+        <p className={`${f.note} text-muted font-ui`}>
           The opinionated editorial dashboard is a work in progress. If you
           have any questions or feedback, please reach out to{" "}
-          <Link
-            href="mailto:mvenda@opinionweekly.co.za"
-            className="underline underline-offset-2 hover:no-underline"
-          >
+          <Link href="mailto:mvenda@opinionweekly.co.za" className={f.link}>
             mvenda@opinionweekly.co.za
           </Link>
         </p>
-        <p className="mt-4 text-sm font-ui">
-          Don't have an account?{" "}
-          <Link
-            href="/signup"
-            className="underline underline-offset-2 hover:no-underline"
-          >
+        <p className={`${f.noteTight} font-ui`}>
+          Don&apos;t have an account?{" "}
+          <Link href="/signup" className={f.link}>
             Create one
           </Link>
         </p>
-        <p className="mt-4 text-sm font-ui">
-          <Link
-            href="/"
-            className="underline underline-offset-2 hover:no-underline"
-          >
+        <p className={`${f.noteTight} font-ui`}>
+          <Link href="/" className={f.link}>
             ← Back to home
           </Link>
         </p>

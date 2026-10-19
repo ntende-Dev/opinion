@@ -1,0 +1,27 @@
+// ─────────────────────────────────────────────────────────────────────────
+// Inline form feedback. `.font-ui` stays global.
+// Colours for the success state are Tailwind palette values, kept verbatim:
+// green-700 #15803d, green-50 #f0fdf4, green-800 #166534.
+// ─────────────────────────────────────────────────────────────────────────
+
+.base {
+  margin-top: 1rem; // mt-4
+  border-radius: 0.25rem; // rounded
+  border-width: 1px; // border (style comes from the reset, as with Tailwind)
+  padding: 0.75rem 1rem; // px-4 py-3
+  font-size: var(--step--1); // text-sm
+  line-height: 1.25rem;
+  font-weight: 500; // font-medium
+}
+
+.error {
+  border-color: var(--color-accent); // border-[var(--color-accent)]
+  background-color: rgba(127, 29, 29, 0.05); // bg-[#7f1d1d]/5
+  color: var(--color-accent);
+}
+
+.success {
+  border-color: rgb(21, 128, 61); // border-green-700
+  background-color: rgb(240, 253, 244); // bg-green-50
+  color: rgb(22, 101, 52); // text-green-800
+}

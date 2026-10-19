@@ -4,6 +4,7 @@ import Link from "next/link";
 import { send } from "./action";
 import Feedback from "@/app/Feedback";
 import { toast } from "sonner";
+import f from "@/app/Form.module.scss";
 
 export default function Contact() {
   const [busy, setBusy] = useState(false);
@@ -26,22 +27,22 @@ export default function Contact() {
   return (
     <div className="container font-body">
       <div className="measure">
-        <h1 className="font-display mb-2">Write to the editors</h1>
-        <p className="mt-2 text-lead">
+        <h1 className={`${f.title} font-display`}>Write to the editors</h1>
+        <p className={`${f.intro} text-lead`}>
           Letters to the editor, corrections, pitches, questions — we read
           everything.
         </p>
 
         {sent ? (
-          <div className="mt-8">
-            <p className="font-display text-xl">
+          <div className={f.sent}>
+            <p className={`${f.sentTitle} font-display`}>
               Thank you — your message is in our inbox.
             </p>
-            <p className="mt-3 text-muted font-ui text-sm">
+            <p className={`${f.sentNote} text-muted font-ui`}>
               We reply to every letter that includes a working email address.
             </p>
-            <p className="mt-6 text-sm font-ui">
-              <Link href="/" className="underline underline-offset-2 hover:no-underline">
+            <p className={`${f.note} font-ui`}>
+              <Link href="/" className={f.link}>
                 ← Back to home
               </Link>
             </p>
@@ -49,12 +50,9 @@ export default function Contact() {
         ) : (
           <>
             {error && <Feedback>{error}</Feedback>}
-            <form action={submit} className="mt-6 space-y-4">
+            <form action={submit} className={f.form}>
               <div>
-                <label
-                  htmlFor="name"
-                  className="block mb-1 text-sm font-ui font-medium text-[var(--color-muted)]"
-                >
+                <label htmlFor="name" className={`${f.label} font-ui`}>
                   Name
                 </label>
                 <input
@@ -63,14 +61,11 @@ export default function Contact() {
                   type="text"
                   required
                   autoComplete="name"
-                  className="block w-full border border-[var(--color-line)] rounded px-3 py-2 text-base font-body focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)]"
+                  className={f.input}
                 />
               </div>
               <div>
-                <label
-                  htmlFor="email"
-                  className="block mb-1 text-sm font-ui font-medium text-[var(--color-muted)]"
-                >
+                <label htmlFor="email" className={`${f.label} font-ui`}>
                   Email
                 </label>
                 <input
@@ -79,14 +74,11 @@ export default function Contact() {
                   type="email"
                   required
                   autoComplete="email"
-                  className="block w-full border border-[var(--color-line)] rounded px-3 py-2 text-base font-body focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)]"
+                  className={f.input}
                 />
               </div>
               <div>
-                <label
-                  htmlFor="subject"
-                  className="block mb-1 text-sm font-ui font-medium text-[var(--color-muted)]"
-                >
+                <label htmlFor="subject" className={`${f.label} font-ui`}>
                   Subject
                 </label>
                 <input
@@ -94,14 +86,11 @@ export default function Contact() {
                   name="subject"
                   type="text"
                   required
-                  className="block w-full border border-[var(--color-line)] rounded px-3 py-2 text-base font-body focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)]"
+                  className={f.input}
                 />
               </div>
               <div>
-                <label
-                  htmlFor="message"
-                  className="block mb-1 text-sm font-ui font-medium text-[var(--color-muted)]"
-                >
+                <label htmlFor="message" className={`${f.label} font-ui`}>
                   Message
                 </label>
                 <textarea
@@ -110,7 +99,7 @@ export default function Contact() {
                   rows={6}
                   required
                   maxLength={5000}
-                  className="block w-full border border-[var(--color-line)] rounded px-3 py-2 text-base font-body focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)]"
+                  className={f.input}
                 />
               </div>
               {/* Honeypot: hidden from humans, irresistible to bots */}
@@ -119,13 +108,10 @@ export default function Contact() {
                 name="website"
                 tabIndex={-1}
                 autoComplete="off"
-                className="hidden"
+                className={f.honeypot}
                 aria-hidden="true"
               />
-              <button
-                disabled={busy}
-                className="rounded bg-[var(--color-accent)] px-4 py-2 text-white font-ui font-medium hover:bg-[var(--color-accent-hover)] transition-colors disabled:bg-gray-400 disabled:hover:bg-gray-400"
-              >
+              <button disabled={busy} className={`${f.submit} font-ui`}>
                 {busy ? "Sending…" : "Send message"}
               </button>
             </form>
