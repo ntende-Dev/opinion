@@ -5,8 +5,6 @@ import { notFound } from "next/navigation";
 import { auth } from "@/auth";
 import { eq } from "drizzle-orm";
 import { EDITORS } from "@/lib/roles";
-import { findQuoteCards } from "@/lib/quoteCards";
-import StoryQuoteCard from "@/app/StoryQuoteCard";
 import s from "@/app/Story.module.scss";
 
 export const dynamic = "force-dynamic";
@@ -48,12 +46,6 @@ const loadStory = cache(async (slug: string): Promise<StoryRow | null> => {
     .where(eq(stories.slug, slug));
   return row ?? null;
 });
-
-/**
- * The rendered cards for this slug, if any have been uploaded. Asked for at
- * the same time as the story itself, so the check costs no extra wait.
- */
-const loadCards = cache(findQuoteCards);
 
 export async function generateMetadata({
   params,
@@ -101,8 +93,7 @@ export default async function Story({
   // Legacy URLs may carry percent-encoded characters (spaces etc.).
   const slug = safeDecode(raw);
   if (!slug) notFound();
-  // Both are keyed by the same slug, so ask for the story and its cards at once.
-  const [story, cards] = await Promise.all([loadStory(slug), loadCards(slug)]);
+  const story = await loadStory(slug);
   if (!story) notFound();
 
   if (story.status !== "published") {
@@ -161,9 +152,6 @@ export default async function Story({
           className={`${s.content} prose-content`}
           dangerouslySetInnerHTML={{ __html: story.content }}
         />
-        {(cards.vertical !== null || cards.square !== null) && (
-          <StoryQuoteCard title={story.title} cards={cards} />
-        )}
       </article>
     </div>
   );

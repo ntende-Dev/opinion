@@ -1,4 +1,4 @@
-import { PutObjectCommand, GetObjectCommand, HeadObjectCommand } from "@aws-sdk/client-s3";
+import { PutObjectCommand, GetObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { S3Client } from "@aws-sdk/client-s3";
 
@@ -73,49 +73,6 @@ export async function getObjectBytes(key: string): Promise<{ body: Uint8Array; c
     const bytes = await obj.Body?.transformToByteArray();
     if (!bytes) return null;
     return { body: bytes, contentType: obj.ContentType ?? "application/octet-stream" };
-  } catch {
-    return null;
-  }
-}
-
-/**
- * Existence and size of an object, so a page can ask "has a card been made for
- * this story?" without pulling the file down.
- */
-export async function headObject(key: string): Promise<{ contentLength: number } | null> {
-  try {
-    const head = await s3.send(
-      new HeadObjectCommand({ Bucket: BUCKET_NAME, Key: key }),
-    );
-    return { contentLength: head.ContentLength ?? 0 };
-  } catch {
-    return null;
-  }
-}
-
-/**
- * Stream an object — or one byte range of it — for the media proxy. Video
- * players cannot seek without range responses, and Safari will not start
- * playback at all.
- */
-export async function getObjectStream(
-  key: string,
-  range?: { start: number; end: number },
-): Promise<{ body: ReadableStream<Uint8Array>; contentLength: number } | null> {
-  try {
-    const obj = await s3.send(
-      new GetObjectCommand({
-        Bucket: BUCKET_NAME,
-        Key: key,
-        Range: range ? `bytes=${range.start}-${range.end}` : undefined,
-      }),
-    );
-    const body = obj.Body?.transformToWebStream();
-    if (!body) return null;
-    return {
-      body: body as ReadableStream<Uint8Array>,
-      contentLength: obj.ContentLength ?? 0,
-    };
   } catch {
     return null;
   }
