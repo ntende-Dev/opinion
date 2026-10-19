@@ -16,7 +16,6 @@ export const cardColumns = {
   authorName: users.name,
   publishedAt: stories.publishedAt,
   createdAt: stories.createdAt,
-  content: stories.content,
 };
 
 /** Newest first. Both stamps are ISO text (which sorts correctly); created_at

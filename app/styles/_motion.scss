@@ -33,24 +33,6 @@
   }
 }
 
-/// A veil arriving.
-@mixin paper-fade {
-  @keyframes paper-fade {
-    from {
-      opacity: 0;
-    }
-  }
-}
-
-/// The same veil leaving.
-@mixin paper-fade-out {
-  @keyframes paper-fade-out {
-    to {
-      opacity: 0;
-    }
-  }
-}
-
 /// A photograph settling rather than fading: it is painted from the first frame
 /// (it is usually the largest thing on the page, and the LCP), so only the last
 /// couple of percent of scale move.
@@ -62,18 +44,7 @@
   }
 }
 
-/// A dialog lifting the last few pixels and settling, so the eye follows the card
-/// it came from into the middle of the page.
-@mixin paper-settle {
-  @keyframes paper-settle {
-    from {
-      opacity: 0;
-      transform: translate3d(0, 10px, 0) scale(0.985);
-    }
-  }
-}
-
-/// The short exit a dialog and the phone panel share.
+/// The short exit the phone panel uses.
 @mixin paper-leave {
   @keyframes paper-leave {
     to {

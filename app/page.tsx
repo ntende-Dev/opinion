@@ -28,7 +28,6 @@ export default async function Home() {
       authorName: users.name,
       publishedAt: stories.publishedAt,
       createdAt: stories.createdAt,
-      content: stories.content,
     })
     .from(stories)
     .leftJoin(users, eq(users.id, stories.authorId))
@@ -102,7 +101,7 @@ export default async function Home() {
         <section className={styles.latest} id="latest">
           <h2 className={`${styles.latestTitle} font-display`}>Latest</h2>
           {/* Front-page story cards — 2-up side by side, stacked on mobile;
-              click opens the story in a modal */}
+              each card opens the story's own page */}
           <StoryGrid stories={published} />
         </section>
       )}
