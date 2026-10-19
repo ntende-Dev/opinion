@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import PaperBroadside from "@/app/PaperBroadside";
 import e from "@/app/Editorial.module.scss";
 
 export const metadata: Metadata = {
@@ -30,6 +31,8 @@ export default function About() {
             view, made plainly, in a form short enough to read over a cup of
             coffee and strong enough to argue with at dinner.
           </p>
+
+          <PaperBroadside />
 
           <h2>How the paper is made</h2>
 

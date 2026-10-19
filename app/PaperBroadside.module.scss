@@ -1,0 +1,61 @@
+@use "./styles/mixins" as m;
+
+/*
+  The broadside: a printed pull quote, then the lit sheet that replaces it once
+  it has painted. The plain quote is not a placeholder — it is the accessible
+  text and the no-WebGL rendering, so it fades rather than disappearing from
+  the document.
+*/
+
+.figure {
+  margin: 2.75rem 0;
+}
+
+.plate {
+  position: relative;
+  container-type: inline-size;
+  aspect-ratio: 2.31 / 1.63;
+}
+
+.quote {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  display: grid;
+  place-content: center;
+  font-family: var(--font-display);
+  /* The inked line is 9.4% of the sheet, and the sheet is ~74% of the plate;
+     matching it in cqw keeps the dissolve from resizing the type. */
+  font-size: 6.8cqw;
+  line-height: 1.18;
+  text-align: center;
+  color: var(--color-ink);
+  transition: opacity 900ms var(--ease-out);
+}
+
+.canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: opacity 900ms var(--ease-out);
+}
+
+/* Once the first frame is on screen, the sheet takes over from the type.
+   Both stay in the document: only one is ever visible. */
+.ready .canvas {
+  opacity: 1;
+}
+
+.ready .quote {
+  opacity: 0;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .quote,
+  .canvas {
+    transition: none;
+  }
+}
