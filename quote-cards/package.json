@@ -1,0 +1,30 @@
+{
+  "name": "quote-cards",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Remotion quote cards for The Opinion Weekly — rendered locally, uploaded to Object Storage.",
+  "scripts": {
+    "studio": "remotion studio --public-dir=../public",
+    "render": "remotion render QuoteCard out/quote-card.mp4 --public-dir=../public",
+    "still": "remotion still QuoteCard out/quote-card.png --frame=200 --public-dir=../public",
+    "still:square": "remotion still QuoteCardSquare out/quote-card-square.png --frame=200 --public-dir=../public",
+    "render:story": "node --env-file=../.env scripts/render-story.mjs",
+    "render:story:upload": "node --env-file=../.env scripts/render-story.mjs --upload",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.1152.0",
+    "@remotion/cli": "4.0.536",
+    "@remotion/google-fonts": "4.0.536",
+    "pg": "^8.23.1",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "remotion": "4.0.536"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.5",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "typescript": "^7.0.2"
+  }
+}
