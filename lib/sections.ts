@@ -41,9 +41,9 @@ export const SECTIONS = [
     deck: "Tools, networks and the slow revolutions they bring.",
   },
   {
-    id: "investigations",
-    name: "Investigations",
-    deck: "Longer work that follows the paper trail to the end.",
+    id: "entertainment",
+    name: "Entertainment",
+    deck: "Screens, stages and the culture that fills the hours between.",
   },
 ] as const;
 
