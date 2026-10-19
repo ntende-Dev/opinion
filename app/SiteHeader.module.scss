@@ -1,9 +1,16 @@
 @use "./styles/mixins" as m;
 
 // ─────────────────────────────────────────────────────────────────────────
-// Masthead — the whole header, hand-ported from the Tailwind utilities.
-// Every value below is the resolved equivalent of the class it replaced;
-// see the parity notes in the pilot report. Nothing here depends on Tailwind.
+// Masthead — two tiers.
+//
+//   tier one   the paper's mark, search and the account actions
+//   tier two   the section row: Home plus every desk with something printed,
+//              with the overflow behind More
+//
+// The rules between the tiers are structure, not decoration: they are what
+// makes the two tiers read as one masthead rather than two stacked bars.
+// Below md the row gives way to the hamburger panel, which repeats the
+// sections and carries the search field.
 // ─────────────────────────────────────────────────────────────────────────
 
 /* ── Shell ──────────────────────────────────────────────────────────── */
@@ -13,29 +20,41 @@
   padding-inline: 1.5rem; // px-6
 }
 
-.bar {
-  position: relative;
+/* ── Tier one: mark, search, account ────────────────────────────────── */
+.masthead {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 1rem; // gap-4
   padding-top: 0.75rem; // pt-3
-  padding-bottom: 1.75rem; // pb-7
+  padding-bottom: 1rem; // pb-4
   @include m.hairline(bottom);
-}
 
-/* ── Left: page links ───────────────────────────────────────────────── */
-.nav {
-  display: none;
-  align-items: center;
-  gap: 1.25rem; // gap-5
-
+  // From md the section row's own rule closes the tier, so the masthead does
+  // not draw a second one right above it.
   @media (min-width: m.$bp-md) {
-    display: flex;
+    border-bottom-width: 0;
   }
 }
 
-/** Shared by the nav links, the Login link and the mobile panel links. */
+.logoLink {
+  display: flex;
+  align-items: center;
+}
+
+.logo {
+  display: block;
+  height: 64px;
+  width: auto;
+}
+
+.tools {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem; // gap-3
+}
+
+/** Shared by the panel links and the bar's Login link. */
 .link {
   @include m.ui-link;
 }
@@ -47,37 +66,6 @@
   @media (min-width: m.$bp-md) {
     display: inline;
   }
-}
-
-/** Left-hand spacer so `space-between` keeps the mark truly centred while the
- *  nav is hidden on small screens (was `md:hidden`). */
-.spacer {
-  @media (min-width: m.$bp-md) {
-    display: none;
-  }
-}
-
-/* ── Centre: the mark ───────────────────────────────────────────────── */
-.logoLink {
-  position: absolute;
-  inset-block: 0; // inset-y-0 — pins to the bar, so the mark centres itself
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  align-items: center;
-}
-
-.logo {
-  display: block;
-  height: 64px;
-  width: auto;
-}
-
-/* ── Right: account ─────────────────────────────────────────────────── */
-.account {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem; // gap-3
 }
 
 .avatar {
@@ -160,6 +148,225 @@
   }
 }
 
+/* ── Search ─────────────────────────────────────────────────────────── */
+/** The bar's search is a desktop affordance; below md it lives in the panel
+ *  (one tap away, and the mark keeps the whole row to itself). */
+.searchWrap {
+  display: none;
+
+  @media (min-width: m.$bp-md) {
+    display: flex;
+  }
+}
+
+.search {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.searchToggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.25rem; // p-1
+  border-radius: 0.25rem;
+  color: var(--color-ink);
+  cursor: pointer;
+  list-style: none; // our own icon, no disclosure marker
+
+  &::-webkit-details-marker {
+    display: none;
+  }
+
+  @include m.transition-colors;
+
+  &:hover {
+    color: var(--color-accent);
+  }
+}
+
+/** The open state is the same marker the section row uses for "you are here". */
+.search[open] .searchToggle {
+  color: var(--color-accent);
+}
+
+/** Opens leftwards from the magnifier, over the empty middle of the bar. */
+.searchForm {
+  position: absolute;
+  top: 50%;
+  right: calc(100% + 0.5rem);
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  width: 15rem;
+  background-color: var(--color-paper);
+  border-radius: 0.25rem;
+  @include m.hairline;
+}
+
+/** A closed disclosure must not leak its panel. The browser hides closed
+ *  <details> content in its own stylesheet, and an author `display` — which
+ *  this panel sets to lay itself out — wins over that, so say it here. */
+.search:not([open]) .searchForm {
+  display: none;
+}
+
+.searchInput {
+  flex: 1;
+  min-width: 0;
+  border-width: 0;
+  background-color: transparent;
+  padding: 0.375rem 0.625rem;
+  font-family: var(--font-ui);
+  font-size: var(--step--1);
+  color: var(--color-ink);
+}
+
+.searchSubmit {
+  border-width: 0;
+  border-radius: 0 0.25rem 0.25rem 0;
+  padding: 0.375rem 0.625rem;
+  font-family: var(--font-ui);
+  font-size: var(--step--1);
+  cursor: pointer;
+
+  @include m.accent-surface;
+
+  // The site-wide `a:hover` colour would otherwise tint the label.
+  &:hover {
+    color: #fff;
+  }
+}
+
+/** The panel's copy of the field: full width, always visible. */
+.panelSearch {
+  display: flex;
+  align-self: stretch;
+  width: 100%;
+  background-color: var(--color-paper);
+  border-radius: 0.25rem;
+  @include m.hairline;
+}
+
+/* ── Tier two: the section row ──────────────────────────────────────── */
+.sectionBar {
+  display: none;
+
+  @media (min-width: m.$bp-md) {
+    display: block;
+    @include m.hairline(top);
+    @include m.hairline(bottom);
+    padding-block: 0.375rem;
+  }
+}
+
+.sectionList {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.125rem 1.25rem;
+}
+
+.sectionLink {
+  display: inline-block;
+  padding-block: 0.375rem;
+  font-family: var(--font-ui);
+  font-size: var(--step--1);
+  font-weight: 500;
+  color: var(--color-ink);
+  text-decoration: none;
+  // Reserves the marker's space so choosing a section moves nothing.
+  border-bottom: 2px solid transparent;
+
+  @include m.transition-colors;
+
+  &:hover {
+    color: var(--color-accent-hover);
+    text-decoration: none;
+  }
+}
+
+/** "You are here" — the house red plus the rule under it, so the state is
+ *  never carried by colour alone. */
+.sectionLinkActive {
+  color: var(--color-accent);
+  border-bottom-color: var(--color-accent);
+}
+
+/* ── More (the desks that do not fit the row) ───────────────────────── */
+.more {
+  position: relative;
+}
+
+.moreToggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding-block: 0.375rem;
+  font-family: var(--font-ui);
+  font-size: var(--step--1);
+  font-weight: 500;
+  color: var(--color-ink);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  list-style: none;
+
+  &::-webkit-details-marker {
+    display: none;
+  }
+
+  svg {
+    transition: transform 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  &:hover {
+    color: var(--color-accent-hover);
+  }
+}
+
+.more[open] {
+  .moreToggle {
+    color: var(--color-accent);
+
+    svg {
+      transform: rotate(180deg);
+    }
+  }
+}
+
+/** Hairline panel rather than a drop shadow — no soft grey elevation here. */
+.moreList {
+  position: absolute;
+  top: calc(100% + 0.25rem);
+  left: 0;
+  z-index: 20;
+  display: flex;
+  min-width: 11rem;
+  flex-direction: column;
+  padding-block: 0.25rem;
+  background-color: var(--color-paper);
+  border-radius: 0.25rem;
+  @include m.hairline;
+
+  .sectionLink {
+    padding-inline: 0.875rem;
+    border-bottom-width: 0;
+  }
+}
+
+/** Same as the search field: the layout `display` above would otherwise
+ *  override the browser's hiding of a closed <details>. */
+.more:not([open]) .moreList {
+  display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .moreToggle svg {
+    transition: none;
+  }
+}
+
 /* ── Hamburger ──────────────────────────────────────────────────────── */
 .menuButton {
   padding: 0.5rem; // p-2
@@ -207,6 +414,12 @@
   display: flex;
   flex-direction: column;
   line-height: 1.25;
+}
+
+/** The current desk, marked by weight and rule rather than colour alone. */
+.panelLinkActive {
+  font-weight: 600;
+  text-decoration-thickness: 3px;
 }
 
 /** Panel actions stretch the full width (was `self-stretch` + `px-3 py-2`). */

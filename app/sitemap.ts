@@ -2,6 +2,7 @@ import type { MetadataRoute } from "next";
 import { db } from "@/drizzle/db";
 import { stories } from "@/drizzle/schema";
 import { eq } from "drizzle-orm";
+import { sectionsInPrint } from "@/lib/stories";
 
 const base = process.env.NEXTAUTH_URL || "http://localhost:3000";
 
@@ -18,12 +19,21 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     console.error("sitemap: story query failed, publishing static entries", e);
   }
 
+  // Only the desks with something printed: an empty section page is noindex,
+  // so listing it here would contradict itself.
+  const sections = await sectionsInPrint();
+
   return [
     { url: base, changeFrequency: "weekly", priority: 1 },
     { url: `${base}/about`, changeFrequency: "yearly", priority: 0.4 },
     { url: `${base}/contact`, changeFrequency: "yearly", priority: 0.3 },
     { url: `${base}/privacy`, changeFrequency: "yearly", priority: 0.2 },
     { url: `${base}/terms`, changeFrequency: "yearly", priority: 0.2 },
+    ...sections.map((section) => ({
+      url: `${base}/section/${section}`,
+      changeFrequency: "weekly" as const,
+      priority: 0.5,
+    })),
     ...published.map((s) => ({
       url: `${base}/story/${s.slug}`,
       ...(s.publishedAt ? { lastModified: new Date(s.publishedAt) } : {}),

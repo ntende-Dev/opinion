@@ -5,6 +5,7 @@ import Link from "next/link";
 import PulseLoader from "react-spinners/PulseLoader";
 import ImageUpload from "./ImageUpload";
 import Feedback from "@/app/Feedback";
+import { SECTIONS } from "@/lib/sections";
 import { uploadImage } from "@/lib/upload";
 import { toast } from "sonner";
 import w from "./Write.module.scss";
@@ -17,6 +18,7 @@ type EditStory = {
   excerpt: string | null;
   content: string;
   coverImage: string | null;
+  section: string | null;
 };
 
 export default function Write() {
@@ -66,6 +68,7 @@ export default function Write() {
       content: String(formData.get("content") ?? ""),
       // Empty means remove the cover — PUT fully specifies the row.
       coverImage: coverImage || null,
+      section: String(formData.get("section") ?? ""),
     };
     const res = await fetch(
       storyId ? `/api/stories/${storyId}` : "/api/stories",
@@ -186,6 +189,30 @@ export default function Write() {
             defaultValue={editStory?.slug ?? ""}
             className={`${f.input} font-ui`}
           />
+        </div>
+        <div>
+          <label
+            htmlFor="section"
+            className={`${f.label} font-ui`}
+          >
+            Section
+            <span className={w.labelNote}>
+              — the desk the story files under, printed in the masthead
+            </span>
+          </label>
+          <select
+            id="section"
+            name="section"
+            defaultValue={editStory?.section ?? ""}
+            className={`${f.input} font-ui`}
+          >
+            <option value="">Unfiled</option>
+            {SECTIONS.map((section) => (
+              <option key={section.id} value={section.id}>
+                {section.name}
+              </option>
+            ))}
+          </select>
         </div>
         <div>
           <label

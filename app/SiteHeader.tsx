@@ -1,10 +1,11 @@
 "use client";
 import { useSession, signOut } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
+import type { SectionId } from "@/lib/sections";
 import styles from "./SiteHeader.module.scss";
 
 type Profile = {
@@ -13,6 +14,11 @@ type Profile = {
   role: string;
   avatarUrl: string | null;
 };
+
+type NavSection = { id: SectionId; name: string };
+
+/** How many desks stay in the section row before the rest move behind More. */
+const ROW_LIMIT = 5;
 
 function initials(name: string) {
   return (
@@ -25,7 +31,37 @@ function initials(name: string) {
   );
 }
 
-/** Leaderboard ad just below the navbar. The strip is held to a fixed
+/**
+ * Native `<details>` toggles by keyboard and works before React hydrates; this
+ * adds the two things it lacks — closing on Escape and on a click outside —
+ * without taking the disclosure away from the browser.
+ */
+function useDismissableDetails(ref: React.RefObject<HTMLDetailsElement | null>) {
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+
+    const onPointerDown = (e: PointerEvent) => {
+      if (el.open && e.target instanceof Node && !el.contains(e.target)) {
+        el.open = false;
+      }
+    };
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key !== "Escape" || !el.open) return;
+      el.open = false;
+      (el.querySelector("summary") as HTMLElement | null)?.focus();
+    };
+
+    document.addEventListener("pointerdown", onPointerDown);
+    document.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.removeEventListener("pointerdown", onPointerDown);
+      document.removeEventListener("keydown", onKeyDown);
+    };
+  }, [ref]);
+}
+
+/** Leaderboard ad just below the masthead. The strip is held to a fixed
  *  100px so the masthead has a stable, predictable rhythm, with the 728×90
  *  creative (displayed at a modest 600px cap) centred inside it. next/image
  *  serves it as compressed WebP/AVIF per device. */
@@ -75,10 +111,99 @@ function MenuIcon({ open }: { open: boolean }) {
   );
 }
 
+function SearchIcon() {
+  return (
+    <svg
+      width="20"
+      height="20"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      aria-hidden="true"
+    >
+      <circle cx="11" cy="11" r="6.5" />
+      <path d="M16 16l4.5 4.5" />
+    </svg>
+  );
+}
+
+function CaretIcon() {
+  return (
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.5"
+      strokeLinecap="round"
+      aria-hidden="true"
+    >
+      <path d="M6 9.5l6 6 6-6" />
+    </svg>
+  );
+}
+
 /**
- * Avatar, name, role chip and email. The desktop bar shows this from `md`
- * up (with the name column appearing at `xl`); the mobile panel shows a
- * full-width variant under a hairline.
+ * The masthead's search. On the bar it is a magnifier that opens the field in
+ * place — `<details>`, so the toggle still works if a script never arrives —
+ * and in the mobile panel it is simply the field. Either way it is a plain GET
+ * form to /search, which is where the results live.
+ */
+function SearchField({
+  variant,
+  onSubmit,
+}: {
+  variant: "bar" | "panel";
+  onSubmit?: () => void;
+}) {
+  const details = useRef<HTMLDetailsElement>(null);
+  useDismissableDetails(details);
+
+  const form = (
+    <form
+      action="/search"
+      method="get"
+      role="search"
+      className={
+        variant === "bar" ? styles.searchForm : styles.panelSearch
+      }
+      onSubmit={() => {
+        if (variant === "bar" && details.current) details.current.open = false;
+        onSubmit?.();
+      }}
+    >
+      <input
+        type="search"
+        name="q"
+        placeholder="Search the paper"
+        aria-label="Search stories"
+        className={`${styles.searchInput} font-ui`}
+      />
+      <button type="submit" className={`${styles.searchSubmit} font-ui`}>
+        Search
+      </button>
+    </form>
+  );
+
+  if (variant === "panel") return form;
+
+  return (
+    <details className={styles.search} ref={details}>
+      <summary className={styles.searchToggle} aria-label="Search">
+        <SearchIcon />
+      </summary>
+      {form}
+    </details>
+  );
+}
+
+/**
+ * Avatar, name, role chip and email. The masthead shows this from md up (with
+ * the name column appearing at xl); the mobile panel shows a full-width
+ * variant under a hairline.
  */
 function ProfileBlock({
   profile,
@@ -109,22 +234,28 @@ function ProfileBlock({
 }
 
 /**
- * Site header with live auth state. The client session decides auth; the
- * profile block (avatar, name, role, email) is fetched from /api/me while
- * signed in and stays there for as long as the session exists — sign-out
- * clears both at once. Avatar changes anywhere in the app re-broadcast the
- * `profile-updated` event to refresh this block immediately.
+ * Masthead, in two tiers. Tier one carries the paper's mark, search and the
+ * account actions; tier two carries the section row — Home plus every desk
+ * that has something published, with the overflow behind More. A desk with
+ * nothing filed yet is deliberately absent, so no link lands a reader on an
+ * empty page (the page itself still exists at /section/<id>).
  *
- * Layout: padded full-width bar, navigation links on the left, the logo
- * absolutely centered on the bar (the content column is `mx-auto`, so this
- * is the same visual center as the page), and account actions on the right.
- * Below md everything moves into the hamburger panel.
+ * The section list arrives from the root layout, which reads it off the
+ * published stories. Below md the row gives way to the hamburger panel, which
+ * repeats the sections and keeps search one tap away.
  *
  * Styling lives in SiteHeader.module.scss — no Tailwind utilities.
  */
-export default function SiteHeader({ initialAuthed }: { initialAuthed: boolean }) {
+export default function SiteHeader({
+  initialAuthed,
+  sections,
+}: {
+  initialAuthed: boolean;
+  sections: NavSection[];
+}) {
   const { status } = useSession();
   const router = useRouter();
+  const pathname = usePathname();
   const [signedOut, setSignedOut] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const authed =
@@ -136,6 +267,9 @@ export default function SiteHeader({ initialAuthed }: { initialAuthed: boolean }
         : initialAuthed);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [profileTick, setProfileTick] = useState(0);
+
+  const more = useRef<HTMLDetailsElement>(null);
+  useDismissableDetails(more);
 
   useEffect(() => {
     const onProfileUpdate = () => setProfileTick((t) => t + 1);
@@ -171,31 +305,31 @@ export default function SiteHeader({ initialAuthed }: { initialAuthed: boolean }
     toast.success("You've been signed out.");
   }
 
+  const closeMenu = () => setMenuOpen(false);
+  const isHome = pathname === "/";
+  const currentSection =
+    pathname.startsWith("/section/") ? pathname.split("/")[2] : null;
+  const inRow = sections.slice(0, ROW_LIMIT);
+  const behindMore = sections.slice(ROW_LIMIT);
+
+  const sectionLink = (id: SectionId, name: string, onNavigate?: () => void) => {
+    const active = currentSection === id;
+    return (
+      <Link
+        href={`/section/${id}`}
+        className={`${styles.sectionLink} ${active ? styles.sectionLinkActive : ""}`}
+        aria-current={active ? "page" : undefined}
+        onClick={onNavigate}
+      >
+        {name}
+      </Link>
+    );
+  };
+
   return (
     <header className={styles.header}>
-      <div className={styles.bar}>
-        {/* Left — page links (desktop). Mobile gets these in the panel. */}
-        <nav className={styles.nav}>
-          <Link href="/" className={styles.link}>
-            Home
-          </Link>
-          <Link href="/contact" className={styles.link}>
-            Contact
-          </Link>
-          {authed && (
-            <Link href="/dashboard" className={styles.link}>
-              Dashboard
-            </Link>
-          )}
-        </nav>
-        {/* Spacer so flex space-between keeps the logo truly central even
-            when the left nav is hidden on mobile. */}
-        <span className={styles.spacer} aria-hidden="true" />
-
-        {/* Center — the logo, justified center of the bar. Static by
-            request: the same SVG, larger, with no animation. `inset-block: 0`
-            plus centring pins it to the bar's true vertical centre regardless
-            of how the SVG measures itself. */}
+      {/* Tier one — the masthead: mark, then the paper's utilities. */}
+      <div className={styles.masthead}>
         <Link
           href="/"
           aria-label="The Opinion Weekly — home"
@@ -205,8 +339,7 @@ export default function SiteHeader({ initialAuthed }: { initialAuthed: boolean }
           <img src="/opinionLogo.svg" alt="" className={styles.logo} />
         </Link>
 
-        {/* Right — account actions. */}
-        <div className={styles.account}>
+        <div className={styles.tools}>
           {authed ? (
             <>
               {profile && <ProfileBlock profile={profile} />}
@@ -233,6 +366,11 @@ export default function SiteHeader({ initialAuthed }: { initialAuthed: boolean }
               </Link>
             </>
           )}
+
+          <div className={styles.searchWrap}>
+            <SearchField variant="bar" />
+          </div>
+
           <button
             type="button"
             className={styles.menuButton}
@@ -246,23 +384,70 @@ export default function SiteHeader({ initialAuthed }: { initialAuthed: boolean }
         </div>
       </div>
 
+      {/* Tier two — the section row. */}
+      <nav className={styles.sectionBar} aria-label="Sections">
+        <ul className={styles.sectionList}>
+          <li>
+            <Link
+              href="/"
+              className={`${styles.sectionLink} ${isHome ? styles.sectionLinkActive : ""}`}
+              aria-current={isHome ? "page" : undefined}
+            >
+              Home
+            </Link>
+          </li>
+          {inRow.map((section) => (
+            <li key={section.id}>
+              {sectionLink(section.id, section.name)}
+            </li>
+          ))}
+          {behindMore.length > 0 && (
+            <li>
+              <details className={styles.more} ref={more}>
+                <summary className={styles.moreToggle}>
+                  More
+                  <CaretIcon />
+                </summary>
+                <ul className={styles.moreList}>
+                  {behindMore.map((section) => (
+                    <li key={section.id}>
+                      {sectionLink(section.id, section.name, () => {
+                        if (more.current) more.current.open = false;
+                      })}
+                    </li>
+                  ))}
+                </ul>
+              </details>
+            </li>
+          )}
+        </ul>
+      </nav>
+
       {/* Mobile drop-down panel. */}
       {menuOpen && (
         <nav id="mobile-menu" className={styles.panel}>
           {authed && profile && <ProfileBlock profile={profile} inPanel />}
-          <Link href="/" className={styles.link} onClick={() => setMenuOpen(false)}>
+          <SearchField variant="panel" onSubmit={closeMenu} />
+          <Link href="/" className={styles.link} onClick={closeMenu}>
             Home
           </Link>
-          <Link href="/contact" className={styles.link} onClick={() => setMenuOpen(false)}>
+          {sections.map((section) => (
+            <Link
+              key={section.id}
+              href={`/section/${section.id}`}
+              className={`${styles.link} ${currentSection === section.id ? styles.panelLinkActive : ""}`}
+              aria-current={currentSection === section.id ? "page" : undefined}
+              onClick={closeMenu}
+            >
+              {section.name}
+            </Link>
+          ))}
+          <Link href="/contact" className={styles.link} onClick={closeMenu}>
             Contact
           </Link>
           {authed ? (
             <>
-              <Link
-                href="/dashboard"
-                className={styles.link}
-                onClick={() => setMenuOpen(false)}
-              >
+              <Link href="/dashboard" className={styles.link} onClick={closeMenu}>
                 Dashboard
               </Link>
               <button onClick={signout} className={styles.panelButton}>
@@ -271,17 +456,13 @@ export default function SiteHeader({ initialAuthed }: { initialAuthed: boolean }
             </>
           ) : (
             <>
-              <Link
-                href="/login"
-                className={styles.link}
-                onClick={() => setMenuOpen(false)}
-              >
+              <Link href="/login" className={styles.link} onClick={closeMenu}>
                 Login
               </Link>
               <Link
                 href="/signup"
                 className={styles.panelButton}
-                onClick={() => setMenuOpen(false)}
+                onClick={closeMenu}
               >
                 Sign up
               </Link>
@@ -290,7 +471,7 @@ export default function SiteHeader({ initialAuthed }: { initialAuthed: boolean }
         </nav>
       )}
 
-      {/* Dummy ad strip lives under the navbar, above the closing rule. */}
+      {/* Dummy ad strip lives under the navigation, above the closing rule. */}
       <AdBanner />
     </header>
   );

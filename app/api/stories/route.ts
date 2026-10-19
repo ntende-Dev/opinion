@@ -2,6 +2,7 @@ import { db } from "@/drizzle/db";
 import { stories } from "@/drizzle/schema";
 import { auth } from "@/auth";
 import { eq } from "drizzle-orm";
+import { isSectionId } from "@/lib/sections";
 import { slugify } from "@/lib/slug";
 
 export async function POST(req: Request) {
@@ -9,12 +10,13 @@ export async function POST(req: Request) {
   if (!session) return new Response("Unauthorized", { status: 401 });
 
   const authorId = (session.user as any).id;
-  const { title, slug: rawSlug, excerpt, content, coverImage } = (await req.json()) as {
+  const { title, slug: rawSlug, excerpt, content, coverImage, section } = (await req.json()) as {
     title?: string;
     slug?: string;
     excerpt?: string;
     content?: string;
     coverImage?: string;
+    section?: string | null;
   };
 
   const slug = slugify(rawSlug ?? "");
@@ -26,6 +28,9 @@ export async function POST(req: Request) {
   }
   if (coverImage && !coverImage.startsWith("/api/images/")) {
     return Response.json({ error: "Invalid cover image" }, { status: 400 });
+  }
+  if (section && !isSectionId(section)) {
+    return Response.json({ error: "Unknown section" }, { status: 400 });
   }
 
   // Friendly duplicate-slug message instead of a raw database error.
@@ -50,6 +55,7 @@ export async function POST(req: Request) {
         content: content ?? "",
         coverImage,
         status: "draft",
+        section: isSectionId(section) ? section : null,
         authorId: Number(authorId),
         createdAt: new Date().toISOString(),
       })

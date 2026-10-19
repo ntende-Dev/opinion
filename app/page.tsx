@@ -1,7 +1,7 @@
 import { db } from "@/drizzle/db";
 import { stories, users } from "@/drizzle/schema";
 import { eq } from "drizzle-orm";
-import StoryCard from "@/app/StoryCard";
+import StoryGrid from "@/app/StoryGrid";
 import styles from "./page.module.scss";
 
 export const dynamic = "force-dynamic";
@@ -100,13 +100,7 @@ export default async function Home() {
           <h2 className={`${styles.latestTitle} font-display`}>Latest</h2>
           {/* Front-page story cards — 2-up side by side, stacked on mobile;
               click opens the story in a modal */}
-          <ul className={styles.cardGrid}>
-            {published.map((s) => (
-              <li key={s.id}>
-                <StoryCard story={s} />
-              </li>
-            ))}
-          </ul>
+          <StoryGrid stories={published} />
         </section>
       )}
     </div>

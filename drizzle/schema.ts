@@ -22,6 +22,8 @@ export const stories = pgTable(
     content: text("content").notNull().default(""),
     coverImage: text("cover_image"),
     status: text("status").notNull().default("draft"),
+    /** Filing desk — one of the ids in lib/sections.ts, or null while unfiled. */
+    section: text("section"),
     authorId: serial("authorId").notNull().references(() => users.id),
     reviewNote: text("review_note"),
     publishedAt: text("published_at"),

@@ -3,6 +3,7 @@ import { stories } from "@/drizzle/schema";
 import { auth } from "@/auth";
 import { and, eq, ne } from "drizzle-orm";
 import { EDITORS, type Status } from "@/lib/roles";
+import { isSectionId } from "@/lib/sections";
 import { slugify } from "@/lib/slug";
 
 const OWNER_MOVES: Record<Status, Status[]> = {
@@ -129,6 +130,7 @@ export async function PUT(
     excerpt?: string;
     content?: string;
     coverImage?: string | null;
+    section?: string | null;
   };
 
   const slug = slugify(body.slug ?? "");
@@ -139,6 +141,8 @@ export async function PUT(
     );
   if (body.coverImage && !body.coverImage.startsWith("/api/images/"))
     return Response.json({ error: "Invalid cover image" }, { status: 400 });
+  if (body.section && !isSectionId(body.section))
+    return Response.json({ error: "Unknown section" }, { status: 400 });
 
   // Slug must stay unique across stories.
   const [clash] = await db
@@ -159,6 +163,8 @@ export async function PUT(
       excerpt: body.excerpt ?? "",
       content: body.content,
       coverImage: body.coverImage ?? null,
+      // Empty means unfiled — PUT fully specifies the row.
+      section: isSectionId(body.section) ? body.section : null,
     })
     .where(eq(stories.id, storyId))
     .returning({

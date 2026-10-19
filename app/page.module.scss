@@ -133,12 +133,3 @@
   // and it becomes `font-size: var(--step-2)`.
 }
 
-.cardGrid {
-  display: grid;
-  gap: 1.25rem; // gap-5
-  align-items: stretch;
-
-  @media (min-width: m.$bp-sm) {
-    grid-template-columns: repeat(2, minmax(0, 1fr)); // sm:grid-cols-2
-  }
-}

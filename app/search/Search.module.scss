@@ -1,0 +1,62 @@
+@use "../styles/mixins" as m;
+
+// ─────────────────────────────────────────────────────────────────────────
+// Search — the field, then the cards. Same head device as a section page:
+// hairline, serif heading, then the control the page is built around.
+// ─────────────────────────────────────────────────────────────────────────
+
+.head {
+  @include m.hairline(top);
+  padding-top: 0.75rem;
+  margin-bottom: 2rem;
+}
+
+/** The one control on the page, so it gets the full column width. */
+.form {
+  display: flex;
+  align-items: center;
+  margin-top: 1.25rem;
+  background-color: var(--color-paper);
+  border-radius: 0.25rem;
+  @include m.hairline;
+}
+
+.input {
+  flex: 1;
+  min-width: 0;
+  border-width: 0;
+  background-color: transparent;
+  padding: 0.5rem 0.75rem;
+  font-size: var(--step-0);
+  color: var(--color-ink);
+}
+
+.submit {
+  border-width: 0;
+  border-radius: 0 0.25rem 0.25rem 0;
+  padding: 0.5rem 1rem;
+  font-family: var(--font-ui);
+  font-weight: 500;
+  cursor: pointer;
+
+  @include m.accent-surface;
+
+  // The site-wide `a:hover` colour would otherwise tint the label.
+  &:hover {
+    color: #fff;
+  }
+}
+
+/** Result tally — Outfit, muted, the same voice as a section's datum line. */
+.count {
+  margin-bottom: 1.25rem;
+  font-size: var(--step--1);
+  line-height: 1.25rem;
+  color: var(--color-muted);
+}
+
+/** The two quiet states: nothing asked yet, or nothing found. */
+.note {
+  max-width: var(--measure);
+  margin-bottom: 3rem;
+}

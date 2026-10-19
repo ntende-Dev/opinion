@@ -1,6 +1,8 @@
 import "./globals.scss";
 import type { Metadata } from "next";
 import { auth } from "@/auth";
+import { sectionById } from "@/lib/sections";
+import { sectionsInPrint } from "@/lib/stories";
 import Providers from "@/app/Providers";
 import { Toaster } from "sonner";
 import SiteHeader from "@/app/SiteHeader";
@@ -35,6 +37,13 @@ export default async function RootLayout({
   const session = await auth();
   const isAuthed = !!session;
 
+  // The masthead's section row: only the desks with something published, so
+  // no link in it lands a reader on an empty page.
+  const sections = (await sectionsInPrint()).flatMap((id) => {
+    const section = sectionById(id);
+    return section ? [{ id: section.id, name: section.name }] : [];
+  });
+
   return (
     <html lang="en">
       <head>
@@ -47,7 +56,7 @@ export default async function RootLayout({
       </head>
       <body className="font-body">
         <Providers>
-          <SiteHeader initialAuthed={isAuthed} />
+          <SiteHeader initialAuthed={isAuthed} sections={sections} />
           <main className="font-body">{children}</main>
           <Footer isAuthed={isAuthed} />
         </Providers>
