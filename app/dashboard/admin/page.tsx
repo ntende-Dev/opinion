@@ -4,6 +4,7 @@ import { db } from "@/drizzle/db";
 import { users } from "@/drizzle/schema";
 import { asc } from "drizzle-orm";
 import AdminUsers from "./AdminUsers";
+import a from "./Admin.module.scss";
 
 export const dynamic = "force-dynamic";
 
@@ -29,8 +30,8 @@ export default async function AdminPage() {
 
   return (
     <div className="font-body measure">
-      <h1 className="font-display mb-3">User management</h1>
-      <p className="text-muted mb-8">
+      <h1 className={`${a.title} font-display`}>User management</h1>
+      <p className={`${a.intro} text-muted`}>
         Hand contributors the editor role to open the review queue and message
         inbox for them. Roles change instantly; you can never edit your own.
       </p>

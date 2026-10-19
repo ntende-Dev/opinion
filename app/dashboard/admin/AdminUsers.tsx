@@ -2,6 +2,8 @@
 import { useState } from "react";
 import { setRole } from "./actions";
 import { toast } from "sonner";
+import a from "./Admin.module.scss";
+import p from "../Profile.module.scss";
 
 type Row = {
   id: number;
@@ -56,42 +58,42 @@ export default function AdminUsers({
   }
 
   return (
-    <ul className="divide-y divide-[var(--color-line)]">
+    <ul className={a.list}>
       {rows.map((u) => {
         const draft = drafts[u.id] ?? u.role;
         const self = u.id === currentUserId;
         return (
-          <li key={u.id} className="py-4 flex items-center gap-4">
+          <li key={u.id} className={a.row}>
             <span
               aria-hidden="true"
-              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[var(--color-accent)] text-white font-display font-bold text-sm"
+              className={`${a.avatar} font-display`}
             >
               {initials(u.name)}
             </span>
-            <div className="min-w-0 flex-1">
-              <p className="font-display font-semibold truncate">
+            <div className={p.main}>
+              <p className={`${p.name} font-display`}>
                 {u.name}
                 {self && (
-                  <span className="ml-2 rounded-full border border-[var(--color-line)] px-1.5 py-px font-ui text-[11px] font-normal text-[var(--color-muted)]">
+                  <span className={`${a.youChip} font-ui`}>
                     you
                   </span>
                 )}
               </p>
-              <p className="text-sm text-muted truncate">
+              <p className={`${p.email} text-muted`}>
                 {u.email}
                 {!u.verified && (
-                  <span className="ml-2 text-[var(--color-accent)]">
+                  <span className={a.unverified}>
                     unverified
                   </span>
                 )}
               </p>
             </div>
             {self ? (
-              <span className="font-ui text-sm text-[var(--color-muted)]">
+              <span className={`${a.selfRole} font-ui`}>
                 {u.role}
               </span>
             ) : (
-              <div className="flex items-center gap-2">
+              <div className={a.controls}>
                 <select
                   aria-label={`Role for ${u.name}`}
                   value={draft}
@@ -99,7 +101,7 @@ export default function AdminUsers({
                   onChange={(e) =>
                     setDrafts((prev) => ({ ...prev, [u.id]: e.target.value }))
                   }
-                  className="rounded border border-[var(--color-line)] px-2 py-1.5 text-sm font-ui font-medium focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)] disabled:opacity-60"
+                  className={`${a.select} font-ui`}
                 >
                   {ROLES.map((r) => (
                     <option key={r} value={r}>
@@ -111,7 +113,7 @@ export default function AdminUsers({
                   type="button"
                   disabled={draft === u.role || busyId === u.id}
                   onClick={() => save(u)}
-                  className="rounded bg-[var(--color-accent)] px-3 py-1.5 text-sm font-ui font-medium text-white hover:bg-[var(--color-accent-hover)] transition-colors disabled:bg-gray-400"
+                  className={`${a.save} font-ui`}
                 >
                   {busyId === u.id ? "Saving…" : "Save"}
                 </button>

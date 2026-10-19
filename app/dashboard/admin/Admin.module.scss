@@ -1,0 +1,144 @@
+@use "../../styles/mixins" as m;
+
+// ─────────────────────────────────────────────────────────────────────────
+// User management: the roster, the role select and the save button. The
+// avatar-with-name-and-email row reuses .main / .name / .email from
+// Profile.module.scss, which is where that trio first lived.
+//
+// Global helpers still carried in the markup: .font-body, .font-display,
+// .font-ui, .text-muted, .measure.
+// ─────────────────────────────────────────────────────────────────────────
+
+/** `font-display mb-3` */
+.title {
+  margin-bottom: 0.75rem;
+}
+
+/** `text-muted mb-8` — the size comes from the global .text-muted. */
+.intro {
+  margin-bottom: 2rem;
+}
+
+/**
+ * `divide-y divide-[var(--color-line)]` — a hairline above every row but the
+ * first. Tailwind drew the top edge on the siblings; the bottom width stays 0
+ * from the reset.
+ */
+.list > * + * {
+  border-top-width: 1px;
+  border-color: var(--color-line);
+}
+
+/** `py-4 flex items-center gap-4` */
+.row {
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+/**
+ * `flex h-10 w-10 shrink-0 items-center justify-center rounded-full
+ *  bg-[var(--color-accent)] text-white font-display font-bold text-sm`
+ *  — the roster's smaller cousin of the profile card's initials disc.
+ */
+.avatar {
+  display: flex;
+  height: 2.5rem;
+  width: 2.5rem;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  background-color: var(--color-accent);
+  color: #fff;
+  font-weight: 700;
+  font-size: var(--step--1);
+  line-height: 1.25rem;
+}
+
+/**
+ * `ml-2 rounded-full border border-[var(--color-line)] px-1.5 py-px font-ui
+ *  text-[11px] font-normal text-[var(--color-muted)]` — the "you" marker.
+ */
+.youChip {
+  margin-left: 0.5rem;
+  border-radius: 9999px;
+  padding: 1px 0.375rem;
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--color-muted);
+
+  @include m.hairline;
+}
+
+/** `ml-2 text-[var(--color-accent)]` */
+.unverified {
+  margin-left: 0.5rem;
+  color: var(--color-accent);
+}
+
+/** `font-ui text-sm text-[var(--color-muted)]` — your own role, not editable. */
+.selfRole {
+  font-size: var(--step--1);
+  line-height: 1.25rem;
+  color: var(--color-muted);
+}
+
+/** `flex items-center gap-2` */
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/**
+ * `rounded border border-[var(--color-line)] px-2 py-1.5 text-sm font-ui
+ *  font-medium focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)]
+ *  disabled:opacity-60`
+ *
+ * The focus ring is the same hand-resolved `ring-2` as Form.module.scss's
+ * .input.
+ */
+.select {
+  border-radius: 0.25rem;
+  padding: 0.375rem 0.5rem;
+  font-size: var(--step--1);
+  line-height: 1.25rem;
+  font-weight: 500;
+
+  @include m.hairline;
+
+  &:focus {
+    outline: 2px solid rgba(0, 0, 0, 0); // Tailwind's `outline-none`
+    outline-offset: 2px;
+    box-shadow: 0 0 0 0 #fff, 0 0 0 2px var(--color-accent), 0 0 #0000;
+  }
+
+  &:disabled {
+    opacity: 0.6;
+  }
+}
+
+/**
+ * `rounded bg-[var(--color-accent)] px-3 py-1.5 text-sm font-ui font-medium
+ *  text-white hover:bg-[var(--color-accent-hover)] transition-colors
+ *  disabled:bg-gray-400`
+ *
+ * Hover precedes :disabled, the order Tailwind emitted.
+ */
+.save {
+  border-width: 0;
+  border-radius: 0.25rem;
+  padding: 0.375rem 0.75rem;
+  font-size: var(--step--1);
+  line-height: 1.25rem;
+  font-weight: 500;
+
+  @include m.accent-surface;
+
+  &:disabled {
+    background-color: rgb(156, 163, 175); // gray-400
+  }
+}
