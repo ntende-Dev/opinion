@@ -1,0 +1,144 @@
+@use "./styles/mixins" as m;
+
+// ─────────────────────────────────────────────────────────────────────────
+// Front page — hero and the latest-stories grid.
+// Shared editorial vocabulary (.container, .measure, .clamp-3, .font-display,
+// .text-lead, .text-muted) stays global; everything Tailwind provided lives
+// here.
+// ─────────────────────────────────────────────────────────────────────────
+
+/* ── Hero ───────────────────────────────────────────────────────────── */
+.hero {
+  margin-bottom: 3.5rem; // mb-14
+}
+
+.dateline {
+  font-size: var(--step--1); // text-sm
+  line-height: 1.25rem;
+  color: var(--color-muted);
+  @include m.hairline(top); // border-t + colour
+  padding-top: 0.75rem; // pt-3
+}
+
+.heroGrid {
+  margin-top: 1rem; // mt-4
+  display: grid;
+  gap: 2.5rem; // gap-10
+
+  @media (min-width: m.$bp-lg) {
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    align-items: center;
+  }
+}
+
+.headline {
+  font-weight: 700; // font-bold
+  font-size: clamp(2.4rem, 7.5vw, 3.4rem);
+  line-height: 1.08;
+  letter-spacing: -0.02em;
+}
+
+.lead {
+  margin-top: 1.25rem; // mt-5
+  max-width: 52ch;
+}
+
+/// The full stop that ends the headline — printed in the house red.
+.headlineStop {
+  color: var(--color-accent);
+}
+
+.actions {
+  margin-top: 2rem; // mt-8
+  display: flex;
+  align-items: center;
+  gap: 0.75rem; // gap-3
+}
+
+.primaryCta {
+  border-radius: 0.25rem; // rounded
+  padding: 0.5rem 1rem; // px-4 py-2
+  font-family: var(--font-ui);
+  font-weight: 500;
+  text-decoration: none;
+
+  @include m.accent-surface;
+
+  // `hover:text-white` — needed here because the site-wide `a:hover` colour
+  // would otherwise win on specificity and tint the label.
+  &:hover {
+    color: #fff;
+  }
+}
+
+.secondaryCta {
+  border-radius: 0.25rem;
+  @include m.hairline;
+  padding: 0.5rem 1rem;
+  font-family: var(--font-ui);
+  font-weight: 500;
+  color: var(--color-ink);
+  text-decoration: none;
+
+  @include m.transition-colors;
+
+  &:hover {
+    border-color: var(--color-muted);
+  }
+}
+
+.heroFigure {
+  margin: 0;
+  overflow: hidden;
+  border-radius: 0.25rem;
+  @include m.hairline;
+  aspect-ratio: 16 / 10;
+
+  @media (min-width: m.$bp-lg) {
+    aspect-ratio: 4 / 5;
+  }
+}
+
+.heroLink {
+  display: block;
+  height: 100%;
+}
+
+.heroImage {
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+}
+
+/* ── Latest ─────────────────────────────────────────────────────────── */
+.emptyState {
+  margin-bottom: 3rem; // mb-12
+}
+
+.emptyTitle {
+  margin-bottom: 1rem; // mb-4
+}
+
+.latest {
+  margin-bottom: 3rem; // mb-12
+}
+
+.latestTitle {
+  font-weight: 600; // font-semibold
+  margin-bottom: 2rem; // mb-8
+  // NOTE: the original `text-[var(--step-2)]` never set a font size — Tailwind
+  // can't infer a type from a bare var(), so it emitted `color: var(--step-2)`,
+  // which is not a valid colour and was dropped. The heading therefore renders
+  // at the global h2 size (--step-3). Reproduced faithfully here; say the word
+  // and it becomes `font-size: var(--step-2)`.
+}
+
+.cardGrid {
+  display: grid;
+  gap: 1.25rem; // gap-5
+  align-items: stretch;
+
+  @media (min-width: m.$bp-sm) {
+    grid-template-columns: repeat(2, minmax(0, 1fr)); // sm:grid-cols-2
+  }
+}

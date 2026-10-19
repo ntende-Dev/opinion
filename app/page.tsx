@@ -2,6 +2,7 @@ import { db } from "@/drizzle/db";
 import { stories, users } from "@/drizzle/schema";
 import { eq } from "drizzle-orm";
 import StoryCard from "@/app/StoryCard";
+import styles from "./page.module.scss";
 
 export const dynamic = "force-dynamic";
 
@@ -39,51 +40,45 @@ export default async function Home() {
   return (
     <div className="container font-body">
       {/* Hero — typography left, masthead image right, per DESIGN.md */}
-      <section className="mb-14">
-        <p className="font-ui text-sm text-[var(--color-muted)] border-t border-[var(--color-line)] pt-3">
+      <section className={styles.hero}>
+        <p className={`${styles.dateline} font-ui`}>
           {dateline()} — the week&apos;s provocation
         </p>
-        <div className="mt-4 grid gap-10 lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)] lg:items-center">
+        <div className={styles.heroGrid}>
           <div>
-            <h1 className="font-display font-bold text-[clamp(2.4rem,7.5vw,3.4rem)] leading-[1.08] tracking-[-0.02em]">
+            <h1 className={`${styles.headline} font-display`}>
               Where every
               <br />
               opinion matters
-              <span className="text-[var(--color-accent)]">.</span>
+              <span className={styles.headlineStop}>.</span>
             </h1>
-            <p className="mt-5 text-lead max-w-[52ch]">
+            <p className={`${styles.lead} text-lead`}>
               A journal of editorial argument — essays, rebuttals and dispatches
               from people willing to commit to a position.
             </p>
-            <div className="mt-8 flex items-center gap-3">
-              <a
-                href="#latest"
-                className="rounded bg-[var(--color-accent)] px-4 py-2 text-white font-ui font-medium no-underline hover:bg-[var(--color-accent-hover)] hover:text-white transition-colors"
-              >
+            <div className={styles.actions}>
+              <a href="#latest" className={styles.primaryCta}>
                 Read the latest
               </a>
-              <a
-                href="/signup"
-                className="rounded border border-[var(--color-line)] px-4 py-2 font-ui font-medium text-[var(--color-ink)] no-underline hover:border-[var(--color-muted)] transition-colors"
-              >
+              <a href="/signup" className={styles.secondaryCta}>
                 Write for us
               </a>
             </div>
           </div>
-          <figure className="m-0 overflow-hidden rounded border border-[var(--color-line)] aspect-[16/10] lg:aspect-[4/5]">
+          <figure className={styles.heroFigure}>
             {heroImage ? (
-              <a href={`/story/${featured.slug}`} className="block h-full">
+              <a href={`/story/${featured.slug}`} className={styles.heroLink}>
                 <img
                   src={heroImage}
                   alt={`Cover of ${featured.title}`}
-                  className="h-full w-full object-cover"
+                  className={styles.heroImage}
                 />
               </a>
             ) : (
               <img
                 src="/hero-emblem.svg"
                 alt="The Opinion Weekly masthead emblem"
-                className="h-full w-full object-cover"
+                className={styles.heroImage}
               />
             )}
           </figure>
@@ -91,21 +86,21 @@ export default async function Home() {
       </section>
 
       {published.length === 0 ? (
-        <section className="mb-12 measure">
-          <h2 className="font-display mb-4">No published stories yet.</h2>
+        <section className={`${styles.emptyState} measure`}>
+          <h2 className={`${styles.emptyTitle} font-display`}>
+            No published stories yet.
+          </h2>
           <p className="text-muted">
             The editorial inbox is open. Check back as contributors submit and
             editors publish.
           </p>
         </section>
       ) : (
-        <section className="mb-12" id="latest">
-          <h2 className="font-display font-semibold mb-8 text-[var(--step-2)]">
-            Latest
-          </h2>
+        <section className={styles.latest} id="latest">
+          <h2 className={`${styles.latestTitle} font-display`}>Latest</h2>
           {/* Front-page story cards — 2-up side by side, stacked on mobile;
               click opens the story in a modal */}
-          <ul className="grid gap-5 sm:grid-cols-2 items-stretch">
+          <ul className={styles.cardGrid}>
             {published.map((s) => (
               <li key={s.id}>
                 <StoryCard story={s} />
@@ -117,4 +112,3 @@ export default async function Home() {
     </div>
   );
 }
-

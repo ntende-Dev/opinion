@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { EDITORS } from "@/lib/roles";
 import { toast } from "sonner";
+import styles from "./StoryCard.module.scss";
 
 export type CardStory = {
   id: number;
@@ -121,19 +122,17 @@ export default function StoryCard({ story }: { story: CardStory }) {
 
   function Byline() {
     return (
-      <p className="mt-2 font-ui text-sm leading-snug">
+      <p className={styles.byline}>
         {story.authorName && (
-          <span className="text-[var(--color-ink)] underline underline-offset-2 decoration-1">
-            {story.authorName}
-          </span>
+          <span className={styles.bylineAuthor}>{story.authorName}</span>
         )}
         {story.authorName && (
-          <span className="mx-2 text-[var(--color-line)]" aria-hidden="true">
+          <span className={styles.bylineSeparator} aria-hidden="true">
             |
           </span>
         )}
         {story.publishedAt || story.createdAt ? (
-          <span className="text-[var(--color-muted)]">
+          <span className={styles.bylineTime}>
             Published {timeAgo(story.publishedAt || story.createdAt)}
           </span>
         ) : null}
@@ -143,30 +142,24 @@ export default function StoryCard({ story }: { story: CardStory }) {
 
   return (
     <>
-      <article className="group relative flex flex-col rounded-lg border border-[var(--color-line)] bg-[var(--color-paper)] overflow-hidden transition-colors hover:border-[var(--color-muted)]">
+      <article className={styles.card}>
         {story.coverImage && (
-          <img
-            src={story.coverImage}
-            alt=""
-            className="w-full aspect-[16/9] object-cover border-b border-[var(--color-line)]"
-          />
+          <img src={story.coverImage} alt="" className={styles.cardImage} />
         )}
-        <div className="p-4 sm:p-5 flex flex-col grow">
-          <h3 className="font-display font-bold text-[1.05rem] sm:text-[1.15rem] leading-[1.3] clamp-3">
+        <div className={styles.cardBody}>
+          <h3 className={`${styles.cardTitle} font-display clamp-3`}>
             {story.title}
           </h3>
           <Byline />
           {story.excerpt && (
-            <p className="mt-2 text-sm text-[var(--color-muted)] leading-relaxed clamp-3 grow">
-              {story.excerpt}
-            </p>
+            <p className={`${styles.excerpt} clamp-3`}>{story.excerpt}</p>
           )}
         </div>
         {/* Stretched click target — the whole card opens the modal. */}
         <button
           type="button"
           onClick={() => setOpen(true)}
-          className="absolute inset-0"
+          className={styles.cardOverlay}
           aria-label={`Read ${story.title}`}
         />
       </article>
@@ -174,7 +167,7 @@ export default function StoryCard({ story }: { story: CardStory }) {
       {open &&
         createPortal(
           <div
-            className="fixed inset-0 z-50 overflow-y-auto bg-black/60 p-4 sm:p-8"
+            className={styles.modalOverlay}
             onClick={() => setOpen(false)}
           >
             <div
@@ -182,13 +175,13 @@ export default function StoryCard({ story }: { story: CardStory }) {
               aria-modal="true"
               aria-labelledby={titleId}
               onClick={(e) => e.stopPropagation()}
-              className="relative mx-auto my-4 w-full max-w-3xl rounded-lg border border-[var(--color-line)] bg-[var(--color-paper)] p-5 sm:p-10"
+              className={styles.dialog}
             >
               <button
                 type="button"
                 onClick={() => setOpen(false)}
                 aria-label="Close story"
-                className="absolute right-3 top-3 rounded p-2 text-[var(--color-muted)] hover:bg-[var(--color-line)] hover:text-[var(--color-ink)] transition-colors"
+                className={styles.dialogClose}
               >
                 <svg
                   width="20"
@@ -208,32 +201,30 @@ export default function StoryCard({ story }: { story: CardStory }) {
                 <img
                   src={story.coverImage}
                   alt=""
-                  className="mb-6 w-full aspect-[16/9] object-cover rounded border border-[var(--color-line)]"
+                  className={styles.dialogImage}
                 />
               )}
               <h2
                 id={titleId}
-                className="font-display font-bold text-2xl sm:text-3xl leading-[1.15] pr-8"
+                className={`${styles.dialogTitle} font-display`}
               >
                 {story.title}
               </h2>
-              <div className="mt-3">
+              <div className={styles.dialogByline}>
                 <Byline />
               </div>
-              <hr className="my-6 border-[var(--color-line)]" />
+              <hr className={styles.dialogRule} />
               <div
-                className="prose-content leading-relaxed"
+                className={`${styles.dialogBody} prose-content`}
                 dangerouslySetInnerHTML={{ __html: story.content }}
               />
               {canManage && (
-                <div className="mt-8 flex flex-wrap items-center gap-3 font-ui text-sm">
-                  <span className="text-xs tracking-wide uppercase text-[var(--color-muted)]">
-                    Manage
-                  </span>
+                <div className={styles.manage}>
+                  <span className={styles.manageLabel}>Manage</span>
                   <Link
                     href={`/dashboard/write?story=${story.id}&from=home`}
                     onClick={() => setOpen(false)}
-                    className="rounded border border-[var(--color-line)] px-3 py-1.5 no-underline hover:border-[var(--color-muted)] transition-colors"
+                    className={styles.manageLink}
                   >
                     Edit
                   </Link>
@@ -241,7 +232,7 @@ export default function StoryCard({ story }: { story: CardStory }) {
                     type="button"
                     onClick={unpublish}
                     disabled={working !== null}
-                    className="rounded border border-[var(--color-line)] px-3 py-1.5 hover:bg-[var(--color-line)] transition-colors disabled:opacity-60"
+                    className={styles.manageUnpublish}
                   >
                     {working === "unpublish" ? "Unpublishing…" : "Unpublish"}
                   </button>
@@ -249,16 +240,16 @@ export default function StoryCard({ story }: { story: CardStory }) {
                     type="button"
                     onClick={remove}
                     disabled={working !== null}
-                    className="rounded bg-[var(--color-accent)] px-3 py-1.5 text-white hover:bg-[var(--color-accent-hover)] transition-colors disabled:opacity-60"
+                    className={styles.manageDanger}
                   >
                     {working === "delete" ? "Deleting…" : "Delete"}
                   </button>
                 </div>
               )}
-              <p className="mt-8 pt-4 border-t border-[var(--color-line)] font-ui text-sm">
+              <p className={styles.dialogFooter}>
                 <Link
                   href={`/story/${story.slug}`}
-                  className="text-[var(--color-accent)] underline underline-offset-2"
+                  className={styles.dialogFooterLink}
                   onClick={() => setOpen(false)}
                 >
                   Open the full story page ↓
