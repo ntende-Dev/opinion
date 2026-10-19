@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import r from "./review/Review.module.scss";
 
 export default function ReviewActions({ id }: { id: number }) {
   const router = useRouter();
@@ -22,11 +23,11 @@ export default function ReviewActions({ id }: { id: number }) {
   }
 
   return (
-    <div className="flex shrink-0 gap-2 font-ui">
+    <div className={`${r.actions} font-ui`}>
       <button
         disabled={busy}
         onClick={() => move("published")}
-        className="rounded bg-green-600 px-3 py-1.5 text-sm text-white font-medium disabled:opacity-50 hover:bg-green-700 transition-colors"
+        className={r.publish}
       >
         Publish
       </button>
@@ -38,7 +39,7 @@ export default function ReviewActions({ id }: { id: number }) {
           );
           if (note !== null) move("draft", note);
         }}
-        className="rounded bg-red-600 px-3 py-1.5 text-sm text-white font-medium disabled:opacity-50 hover:bg-red-700 transition-colors"
+        className={r.reject}
       >
         Reject
       </button>

@@ -1,0 +1,136 @@
+@use "../../styles/mixins" as m;
+
+// ─────────────────────────────────────────────────────────────────────────
+// The review queue and the publish / reject controls that sit on each item.
+// ReviewActions renders the two buttons; its markup lives one directory up.
+//
+// Global helpers still carried in the markup: .font-body, .font-display,
+// .font-ui, .text-muted, .measure.
+// ─────────────────────────────────────────────────────────────────────────
+
+/** `font-display mb-6` */
+.title {
+  margin-bottom: 1.5rem;
+}
+
+/** `font-normal text-[var(--color-muted)]` — the count beside the heading. */
+.count {
+  font-weight: 400;
+  color: var(--color-muted);
+}
+
+/** `text-muted measure mb-10` */
+.empty {
+  margin-bottom: 2.5rem;
+}
+
+/** `border-b border-[var(--color-line)] pb-8 last:border-0` */
+.item {
+  padding-bottom: 2rem;
+
+  @include m.hairline(bottom);
+
+  &:last-child {
+    border-width: 0;
+  }
+}
+
+/** `flex items-start justify-between gap-4` */
+.head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+/** `font-display text-xl font-bold` */
+.storyTitle {
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+  font-weight: 700;
+}
+
+/**
+ * `mt-3 text-xs text-muted font-ui` — .text-muted sets the size and text-xs
+ * the 1rem leading, exactly as in the inbox.
+ */
+.byline {
+  margin-top: 0.75rem;
+  font-size: var(--step--1);
+  line-height: 1rem;
+}
+
+/** `mt-4 leading-relaxed` */
+.excerpt {
+  margin-top: 1rem;
+  line-height: 1.625;
+}
+
+/** `mt-4 inline-block text-sm font-ui underline underline-offset-2 hover:no-underline` */
+.readLink {
+  margin-top: 1rem;
+  display: inline-block;
+  font-size: var(--step--1);
+  line-height: 1.25rem;
+
+  @include m.text-link;
+}
+
+/* The publish / reject controls ---------------------------------------- */
+
+/** `flex shrink-0 gap-2 font-ui` */
+.actions {
+  display: flex;
+  flex-shrink: 0;
+  gap: 0.5rem;
+}
+
+/**
+ * `rounded bg-green-600 px-3 py-1.5 text-sm text-white font-medium
+ *  disabled:opacity-50 hover:bg-green-700 transition-colors`
+ *
+ * Hover precedes :disabled so a busy button stays green-but-faded under the
+ * pointer — the order Tailwind emitted.
+ */
+.publish {
+  border-width: 0;
+  border-radius: 0.25rem;
+  padding: 0.375rem 0.75rem;
+  font-size: var(--step--1);
+  line-height: 1.25rem;
+  font-weight: 500;
+  background-color: rgb(22 163 74); // green-600
+  color: #fff;
+
+  @include m.transition-colors;
+
+  &:hover {
+    background-color: rgb(21 128 61); // green-700
+  }
+
+  &:disabled {
+    opacity: 0.5;
+  }
+}
+
+/** The same shape in red — `bg-red-600 ... hover:bg-red-700`. */
+.reject {
+  border-width: 0;
+  border-radius: 0.25rem;
+  padding: 0.375rem 0.75rem;
+  font-size: var(--step--1);
+  line-height: 1.25rem;
+  font-weight: 500;
+  background-color: rgb(220 38 38); // red-600
+  color: #fff;
+
+  @include m.transition-colors;
+
+  &:hover {
+    background-color: rgb(185 28 28); // red-700
+  }
+
+  &:disabled {
+    opacity: 0.5;
+  }
+}

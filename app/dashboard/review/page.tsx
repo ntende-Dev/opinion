@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { EDITORS } from "@/lib/roles";
 import ReviewActions from "../ReviewActions";
+import r from "./Review.module.scss";
 
 export const dynamic = "force-dynamic";
 
@@ -28,32 +29,32 @@ export default async function ReviewQueue() {
 
   return (
     <div className="font-body">
-      <h1 className="font-display mb-6">
-        Pending review <span className="font-normal text-[var(--color-muted)]">({pending.length})</span>
+      <h1 className={`${r.title} font-display`}>
+        Pending review <span className={r.count}>({pending.length})</span>
       </h1>
       {pending.length === 0 && (
-        <p className="text-muted measure mb-10">
+        <p className={`${r.empty} text-muted measure`}>
           🎉 Inbox Zero — nothing awaiting review.
         </p>
       )}
       {pending.map((s) => (
-        <div key={s.id} className="border-b border-[var(--color-line)] pb-8 last:border-0">
-          <div className="flex items-start justify-between gap-4">
+        <div key={s.id} className={r.item}>
+          <div className={r.head}>
             <div>
-              <h2 className="font-display text-xl font-bold">{s.title}</h2>
+              <h2 className={`${r.storyTitle} font-display`}>{s.title}</h2>
               <ReviewActions id={s.id} />
             </div>
           </div>
-          <p className="mt-3 text-xs text-muted font-ui">
+          <p className={`${r.byline} text-muted font-ui`}>
             by {s.author ?? "unknown"} &nbsp;·&nbsp;
             {new Date(s.submittedAt!).toLocaleString()}
           </p>
-          <p className="mt-4 leading-relaxed">{s.excerpt}</p>
+          <p className={r.excerpt}>{s.excerpt}</p>
           <a
             href={`/story/${s.slug}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="mt-4 inline-block text-sm font-ui underline underline-offset-2 hover:no-underline"
+            className={`${r.readLink} font-ui`}
           >
             Read full story
           </a>

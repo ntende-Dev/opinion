@@ -5,6 +5,8 @@ import { redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { EDITORS } from "@/lib/roles";
 import { markHandled } from "@/app/contact/action";
+import ms from "./Messages.module.scss";
+import c from "../Chip.module.scss";
 
 export const dynamic = "force-dynamic";
 
@@ -28,60 +30,61 @@ export default async function Messages() {
 
   function row(m: typeof contactMessages.$inferSelect, isHandled: boolean) {
     return (
-      <li
-        key={m.id}
-        className="border-b border-[var(--color-line)] pb-6 last:border-0"
-      >
-        <div className="flex items-start justify-between gap-3">
+      <li key={m.id} className={ms.item}>
+        <div className={ms.head}>
           <div>
-            <h3 className="font-display font-bold">{m.subject}</h3>
-            <p className="mt-1 text-sm text-muted font-ui">
+            <h3 className={`${ms.subject} font-display`}>{m.subject}</h3>
+            <p className={`${ms.from} text-muted font-ui`}>
               {m.name} ·{" "}
-              <a href={`mailto:${m.email}`} className="hover:underline">
+              <a href={`mailto:${m.email}`}>
                 {m.email}
               </a>
             </p>
-            <p className="mt-1 text-xs text-muted font-ui">
+            <p className={`${ms.date} text-muted font-ui`}>
               {m.createdAt && new Date(m.createdAt).toLocaleString()}
             </p>
           </div>
           {isHandled ? (
-            <span className="shrink-0 rounded-full bg-gray-200 px-2.5 py-0.5 font-sans text-xs font-medium uppercase tracking-wider text-gray-700">
+            <span className={`${c.chip} ${c.draft} ${ms.handledChip}`}>
               handled
             </span>
           ) : (
-            <form action={markHandled} className="shrink-0">
+            <form action={markHandled} className={ms.markForm}>
               <input type="hidden" name="id" value={m.id} />
-              <button className="rounded bg-[var(--color-accent)] px-3 py-1.5 text-sm font-ui font-medium text-white hover:bg-[var(--color-accent-hover)] transition-colors">
+              <button className={`${ms.markButton} font-ui`}>
                 Mark handled
               </button>
             </form>
           )}
         </div>
-        <p className="mt-3 whitespace-pre-wrap leading-relaxed">{m.message}</p>
+        <p className={ms.body}>{m.message}</p>
       </li>
     );
   }
 
   return (
     <div className="font-body">
-      <h1 className="font-display mb-6">Messages</h1>
+      <h1 className={`${ms.title} font-display`}>Messages</h1>
       <section>
-        <h2 className="font-display mb-3 text-lg">Open ({open.length})</h2>
+        <h2 className={`${ms.sectionTitle} font-display`}>
+          Open ({open.length})
+        </h2>
         {open.length === 0 ? (
-          <p className="text-muted measure mb-10">
+          <p className={`${ms.empty} text-muted measure`}>
             No new messages. The mailbag is empty.
           </p>
         ) : (
-          <ul className="measure space-y-6 mb-10">
+          <ul className={`${ms.list} ${ms.openList} measure`}>
             {open.map((m) => row(m, false))}
           </ul>
         )}
       </section>
       {handled.length > 0 && (
         <section>
-          <h2 className="font-display mb-3 text-lg">Handled ({handled.length})</h2>
-          <ul className="measure space-y-6 opacity-75">
+          <h2 className={`${ms.sectionTitle} font-display`}>
+            Handled ({handled.length})
+          </h2>
+          <ul className={`${ms.list} ${ms.handledList} measure`}>
             {handled.map((m) => row(m, true))}
           </ul>
         </section>

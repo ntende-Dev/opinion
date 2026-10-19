@@ -1,0 +1,117 @@
+@use "../../styles/mixins" as m;
+
+// ─────────────────────────────────────────────────────────────────────────
+// The contact inbox. Open and handled messages share one row shape; handled
+// ones are simply dimmed.
+//
+// Global helpers still carried in the markup: .font-body, .font-display,
+// .font-ui, .text-muted, .measure. The "handled" chip comes from
+// Chip.module.scss — the same chip the dashboard lists use.
+// ─────────────────────────────────────────────────────────────────────────
+
+/** `font-display mb-6` */
+.title {
+  margin-bottom: 1.5rem;
+}
+
+/** `font-display mb-3 text-lg` — the utility beats the h2 element size. */
+.sectionTitle {
+  margin-bottom: 0.75rem;
+  font-size: 1.125rem;
+  line-height: 1.75rem;
+}
+
+/** `text-muted measure mb-10` — the size comes from the global .text-muted. */
+.empty {
+  margin-bottom: 2.5rem;
+}
+
+/** `measure space-y-6 mb-10` */
+.openList {
+  margin-bottom: 2.5rem;
+}
+
+/** `measure space-y-6 opacity-75` */
+.handledList {
+  opacity: 0.75;
+}
+
+/** `space-y-6`, shared by both lists. */
+.list > * + * {
+  margin-top: 1.5rem;
+}
+
+/** `border-b border-[var(--color-line)] pb-6 last:border-0` */
+.item {
+  padding-bottom: 1.5rem;
+
+  @include m.hairline(bottom);
+
+  &:last-child {
+    border-width: 0;
+  }
+}
+
+/** `flex items-start justify-between gap-3` */
+.head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+/** `font-display font-bold` */
+.subject {
+  font-weight: 700;
+}
+
+/** `mt-1 text-sm text-muted font-ui` */
+.from {
+  margin-top: 0.25rem;
+  font-size: var(--step--1);
+  line-height: 1.25rem;
+}
+
+/**
+ * `mt-1 text-xs text-muted font-ui`
+ *
+ * The size trap again: .text-muted (.875rem) beats text-xs (.75rem) while the
+ * utility still supplies the 1rem leading. Reproduced deliberately.
+ */
+.date {
+  margin-top: 0.25rem;
+  font-size: var(--step--1);
+  line-height: 1rem;
+}
+
+/** `shrink-0` — the chip's own look lives in Chip.module.scss. */
+.handledChip {
+  flex-shrink: 0;
+}
+
+/** `shrink-0` around the Mark handled form. */
+.markForm {
+  flex-shrink: 0;
+}
+
+/**
+ * `rounded bg-[var(--color-accent)] px-3 py-1.5 text-sm font-ui font-medium
+ *  text-white hover:bg-[var(--color-accent-hover)] transition-colors`
+ */
+.markButton {
+  border-width: 0;
+  border-radius: 0.25rem;
+  padding: 0.375rem 0.75rem;
+  font-size: var(--step--1);
+  line-height: 1.25rem;
+  font-weight: 500;
+
+  @include m.accent-surface;
+}
+
+/** `mt-3 whitespace-pre-wrap leading-relaxed` */
+.body {
+  margin-top: 0.75rem;
+  white-space: pre-wrap;
+  line-height: 1.625;
+}
