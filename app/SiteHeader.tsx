@@ -142,7 +142,7 @@ export default function SiteHeader({ initialAuthed }: { initialAuthed: boolean }
   }
 
   return (
-    <header className="mt-5 mb-10 border-b border-[var(--color-line)] px-6">
+    <header className="mt-5 mb-6 px-6">
       <div className="relative flex items-center justify-between gap-4 pt-3 pb-7 border-b border-[var(--color-line)]">
         {/* Left — page links (desktop). Mobile gets these in the panel. */}
         <nav className="hidden md:flex items-center gap-5">
