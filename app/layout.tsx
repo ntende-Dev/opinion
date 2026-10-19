@@ -1,5 +1,6 @@
 import "./globals.scss";
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
+import { Literata, Outfit } from "next/font/google";
 import { auth } from "@/auth";
 import { sectionById } from "@/lib/sections";
 import { sectionsInPrint } from "@/lib/stories";
@@ -9,6 +10,33 @@ import SiteHeader from "@/app/SiteHeader";
 import Footer from "@/app/Footer";
 
 const siteUrl = process.env.NEXTAUTH_URL || "http://localhost:3000";
+
+/**
+ * The paper's two faces, self-hosted by next/font: served from our own domain
+ * (no third-party request, no render-blocking stylesheet) and preloaded with
+ * `display: swap` plus a metric-matched fallback, so the swap does not shift
+ * the page. The CSS variables below are what globals.scss reads.
+ */
+const literata = Literata({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-literata",
+});
+
+const outfit = Outfit({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-outfit",
+});
+
+export const viewport: Viewport = {
+  // Ties the browser chrome to each theme (globals.scss paints both).
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
+    { media: "(prefers-color-scheme: dark)", color: "#0b0c10" },
+  ],
+  colorScheme: "light dark",
+};
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -45,19 +73,17 @@ export default async function RootLayout({
   });
 
   return (
-    <html lang="en">
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" crossOrigin="" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
-        <link
-          rel="stylesheet"
-          href="https://fonts.googleapis.com/css2?family=Literata:wght@400;600;700&family=Outfit:wght@400;500;600&display=swap"
-        />
-      </head>
+    <html lang="en" className={`${literata.variable} ${outfit.variable}`}>
       <body className="font-body">
+        {/* Keyboard readers reach the story without walking the masthead. */}
+        <a href="#main" className="skip-link">
+          Skip to content
+        </a>
         <Providers>
           <SiteHeader initialAuthed={isAuthed} sections={sections} />
-          <main className="font-body">{children}</main>
+          <main id="main" tabIndex={-1} className="font-body">
+            {children}
+          </main>
           <Footer isAuthed={isAuthed} />
         </Providers>
         <Toaster position="top-center" />

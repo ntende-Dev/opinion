@@ -12,12 +12,12 @@
   --color-muted: #475569;
   --color-line: #cbd5e1;
 
-  /* Type */
-  --font-display: "Literata", ui-serif, Georgia, serif;
-  --font-body: "Literata", ui-serif, Georgia, serif;
-  --font-ui: "Outfit", ui-sans-serif, system-ui, sans-serif;
-  --font-serif: "Literata", ui-serif, Georgia, serif;
-  --font-sans: "Outfit", ui-sans-serif, system-ui, sans-serif;
+  /* Type — bound to the next/font variables declared on <html> in layout.tsx */
+  --font-display: var(--font-literata), ui-serif, Georgia, serif;
+  --font-body: var(--font-literata), ui-serif, Georgia, serif;
+  --font-ui: var(--font-outfit), ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--font-literata), ui-serif, Georgia, serif;
+  --font-sans: var(--font-outfit), ui-sans-serif, system-ui, sans-serif;
 
   /* Type scale (Elements of Typographic Style) */
   --step--2: 0.75rem;
@@ -88,6 +88,39 @@ a:hover {
   outline-offset: 2px;
 }
 
+/* Controls respond on the first tap — without disabling zoom. */
+a,
+button,
+input,
+select,
+textarea,
+summary {
+  touch-action: manipulation;
+}
+
+/* The first tab stop: hidden until it takes focus, then printed over the
+   masthead so a keyboard reader can jump straight to the story. Fixed, so it
+   is at the top of whatever part of the page the reader is standing on. */
+.skip-link {
+  position: fixed;
+  left: 0.75rem;
+  top: 0.75rem;
+  z-index: 100;
+  transform: translateY(-300%);
+  padding: 0.5rem 0.75rem;
+  font-family: var(--font-ui);
+  font-size: var(--step--1);
+  color: var(--color-ink);
+  background-color: var(--color-paper);
+  border: 1px solid var(--color-accent);
+  border-radius: 0.25rem;
+  text-decoration: none;
+
+  &:focus {
+    transform: translateY(0);
+  }
+}
+
 /* Font utilities bound to next/font variables */
 .font-display {
   font-family: var(--font-display);
@@ -120,6 +153,21 @@ a:hover {
   max-width: var(--measure);
 }
 
+/* For a heading a sighted reader does not need (a list has to sit under
+   something for readers who navigate by heading) but that stays in the
+   accessibility tree. */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
 /* DESIGN.md's "Centered single column". `.measure` on its own caps the line
    length but leaves the block at its container's left edge, so the 62ch story
    column and the forms sat ~74px left of the masthead's centre line with all
@@ -136,6 +184,8 @@ h1, h2, h3, h4, h5, h6 {
   line-height: 1.2;
   font-weight: 600;
   letter-spacing: -0.01em;
+  /* Keeps a headline from leaving one word stranded on its last line. */
+  text-wrap: balance;
 }
 
 h1 { font-size: var(--step-5); }

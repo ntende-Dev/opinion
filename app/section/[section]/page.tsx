@@ -57,7 +57,14 @@ export default async function SectionPage({ params }: Props) {
           <Link href="/signup">Write for us</Link> and make it the first.
         </p>
       ) : (
-        <StoryGrid stories={filed} />
+        <>
+          {/* The cards hang off this, so a heading-by-heading reader lands on
+              the desk's list rather than dropping straight from h1 to h3. */}
+          <h2 className="visually-hidden">
+            Stories filed under {section.name}
+          </h2>
+          <StoryGrid stories={filed} />
+        </>
       )}
     </div>
   );

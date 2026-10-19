@@ -1,6 +1,6 @@
 "use client";
 import { createPortal } from "react-dom";
-import { useEffect, useId, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
@@ -54,6 +54,7 @@ export default function StoryCard({ story }: { story: CardStory }) {
   const [open, setOpen] = useState(false);
   const [working, setWorking] = useState<string | null>(null);
   const titleId = useId();
+  const dialogRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
   const { data: session } = useSession();
 
@@ -73,7 +74,7 @@ export default function StoryCard({ story }: { story: CardStory }) {
         body: JSON.stringify({ status: "draft" }),
       });
       if (!res.ok) throw new Error(((await res.json().catch(() => ({}))) as { error?: string }).error || "Could not unpublish");
-      toast.success("Story unpublished — it's back in the editor's drafts.");
+      toast.success("Story unpublished — it’s back in the editor’s drafts.");
       setOpen(false);
       router.refresh();
     } catch (e) {
@@ -87,7 +88,7 @@ export default function StoryCard({ story }: { story: CardStory }) {
   async function remove() {
     if (
       !window.confirm(
-        `Delete "${story.title}" permanently? This cannot be undone.`,
+        `Delete “${story.title}” permanently? This cannot be undone.`,
       )
     )
       return;
@@ -105,18 +106,48 @@ export default function StoryCard({ story }: { story: CardStory }) {
     }
   }
 
-  // ESC closes; body scroll is locked while the modal is up.
+  /**
+   * The overlay is a modal dialog, so it holds the keyboard while it is up:
+   * Escape closes it, focus moves into the dialog on open and returns to the
+   * card that opened it on close, and Tab cycles inside the dialog instead of
+   * walking the page behind the veil. Body scroll is locked for the duration.
+   */
   useEffect(() => {
     if (!open) return;
+    const opener = document.activeElement as HTMLElement | null;
+    const dialog = dialogRef.current;
+    dialog?.focus();
+
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setOpen(false);
+      if (e.key === "Escape") {
+        setOpen(false);
+        return;
+      }
+      if (e.key !== "Tab" || !dialog) return;
+      const stops = dialog.querySelectorAll<HTMLElement>(
+        'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])',
+      );
+      if (stops.length === 0) return;
+      const first = stops[0];
+      const last = stops[stops.length - 1];
+      const active = document.activeElement;
+      if (e.shiftKey && (active === first || active === dialog)) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && active === last) {
+        e.preventDefault();
+        first.focus();
+      }
     };
+
     document.addEventListener("keydown", onKey);
     const prev = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     return () => {
       document.removeEventListener("keydown", onKey);
       document.body.style.overflow = prev;
+      // Hand the reader back to the card they opened.
+      opener?.focus?.();
     };
   }, [open]);
 
@@ -132,7 +163,9 @@ export default function StoryCard({ story }: { story: CardStory }) {
           </span>
         )}
         {story.publishedAt || story.createdAt ? (
-          <span className={styles.bylineTime}>
+          // Relative time is computed at render, so a minute boundary crossed
+          // between the server render and hydration reads as a text mismatch.
+          <span className={styles.bylineTime} suppressHydrationWarning>
             Published {timeAgo(story.publishedAt || story.createdAt)}
           </span>
         ) : null}
@@ -144,7 +177,13 @@ export default function StoryCard({ story }: { story: CardStory }) {
     <>
       <article className={styles.card}>
         {story.coverImage && (
-          <img src={story.coverImage} alt="" className={styles.cardImage} />
+          <img
+            src={story.coverImage}
+            alt=""
+            width={1200}
+            height={675}
+            className={styles.cardImage}
+          />
         )}
         <div className={styles.cardBody}>
           <h3 className={`${styles.cardTitle} font-display clamp-3`}>
@@ -166,6 +205,8 @@ export default function StoryCard({ story }: { story: CardStory }) {
 
       {open &&
         createPortal(
+          // The backdrop click is a mouse shortcut only: the keyboard paths are
+          // Escape and the close button, and the dialog stops propagation.
           <div
             className={styles.modalOverlay}
             onClick={() => setOpen(false)}
@@ -174,6 +215,8 @@ export default function StoryCard({ story }: { story: CardStory }) {
               role="dialog"
               aria-modal="true"
               aria-labelledby={titleId}
+              ref={dialogRef}
+              tabIndex={-1}
               onClick={(e) => e.stopPropagation()}
               className={styles.dialog}
             >
@@ -201,6 +244,8 @@ export default function StoryCard({ story }: { story: CardStory }) {
                 <img
                   src={story.coverImage}
                   alt=""
+                  width={1200}
+                  height={675}
                   className={styles.dialogImage}
                 />
               )}

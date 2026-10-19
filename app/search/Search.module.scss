@@ -51,6 +51,9 @@
 .count {
   margin-bottom: 1.25rem;
   font-size: var(--step--1);
+  /* An h2 carries the result count, so the heading defaults are neutralised. */
+  font-weight: 400;
+  letter-spacing: normal;
   line-height: 1.25rem;
   color: var(--color-muted);
 }

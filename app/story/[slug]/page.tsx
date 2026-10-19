@@ -111,6 +111,9 @@ export default async function Story({
   }
 
   const date = story.publishedAt || story.createdAt;
+  // Empty when the stored timestamp cannot be formatted — the byline then
+  // carries the author alone rather than a stranded "Published".
+  const when = date ? dateline(date) : "";
 
   return (
     <div className="container font-body">
@@ -137,12 +140,14 @@ export default async function Story({
                 {story.authorName && (
                   <>
                     By {story.authorName}
-                    <span className={s.dash}>
-                      —
-                    </span>
+                    {when ? (
+                      <span className={s.dash}>
+                        —
+                      </span>
+                    ) : null}
                   </>
                 )}
-                {date ? dateline(date) : "Published"}
+                {when}
               </>
             )}
           </p>

@@ -30,10 +30,18 @@ export default function Write() {
   const [loadError, setLoadError] = useState("");
   // "home" when opened from a story card's Edit action, else the dashboard.
   const [fromPage, setFromPage] = useState<string>("");
+  // A story is minutes of typing; this guards the reload/close that would lose it.
+  const [dirty, setDirty] = useState(false);
   const contentRef = useRef<HTMLTextAreaElement>(null);
+  const errorRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
 
   const storyId = editStory?.id ?? null;
+
+  /** Any edit to a field arms the unsaved-work guard. */
+  function markDirty() {
+    setDirty(true);
+  }
 
   useEffect(() => {
     // URL params without useSearchParams — dashboard pages render statically.
@@ -50,13 +58,26 @@ export default function Write() {
       .catch((code) => {
         setLoadError(
           code === 403
-            ? "You don't have permission to edit that story."
+            ? "You don’t have permission to edit that story."
             : code === 404
               ? "Story not found."
               : "Could not load the story.",
         );
       });
   }, []);
+
+  /** Warn before a reload or tab close throws away unsaved writing. */
+  useEffect(() => {
+    if (!dirty) return;
+    const onBeforeUnload = (e: BeforeUnloadEvent) => e.preventDefault();
+    window.addEventListener("beforeunload", onBeforeUnload);
+    return () => window.removeEventListener("beforeunload", onBeforeUnload);
+  }, [dirty]);
+
+  /** A failed save or a failed load puts the reader on the message. */
+  useEffect(() => {
+    if (error || loadError) errorRef.current?.focus();
+  }, [error, loadError]);
 
   async function submit(formData: FormData) {
     setBusy(true);
@@ -85,6 +106,7 @@ export default function Write() {
       return;
     }
     toast.success(storyId ? "Story updated." : "Story saved as draft.");
+    setDirty(false);
     router.push(fromPage === "home" ? "/" : "/dashboard");
     router.refresh();
   }
@@ -101,8 +123,11 @@ export default function Write() {
         input.accept = "image/jpeg,image/png,image/webp,image/gif,image/avif";
         input.onchange = () => {
           const file = input.files?.[0];
+          // The picker node is removed as soon as it has done its job, so
+          // repeated inserts do not litter the body with hidden inputs.
+          input.remove();
           if (!file) {
-            resolve(null); // dialog cancelled without a file
+            resolve(null); // dialog closed without choosing a file
             return;
           }
           uploadImage(file)
@@ -112,19 +137,20 @@ export default function Write() {
               resolve(null);
             });
         };
-        document.body.appendChild(input);
-        input.style.display = "none";
-        input.click();
         input.oncancel = () => {
           input.remove();
           resolve(null);
         };
+        document.body.appendChild(input);
+        input.style.display = "none";
+        input.click();
       });
       if (!url) return;
       const img = `<p><img src="${url}" alt="" style="max-width:100%" /></p>`;
       const start = el.selectionStart ?? el.value.length;
       const end = el.selectionEnd ?? el.value.length;
       el.value = el.value.slice(0, start) + "\n" + img + "\n" + el.value.slice(end);
+      markDirty();
       toast.success("Image inserted.");
     } finally {
       setUploading(false);
@@ -147,8 +173,11 @@ export default function Write() {
       <h1 className={`${w.title} font-display`}>
         {storyId ? "Edit story" : "Write a story"}
       </h1>
-      {loadError && <Feedback>{loadError}</Feedback>}
-      {error && <Feedback>{error}</Feedback>}
+      {loadError || error ? (
+        <div ref={errorRef} tabIndex={-1}>
+          <Feedback>{loadError || error}</Feedback>
+        </div>
+      ) : null}
       {/* key remount applies the loaded story to the uncontrolled fields */}
       <form key={editStory?.id ?? 0} action={submit} className={w.form}>
         <div>
@@ -162,7 +191,9 @@ export default function Write() {
             id="title"
             name="title"
             required
+            autoComplete="off"
             defaultValue={editStory?.title ?? ""}
+            onChange={markDirty}
             className={f.input}
           />
         </div>
@@ -186,7 +217,10 @@ export default function Write() {
             id="slug"
             name="slug"
             required
+            autoComplete="off"
+            spellCheck={false}
             defaultValue={editStory?.slug ?? ""}
+            onChange={markDirty}
             className={`${f.input} font-ui`}
           />
         </div>
@@ -204,6 +238,7 @@ export default function Write() {
             id="section"
             name="section"
             defaultValue={editStory?.section ?? ""}
+            onChange={markDirty}
             className={`${f.input} font-ui`}
           >
             <option value="">Unfiled</option>
@@ -224,7 +259,9 @@ export default function Write() {
           <textarea
             id="excerpt"
             name="excerpt"
+            autoComplete="off"
             defaultValue={editStory?.excerpt ?? ""}
+            onChange={markDirty}
             className={f.input}
           />
         </div>
@@ -240,7 +277,9 @@ export default function Write() {
             name="content"
             ref={contentRef}
             rows={12}
+            autoComplete="off"
             defaultValue={editStory?.content ?? ""}
+            onChange={markDirty}
             className={f.input}
           />
           <div className={w.insertRow}>
@@ -266,11 +305,20 @@ export default function Write() {
             />
           )}
           <div className={w.coverRow}>
-            <ImageUpload label="Upload cover image" onUploaded={setCoverImage} />
+            <ImageUpload
+              label="Upload cover image"
+              onUploaded={(url) => {
+                setCoverImage(url);
+                markDirty();
+              }}
+            />
             {coverImage && (
               <button
                 type="button"
-                onClick={() => setCoverImage("")}
+                onClick={() => {
+                  setCoverImage("");
+                  markDirty();
+                }}
                 className={`${w.removeCover} font-ui`}
               >
                 Remove

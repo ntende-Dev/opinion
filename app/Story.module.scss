@@ -18,6 +18,10 @@
 .cover {
   margin-bottom: 2rem;
   width: 100%;
+  /* Reserves the image's space before it loads, in the same 16:9 the cards
+     use — uploaded covers vary in size, so the ratio is imposed here. */
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
   border-width: 1px;
   border-color: var(--color-line);
   border-radius: 0.25rem;

@@ -72,7 +72,7 @@ function useDismissableDetails(ref: React.RefObject<HTMLDetailsElement | null>) 
  *  serves it as compressed WebP/AVIF per device. */
 function AdBanner() {
   return (
-    <div className={styles.adStrip} aria-label="Advertisement">
+    <aside className={styles.adStrip} aria-label="Advertisement">
       <Image
         src="/images/topBanner.png"
         alt="Advertisement"
@@ -81,7 +81,7 @@ function AdBanner() {
         priority
         className={styles.ad}
       />
-    </div>
+    </aside>
   );
 }
 
@@ -172,6 +172,7 @@ function SearchField({
       action="/search"
       method="get"
       role="search"
+      aria-label="Search the paper"
       className={
         variant === "bar" ? styles.searchForm : styles.panelSearch
       }
@@ -183,8 +184,8 @@ function SearchField({
       <input
         type="search"
         name="q"
-        placeholder="Search the paper"
-        aria-label="Search stories"
+        placeholder="Search the paper…"
+        aria-label="Search the paper"
         className={`${styles.searchInput} font-ui`}
       />
       <button type="submit" className={`${styles.searchSubmit} font-ui`}>
@@ -221,7 +222,13 @@ function ProfileBlock({
     <div className={inPanel ? styles.panelProfile : styles.profile}>
       {profile.avatarUrl ? (
         // eslint-disable-next-line @next/next/no-img-element
-        <img src={profile.avatarUrl} alt="" className={styles.avatar} />
+        <img
+          src={profile.avatarUrl}
+          alt=""
+          width={36}
+          height={36}
+          className={styles.avatar}
+        />
       ) : (
         <span aria-hidden="true" className={styles.avatarFallback}>
           {initials(profile.name)}
@@ -275,6 +282,26 @@ export default function SiteHeader({
 
   const more = useRef<HTMLDetailsElement>(null);
   useDismissableDetails(more);
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
+  const panelRef = useRef<HTMLElement>(null);
+
+  /**
+   * The mobile panel is a navigation disclosure, so it behaves like the
+   * `<details>` ones: Escape closes it and hands focus back to the button that
+   * opened it, and focus lands inside the panel on open rather than being left
+   * behind in the masthead.
+   */
+  useEffect(() => {
+    if (!menuOpen) return;
+    panelRef.current?.focus();
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== "Escape") return;
+      setMenuOpen(false);
+      menuButtonRef.current?.focus();
+    };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [menuOpen]);
 
   useEffect(() => {
     const onProfileUpdate = () => setProfileTick((t) => t + 1);
@@ -340,6 +367,8 @@ export default function SiteHeader({
           aria-label="The Opinion Weekly — home"
           className={styles.logoLink}
         >
+          {/* No width/height here on purpose: the logo's own ratio must be
+              what lays it out, whatever size the file is cut to. */}
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="/opinionLogo.svg" alt="" className={styles.logo} />
         </Link>
@@ -378,10 +407,11 @@ export default function SiteHeader({
 
           <button
             type="button"
+            ref={menuButtonRef}
             className={styles.menuButton}
             aria-label={menuOpen ? "Close menu" : "Open menu"}
             aria-expanded={menuOpen}
-            aria-controls="mobile-menu"
+            aria-controls={menuOpen ? "mobile-menu" : undefined}
             onClick={() => setMenuOpen((o) => !o)}
           >
             <MenuIcon open={menuOpen} />
@@ -430,7 +460,12 @@ export default function SiteHeader({
 
       {/* Mobile drop-down panel. */}
       {menuOpen && (
-        <nav id="mobile-menu" className={styles.panel}>
+        <nav
+          id="mobile-menu"
+          ref={panelRef}
+          tabIndex={-1}
+          className={styles.panel}
+        >
           {authed && profile && <ProfileBlock profile={profile} inPanel />}
           <SearchField variant="panel" onSubmit={closeMenu} />
           <Link href="/" className={styles.link} onClick={closeMenu}>

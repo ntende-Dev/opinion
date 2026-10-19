@@ -1,6 +1,7 @@
 import { db } from "@/drizzle/db";
 import { stories, users } from "@/drizzle/schema";
 import { eq } from "drizzle-orm";
+import Link from "next/link";
 import StoryGrid from "@/app/StoryGrid";
 import styles from "./page.module.scss";
 
@@ -60,24 +61,26 @@ export default async function Home() {
               <a href="#latest" className={styles.primaryCta}>
                 Read the latest
               </a>
-              <a href="/signup" className={styles.secondaryCta}>
+              <Link href="/signup" className={styles.secondaryCta}>
                 Write for us
-              </a>
+              </Link>
             </div>
           </div>
           <figure className={styles.heroFigure}>
             {heroImage ? (
-              <a href={`/story/${featured.slug}`} className={styles.heroLink}>
+              <Link href={`/story/${featured.slug}`} className={styles.heroLink}>
                 <img
                   src={heroImage}
                   alt={`Cover of ${featured.title}`}
+                  fetchPriority="high"
                   className={styles.heroImage}
                 />
-              </a>
+              </Link>
             ) : (
               <img
                 src="/hero-emblem.svg"
                 alt="The Opinion Weekly masthead emblem"
+                fetchPriority="high"
                 className={styles.heroImage}
               />
             )}

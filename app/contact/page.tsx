@@ -21,7 +21,7 @@ export default function Contact() {
       return;
     }
     setSent(true);
-    toast.success("Message sent — it's in the editors' inbox.");
+    toast.success("Message sent — it’s in the editors’ inbox.");
   }
 
   return (

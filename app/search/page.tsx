@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import StoryGrid from "@/app/StoryGrid";
+import SearchInput from "./SearchInput";
 import { searchPublishedStories } from "@/lib/stories";
 import styles from "./Search.module.scss";
 
@@ -24,17 +25,14 @@ export default async function SearchPage({ searchParams }: Props) {
     <div className="container font-body">
       <header className={styles.head}>
         <h1 className="font-display">Search</h1>
-        <form action="/search" method="get" role="search" className={styles.form}>
-          <input
-            type="search"
-            name="q"
-            defaultValue={query}
-            placeholder="Name, place or phrase"
-            aria-label="Search stories"
-            // eslint-disable-next-line jsx-a11y/no-autofocus
-            autoFocus
-            className={`${styles.input} font-ui`}
-          />
+        <form
+          action="/search"
+          method="get"
+          role="search"
+          aria-label="Search every story"
+          className={styles.form}
+        >
+          <SearchInput defaultValue={query} />
           <button type="submit" className={`${styles.submit} font-ui`}>
             Search
           </button>
@@ -52,10 +50,10 @@ export default async function SearchPage({ searchParams }: Props) {
         </p>
       ) : (
         <>
-          <p className={`${styles.count} font-ui`}>
+          <h2 className={`${styles.count} font-ui`}>
             {results.length === 1 ? "One story" : `${results.length} stories`}{" "}
             matching <q>{query}</q>
-          </p>
+          </h2>
           <StoryGrid stories={results} />
         </>
       )}
