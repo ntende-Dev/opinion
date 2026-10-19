@@ -1,0 +1,160 @@
+@use "../../styles/mixins" as m;
+
+// ─────────────────────────────────────────────────────────────────────────
+// The story editor and its image uploaders. Labels, fields and the submit
+// button come from Form.module.scss — this file holds only what the editor
+// adds on top.
+//
+// Global helpers still carried in the markup: .font-body, .font-display,
+// .font-ui, .measure.
+// ─────────────────────────────────────────────────────────────────────────
+
+/** `font-display mb-6` */
+.title {
+  margin-bottom: 1.5rem;
+}
+
+/** `space-y-6` — note this form has no top margin, unlike the auth forms. */
+.form > * + * {
+  margin-top: 1.5rem;
+}
+
+/**
+ * `fixed inset-0 z-50 grid place-items-center bg-white/70` — the veil over the
+ * form while an image uploads. The colour is Tailwind's 8-digit hex so the
+ * alpha serialises exactly as it did.
+ */
+.veil {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 50;
+  display: grid;
+  place-items: center;
+  background-color: #ffffffb3;
+}
+
+/** `flex flex-col items-center gap-3` */
+.veilInner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+/** `font-ui text-sm text-[var(--color-muted)]` */
+.veilText {
+  font-size: var(--step--1);
+  line-height: 1.25rem;
+  color: var(--color-muted);
+}
+
+/** `ml-2 font-normal text-[var(--color-muted)]` — the hint riding inside a label. */
+.labelNote {
+  margin-left: 0.5rem;
+  font-weight: 400;
+  color: var(--color-muted);
+}
+
+/**
+ * `font-mono` on the content box was a no-op as well: the global `.font-body`
+ * (Literata) loads after Tailwind's utilities and wins, so the editor's HTML
+ * box renders in the body serif, not the mono stack. The markup carries no
+ * font class at all now, which lands on the same inherited Literata.
+ */
+
+/** `mt-2 flex items-center gap-3` */
+.insertRow {
+  margin-top: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+/**
+ * `rounded border border-[var(--color-line)] px-3 py-2 text-sm font-ui
+ *  font-medium hover:bg-gray-50 disabled:opacity-50`
+ *
+ * No transition-colors here — the button never had one.
+ */
+.insertButton {
+  border-radius: 0.25rem;
+  padding: 0.5rem 0.75rem;
+  font-size: var(--step--1);
+  line-height: 1.25rem;
+  font-weight: 500;
+
+  @include m.hairline;
+
+  &:hover {
+    background-color: rgb(249, 250, 251); // gray-50
+  }
+
+  &:disabled {
+    opacity: 0.5;
+  }
+}
+
+/** `mb-2 max-h-48 w-auto rounded border border-[var(--color-line)]` */
+.coverPreview {
+  margin-bottom: 0.5rem;
+  max-height: 12rem;
+  width: auto;
+  border-radius: 0.25rem;
+
+  @include m.hairline;
+}
+
+/** `flex items-center gap-2` */
+.coverRow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/** `text-sm font-ui text-[var(--color-accent)] hover:underline` */
+.removeCover {
+  font-size: var(--step--1);
+  line-height: 1.25rem;
+  color: var(--color-accent);
+
+  &:hover {
+    text-decoration-line: underline;
+  }
+}
+
+/** `mt-8 text-sm font-ui` */
+.backNote {
+  margin-top: 2rem;
+  font-size: var(--step--1);
+  line-height: 1.25rem;
+}
+
+/**
+ * `inline-flex items-center gap-2 rounded border border-[var(--color-line)]
+ *  px-3 py-2 text-sm font-ui font-medium hover:bg-gray-50 disabled:opacity-60`
+ *  — the ImageUpload button, a slightly fainter disabled state than the
+ *  insert button above.
+ */
+.uploadButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-radius: 0.25rem;
+  padding: 0.5rem 0.75rem;
+  font-size: var(--step--1);
+  line-height: 1.25rem;
+  font-weight: 500;
+
+  @include m.hairline;
+
+  &:hover {
+    background-color: rgb(249, 250, 251); // gray-50
+  }
+
+  &:disabled {
+    opacity: 0.6;
+  }
+}

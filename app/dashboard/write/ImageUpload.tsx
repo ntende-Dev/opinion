@@ -4,6 +4,7 @@ import { useRef, useState } from "react";
 import ClipLoader from "react-spinners/ClipLoader";
 import { uploadImage } from "@/lib/upload";
 import { toast } from "sonner";
+import w from "./Write.module.scss";
 
 export default function ImageUpload({
   onUploaded,
@@ -45,7 +46,7 @@ export default function ImageUpload({
         type="button"
         disabled={busy}
         onClick={() => inputRef.current?.click()}
-        className="inline-flex items-center gap-2 rounded border border-[var(--color-line)] px-3 py-2 text-sm font-ui font-medium hover:bg-gray-50 disabled:opacity-60"
+        className={`${w.uploadButton} font-ui`}
         aria-busy={busy}
       >
         {busy && <ClipLoader size={13} color="var(--color-accent)" />}

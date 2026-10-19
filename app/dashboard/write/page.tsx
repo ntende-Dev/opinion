@@ -7,6 +7,8 @@ import ImageUpload from "./ImageUpload";
 import Feedback from "@/app/Feedback";
 import { uploadImage } from "@/lib/upload";
 import { toast } from "sonner";
+import w from "./Write.module.scss";
+import f from "@/app/Form.module.scss";
 
 type EditStory = {
   id: number;
@@ -130,26 +132,26 @@ export default function Write() {
     <div className="font-body measure">
       {/* Upload-in-progress veil: quiet, centered spinner over the form */}
       {uploading && (
-        <div className="fixed inset-0 z-50 grid place-items-center bg-white/70">
-          <div className="flex flex-col items-center gap-3">
+        <div className={w.veil}>
+          <div className={w.veilInner}>
             <PulseLoader size={12} color="var(--color-accent)" />
-            <p className="font-ui text-sm text-[var(--color-muted)]" aria-live="polite">
+            <p className={`${w.veilText} font-ui`} aria-live="polite">
               Uploading image…
             </p>
           </div>
         </div>
       )}
-      <h1 className="font-display mb-6">
+      <h1 className={`${w.title} font-display`}>
         {storyId ? "Edit story" : "Write a story"}
       </h1>
       {loadError && <Feedback>{loadError}</Feedback>}
       {error && <Feedback>{error}</Feedback>}
       {/* key remount applies the loaded story to the uncontrolled fields */}
-      <form key={editStory?.id ?? 0} action={submit} className="space-y-6">
+      <form key={editStory?.id ?? 0} action={submit} className={w.form}>
         <div>
           <label
             htmlFor="title"
-            className="block mb-1 text-sm font-ui font-medium text-[var(--color-muted)]"
+            className={`${f.label} font-ui`}
           >
             Title
           </label>
@@ -158,21 +160,21 @@ export default function Write() {
             name="title"
             required
             defaultValue={editStory?.title ?? ""}
-            className="block w-full border border-[var(--color-line)] rounded px-3 py-2 text-base font-body focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)]"
+            className={f.input}
           />
         </div>
         <div>
           <label
             htmlFor="slug"
-            className="block mb-1 text-sm font-ui font-medium text-[var(--color-muted)]"
+            className={`${f.label} font-ui`}
           >
             Slug (e.g. my-story)
             {storyId ? (
-              <span className="ml-2 font-normal text-[var(--color-muted)] normal-case">
+              <span className={w.labelNote}>
                 — changing it moves the story&apos;s URL
               </span>
             ) : (
-              <span className="ml-2 font-normal text-[var(--color-muted)] normal-case">
+              <span className={w.labelNote}>
                 — tidied to lowercase-with-dashes automatically
               </span>
             )}
@@ -182,13 +184,13 @@ export default function Write() {
             name="slug"
             required
             defaultValue={editStory?.slug ?? ""}
-            className="block w-full border border-[var(--color-line)] rounded px-3 py-2 text-base font-body font-ui focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)]"
+            className={`${f.input} font-ui`}
           />
         </div>
         <div>
           <label
             htmlFor="excerpt"
-            className="block mb-1 text-sm font-ui font-medium text-[var(--color-muted)]"
+            className={`${f.label} font-ui`}
           >
             Excerpt
           </label>
@@ -196,13 +198,13 @@ export default function Write() {
             id="excerpt"
             name="excerpt"
             defaultValue={editStory?.excerpt ?? ""}
-            className="block w-full border border-[var(--color-line)] rounded px-3 py-2 text-base font-body focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)]"
+            className={f.input}
           />
         </div>
         <div>
           <label
             htmlFor="content"
-            className="block mb-1 text-sm font-ui font-medium text-[var(--color-muted)]"
+            className={`${f.label} font-ui`}
           >
             Content (HTML)
           </label>
@@ -212,37 +214,37 @@ export default function Write() {
             ref={contentRef}
             rows={12}
             defaultValue={editStory?.content ?? ""}
-            className="block w-full border border-[var(--color-line)] rounded px-3 py-2 text-base font-body font-mono focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)]"
+            className={f.input}
           />
-          <div className="mt-2 flex items-center gap-3">
+          <div className={w.insertRow}>
             <button
               type="button"
               disabled={busy}
               onClick={insertImage}
-              className="rounded border border-[var(--color-line)] px-3 py-2 text-sm font-ui font-medium hover:bg-gray-50 disabled:opacity-50"
+              className={`${w.insertButton} font-ui`}
             >
               {busy ? "Uploading…" : "Insert image at cursor"}
             </button>
           </div>
         </div>
         <div>
-          <span className="block mb-1 text-sm font-ui font-medium text-[var(--color-muted)]">
+          <span className={`${f.label} font-ui`}>
             Cover image
           </span>
           {coverImage && (
             <img
               src={coverImage}
               alt="Cover preview"
-              className="mb-2 max-h-48 w-auto rounded border border-[var(--color-line)]"
+              className={w.coverPreview}
             />
           )}
-          <div className="flex items-center gap-2">
+          <div className={w.coverRow}>
             <ImageUpload label="Upload cover image" onUploaded={setCoverImage} />
             {coverImage && (
               <button
                 type="button"
                 onClick={() => setCoverImage("")}
-                className="text-sm font-ui text-[var(--color-accent)] hover:underline"
+                className={`${w.removeCover} font-ui`}
               >
                 Remove
               </button>
@@ -251,15 +253,15 @@ export default function Write() {
         </div>
         <button
           disabled={busy}
-          className="rounded bg-[var(--color-accent)] px-4 py-2 text-white font-ui font-medium hover:bg-[var(--color-accent-hover)] transition-colors disabled:bg-gray-400 disabled:hover:bg-gray-400"
+          className={`${f.submit} font-ui`}
         >
           {busy ? "Saving…" : storyId ? "Save changes" : "Save as draft"}
         </button>
       </form>
-      <p className="mt-8 text-sm font-ui">
+      <p className={`${w.backNote} font-ui`}>
         <Link
           href={fromPage === "home" ? "/" : "/dashboard"}
-          className="underline underline-offset-2 hover:no-underline"
+          className={f.link}
         >
           {fromPage === "home" ? "← Back to the front page" : "← Back to my stories"}
         </Link>
