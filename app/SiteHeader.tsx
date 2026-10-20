@@ -66,7 +66,8 @@ function useDismissableDetails(ref: React.RefObject<HTMLDetailsElement | null>) 
   }, [ref]);
 }
 
-/** Leaderboard ad just below the masthead. The strip is held to a fixed
+/** Leaderboard ad just below the masthead, for readers who are not signed
+ *  in. The strip is held to a fixed
  *  100px so the masthead has a stable, predictable rhythm, with the 728×90
  *  creative (displayed at a modest 600px cap) centred inside it. next/image
  *  serves it as compressed WebP/AVIF per device. */
@@ -548,8 +549,9 @@ export default function SiteHeader({
         </nav>
       )}
 
-      {/* Dummy ad strip lives under the navigation, above the closing rule. */}
-      <AdBanner />
+      {/* The ad strip is for readers only — signed-in members of the paper
+          never see it, so it stays out of their reading column too. */}
+      {!authed && <AdBanner />}
     </header>
   );
 }
