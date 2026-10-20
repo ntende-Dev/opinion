@@ -91,7 +91,7 @@ export default function FitWord({
           {
             "--desk-size": initialSize,
             fontFamily: "var(--font-ui)",
-            fontWeight: 900,
+            fontWeight: 400,
             color: "#111827",
             whiteSpace: "nowrap",
             lineHeight: 0.9,
