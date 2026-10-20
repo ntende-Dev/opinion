@@ -13,3 +13,10 @@
     grid-template-columns: repeat(2, minmax(0, 1fr)); // sm:grid-cols-2
   }
 }
+
+// A desk with a single filing spans the full measure instead of hanging a
+// half-width card in the left column. Section pages pass `solo`; the front
+// page and search keep the two-up pattern.
+.solo {
+  grid-template-columns: 1fr;
+}

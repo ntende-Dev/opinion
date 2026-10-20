@@ -3,9 +3,11 @@
 // ─────────────────────────────────────────────────────────────────────────
 // A section page — the desk's heading over the cards filed under it.
 //
-// The head keeps the front page's device: a hairline, then the datum line in
-// Outfit, then the serif heading. It sits at the container's left edge so it
-// lines up with the card grid beneath it, exactly as the front page does.
+// The page reads on the same centered column as a story page: an outer
+// `.container` for the page padding, with `.measure-center` inside putting
+// header and cards on the masthead's centre line, per DESIGN.md's "Centered
+// single column". The head keeps the front page's device — a hairline, then
+// the datum line in Outfit, then the serif heading.
 // ─────────────────────────────────────────────────────────────────────────
 
 .head {

@@ -41,31 +41,41 @@ export default async function SectionPage({ params }: Props) {
 
   return (
     <div className="container font-body">
-      <header className={styles.head}>
-        <p className={`${styles.count} font-ui`}>
-          {filed.length === 1
-            ? "One story filed here"
-            : `${filed.length} stories filed here`}
-        </p>
-        <h1 className="font-display">{section.name}</h1>
-        <p className={styles.deck}>{section.deck}</p>
-      </header>
+      {/* The desk reads on the same centered column as a story page —
+          DESIGN.md "Centered single column" — so a desk's header and its
+          cards share the centre line the masthead sets. */}
+      <div className="measure-center">
+        <header className={styles.head}>
+          <p className={`${styles.count} font-ui`}>
+            {filed.length === 1
+              ? "One story filed here"
+              : `${filed.length} stories filed here`}
+          </p>
+          <h1 className="font-display">{section.name}</h1>
+          <p className={styles.deck}>{section.deck}</p>
+        </header>
 
-      {filed.length === 0 ? (
-        <p className={`${styles.empty} font-body`}>
-          Nothing has been filed under {section.name} yet.{" "}
-          <Link href="/signup">Write for us</Link> and make it the first.
-        </p>
-      ) : (
-        <>
-          {/* The cards hang off this, so a heading-by-heading reader lands on
-              the desk's list rather than dropping straight from h1 to h3. */}
-          <h2 className="visually-hidden">
-            Stories filed under {section.name}
-          </h2>
-          <StoryGrid stories={filed} />
-        </>
-      )}
+        {filed.length === 0 ? (
+          <p className={`${styles.empty} font-body`}>
+            Nothing has been filed under {section.name} yet.{" "}
+            <Link href="/signup">Write for us</Link> and make it the first.
+          </p>
+        ) : (
+          <>
+            {/* The cards hang off this, so a heading-by-heading reader lands
+                on the desk's list rather than dropping straight from h1 to
+                h3. */}
+            <h2 className="visually-hidden">
+              Stories filed under {section.name}
+            </h2>
+            {/* A desk with a single filing prints it full measure — a
+                half-width card hanging in the left column reads lopsided on
+                the narrow reading column, and the full width mirrors how the
+                story's own page opens with the cover. */}
+            <StoryGrid stories={filed} solo={filed.length === 1} />
+          </>
+        )}
+      </div>
     </div>
   );
 }
