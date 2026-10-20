@@ -102,18 +102,15 @@ $bp-xl: 1280px;
   }
 }
 
-/// Editorial UI link, underlined at 2px with a 4px offset.
-/// Reproduces `font-ui text-sm font-medium hover:underline decoration-2
-/// underline-offset-4` on top of the site-wide anchor colour.
+/// Editorial UI link — `font-ui text-sm font-medium` on top of the site-wide
+/// anchor colour. The site carries no link underlines anywhere; the hover
+/// colour shift is the affordance.
 @mixin ui-link {
   font-family: var(--font-ui);
   font-size: var(--step--1);
   line-height: 1.25rem;
   font-weight: 500;
   color: var(--color-accent);
-  text-decoration-line: underline;
-  text-decoration-thickness: 2px;
-  text-underline-offset: 4px;
 
   @include transition-colors;
 

@@ -84,10 +84,11 @@ body {
   margin: 0;
 }
 
+/* The paper carries no link underlines anywhere — the accent colour, and the
+   darker accent on hover, are the affordance. */
 a {
   color: var(--color-accent);
-  text-decoration: underline;
-  text-underline-offset: 2px;
+  text-decoration: none;
 }
 
 a:hover {
@@ -260,8 +261,6 @@ h3 { font-size: var(--step-2); }
 }
 .prose-content a {
   color: var(--color-accent);
-  text-decoration: underline;
-  text-underline-offset: 2px;
 }
 .prose-content ul,
 .prose-content ol {

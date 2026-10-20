@@ -153,10 +153,10 @@ function CaretIcon() {
 }
 
 /**
- * The masthead's search. On the bar it is a magnifier that opens the field in
- * place — `<details>`, so the toggle still works if a script never arrives —
- * and in the mobile panel it is simply the field. Either way it is a plain GET
- * form to /search, which is where the results live.
+ * The masthead's search. In the section row it is an always-visible field —
+ * the magnifier is its submit button, sweeping once when the reader reaches
+ * for it — and the mobile panel stretches the same field full width. Either
+ * way it is a plain GET form to /search, which is where the results live.
  */
 function SearchField({
   variant,
@@ -165,10 +165,7 @@ function SearchField({
   variant: "bar" | "panel";
   onSubmit?: () => void;
 }) {
-  const details = useRef<HTMLDetailsElement>(null);
-  useDismissableDetails(details);
-
-  const form = (
+  return (
     <form
       action="/search"
       method="get"
@@ -177,11 +174,11 @@ function SearchField({
       className={
         variant === "bar" ? styles.searchForm : styles.panelSearch
       }
-      onSubmit={() => {
-        if (variant === "bar" && details.current) details.current.open = false;
-        onSubmit?.();
-      }}
+      onSubmit={() => onSubmit?.()}
     >
+      <button type="submit" className={styles.searchIcon} aria-label="Search">
+        <SearchIcon />
+      </button>
       <input
         type="search"
         name="q"
@@ -189,21 +186,7 @@ function SearchField({
         aria-label="Search the paper"
         className={`${styles.searchInput} font-ui`}
       />
-      <button type="submit" className={`${styles.searchSubmit} font-ui`}>
-        Search
-      </button>
     </form>
-  );
-
-  if (variant === "panel") return form;
-
-  return (
-    <details className={styles.search} ref={details}>
-      <summary className={styles.searchToggle} aria-label="Search">
-        <SearchIcon />
-      </summary>
-      {form}
-    </details>
   );
 }
 
@@ -436,10 +419,6 @@ export default function SiteHeader({
             </>
           )}
 
-          <div className={styles.searchWrap}>
-            <SearchField variant="bar" />
-          </div>
-
           <button
             type="button"
             ref={menuButtonRef}
@@ -454,7 +433,7 @@ export default function SiteHeader({
         </div>
       </div>
 
-      {/* Tier two — the section row. */}
+      {/* Tier two — the section row: the desks, and the search at its end. */}
       <nav className={styles.sectionBar} aria-label="Sections">
         <ul className={styles.sectionList}>
           <li>
@@ -491,6 +470,10 @@ export default function SiteHeader({
             </li>
           )}
         </ul>
+
+        <div className={styles.sectionSearch}>
+          <SearchField variant="bar" />
+        </div>
       </nav>
 
       {/* Mobile drop-down panel. */}

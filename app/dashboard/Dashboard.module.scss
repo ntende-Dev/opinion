@@ -25,9 +25,8 @@
 }
 
 /**
- * The nav links carried `hover:underline`, which was already a no-op — the
- * site-wide `a` rule underlines every anchor — so they need nothing of their
- * own beyond the global colour and hover.
+ * The nav links need nothing of their own beyond the global colour and hover —
+ * the site carries no link underlines anywhere.
  */
 
 /** `font-semibold text-[var(--color-accent)]` */
@@ -163,11 +162,9 @@
   flex: 1;
 }
 
-/** `font-display font-semibold decoration-2 underline-offset-4` */
+/** `font-display font-semibold` */
 .manageTitle {
   font-weight: 600;
-  text-decoration-thickness: 2px;
-  text-underline-offset: 4px;
 }
 
 /** `mt-1 font-ui text-xs text-[var(--color-muted)]` */

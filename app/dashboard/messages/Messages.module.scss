@@ -112,9 +112,7 @@
   color: var(--color-accent);
 
   &:hover:not(:disabled) {
-    text-decoration-line: underline;
-    text-decoration-thickness: 1px;
-    text-underline-offset: 2px;
+    color: var(--color-accent-hover);
   }
 
   &:disabled {

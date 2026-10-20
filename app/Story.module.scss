@@ -84,9 +84,6 @@
   line-height: 1.25rem;
   font-weight: 500;
   color: var(--color-accent);
-  text-decoration-line: underline;
-  text-decoration-thickness: 1px;
-  text-underline-offset: 4px;
 
   @include m.transition-colors;
 

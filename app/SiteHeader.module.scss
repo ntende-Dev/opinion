@@ -9,9 +9,10 @@
 // ─────────────────────────────────────────────────────────────────────────
 // Masthead — two tiers.
 //
-//   tier one   the paper's mark, search and the account actions
+//   tier one   the paper's mark and the account actions
 //   tier two   the section row: Home plus every desk with something printed,
-//              with the overflow behind More
+//              with the overflow behind More — and the search at its right
+//              end, an always-visible field with the magnifier as its submit
 //
 // The rules between the tiers are structure, not decoration: they are what
 // makes the two tiers read as one masthead rather than two stacked bars.
@@ -161,35 +162,47 @@
 }
 
 /* ── Search ─────────────────────────────────────────────────────────── */
-/** The bar's search is a desktop affordance; below md it lives in the panel
- *  (one tap away, and the mark keeps the whole row to itself). */
-.searchWrap {
+/** The search lives at the section row's right end from md up; below md it
+ *  lives in the panel (one tap away, and the mark keeps the whole row to
+ *  itself). */
+.sectionSearch {
   display: none;
 
   @media (min-width: m.$bp-md) {
     display: flex;
+    flex-shrink: 0;
   }
 }
 
-.search {
-  position: relative;
+/** An always-visible pill: magnifier, then the field. Focus draws the row's
+ *  house red around it. */
+.searchForm {
   display: flex;
   align-items: center;
+  width: 13rem;
+  padding: 0.125rem 0.25rem 0.125rem 0.375rem;
+  background-color: var(--color-paper);
+  border-radius: 0.25rem;
+  @include m.hairline;
+
+  @include m.transition-colors;
+
+  &:focus-within {
+    border-color: var(--color-accent);
+  }
 }
 
-.searchToggle {
+/** The magnifier is the form's submit. Hovering the field — or focusing it —
+ *  gives the glass one short sweep, the only flourish in the row. */
+.searchIcon {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 0.25rem; // p-1
-  border-radius: 0.25rem;
-  color: var(--color-ink);
+  padding: 0.25rem;
+  border-width: 0;
+  background-color: transparent;
+  color: var(--color-muted);
   cursor: pointer;
-  list-style: none; // our own icon, no disclosure marker
-
-  &::-webkit-details-marker {
-    display: none;
-  }
 
   @include m.transition-colors;
 
@@ -198,30 +211,31 @@
   }
 }
 
-/** The open state is the same marker the section row uses for "you are here". */
-.search[open] .searchToggle {
-  color: var(--color-accent);
+.searchForm:hover .searchIcon svg,
+.searchForm:focus-within .searchIcon svg {
+  animation: search-sweep 0.6s var(--ease-out);
 }
 
-/** Opens leftwards from the magnifier, over the empty middle of the bar. */
-.searchForm {
-  position: absolute;
-  top: 50%;
-  right: calc(100% + 0.5rem);
-  transform: translateY(-50%);
-  display: flex;
-  align-items: center;
-  width: 15rem;
-  background-color: var(--color-paper);
-  border-radius: 0.25rem;
-  @include m.hairline;
+@keyframes search-sweep {
+  0% {
+    transform: rotate(0deg);
+  }
+  35% {
+    transform: rotate(-18deg);
+  }
+  70% {
+    transform: rotate(9deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
 }
 
-/** A closed disclosure must not leak its panel. The browser hides closed
- *  <details> content in its own stylesheet, and an author `display` — which
- *  this panel sets to lay itself out — wins over that, so say it here. */
-.search:not([open]) .searchForm {
-  display: none;
+@media (prefers-reduced-motion: reduce) {
+  .searchForm:hover .searchIcon svg,
+  .searchForm:focus-within .searchIcon svg {
+    animation: none;
+  }
 }
 
 .searchInput {
@@ -229,29 +243,13 @@
   min-width: 0;
   border-width: 0;
   background-color: transparent;
-  padding: 0.375rem 0.625rem;
+  padding: 0.375rem 0.625rem 0.375rem 0;
   font-family: var(--font-ui);
   font-size: var(--step--1);
   color: var(--color-ink);
 }
 
-.searchSubmit {
-  border-width: 0;
-  border-radius: 0 0.25rem 0.25rem 0;
-  padding: 0.375rem 0.625rem;
-  font-family: var(--font-ui);
-  font-size: var(--step--1);
-  cursor: pointer;
-
-  @include m.accent-surface;
-
-  // The site-wide `a:hover` colour would otherwise tint the label.
-  &:hover {
-    color: #fff;
-  }
-}
-
-/** The panel's copy of the field: full width, always visible. */
+/** The panel's copy of the field: full width, always visible, same icon. */
 .panelSearch {
   display: flex;
   align-self: stretch;
@@ -259,6 +257,10 @@
   background-color: var(--color-paper);
   border-radius: 0.25rem;
   @include m.hairline;
+
+  &:focus-within {
+    border-color: var(--color-accent);
+  }
 }
 
 /* ── Tier two: the section row ──────────────────────────────────────── */
@@ -266,7 +268,9 @@
   display: none;
 
   @media (min-width: m.$bp-md) {
-    display: block;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
     @include m.hairline(top);
     @include m.hairline(bottom);
     padding-block: 0.375rem;
@@ -274,6 +278,7 @@
 }
 
 .sectionList {
+  flex: 1;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -438,10 +443,9 @@
   line-height: 1.25;
 }
 
-/** The current desk, marked by weight and rule rather than colour alone. */
+/** The current desk, marked by weight rather than colour alone. */
 .panelLinkActive {
   font-weight: 600;
-  text-decoration-thickness: 3px;
 }
 
 /** Panel actions stretch the full width (was `self-stretch` + `px-3 py-2`). */

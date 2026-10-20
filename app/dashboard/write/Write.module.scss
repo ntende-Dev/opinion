@@ -217,9 +217,6 @@
   font-size: var(--step--1);
   line-height: 1.25rem;
   color: var(--color-accent);
-  text-decoration-line: underline;
-  text-decoration-thickness: 1px;
-  text-underline-offset: 2px;
 
   &:hover {
     color: var(--color-accent-hover);
@@ -233,14 +230,15 @@
   gap: 0.5rem;
 }
 
-/** `text-sm font-ui text-[var(--color-accent)] hover:underline` */
+/** `text-sm font-ui text-[var(--color-accent)]` — the hover accent shift is
+    the site-wide affordance now. */
 .removeCover {
   font-size: var(--step--1);
   line-height: 1.25rem;
   color: var(--color-accent);
 
   &:hover {
-    text-decoration-line: underline;
+    color: var(--color-accent-hover);
   }
 }
 
