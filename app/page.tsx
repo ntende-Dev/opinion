@@ -3,6 +3,7 @@ import { stories, users } from "@/drizzle/schema";
 import { eq } from "drizzle-orm";
 import Link from "next/link";
 import StoryGrid from "@/app/StoryGrid";
+import SmoothHashLink from "@/app/SmoothHashLink";
 import styles from "./page.module.scss";
 
 export const dynamic = "force-dynamic";
@@ -57,9 +58,9 @@ export default async function Home() {
               from people willing to commit to a position.
             </p>
             <div className={styles.actions}>
-              <a href="#latest" className={styles.primaryCta}>
+              <SmoothHashLink href="#latest" className={styles.primaryCta}>
                 Read the latest
-              </a>
+              </SmoothHashLink>
               <Link href="/signup" className={styles.secondaryCta}>
                 Write for us
               </Link>
