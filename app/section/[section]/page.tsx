@@ -190,24 +190,6 @@ export default async function SectionPage({ params }: Props) {
       </header>
 
       <div className="measure-center">
-        {/* The desk's poster advert — a motorsport day at Nzhelele, exactly
-            the reader this desk files for. It rides the reading column
-            above the grid, framed like the paper's other picture
-            furniture, and stays out of print. */}
-        {section.id === "sport" && (
-          <aside className={styles.billboardAd} data-print="hide">
-            <p className={`${styles.adTag} font-ui`}>Advertisement</p>
-            <img
-              src="/images/advert.jpeg"
-              alt="London Spin Fest poster — spinning and drifting at Nzhelele on 29 November 2026, free entrance."
-              className={styles.adImage}
-              width={1439}
-              height={1024}
-              loading="lazy"
-            />
-          </aside>
-        )}
-
         {/* The cards hang off this, so a heading-by-heading reader lands on
             the desk's list rather than dropping straight from h1 to h3. The
             head carried the desk's name and deck; the count line went with
@@ -226,6 +208,24 @@ export default async function SectionPage({ params }: Props) {
             Nothing has been filed under {section.name} yet.{" "}
             <Link href="/signup">Write for us</Link> and make it the first.
           </p>
+        )}
+
+        {/* The desk's poster advert — a motorsport day at Nzhelele, exactly
+            the reader this desk files for. It closes the page under the
+            grid, framed like the paper's other picture furniture, and
+            stays out of print. */}
+        {section.id === "sport" && (
+          <aside className={styles.billboardAd} data-print="hide">
+            <p className={`${styles.adTag} font-ui`}>Advertisement</p>
+            <img
+              src="/images/advert.jpeg"
+              alt="London Spin Fest poster — spinning and drifting at Nzhelele on 29 November 2026, free entrance."
+              className={styles.adImage}
+              width={1439}
+              height={1024}
+              loading="lazy"
+            />
+          </aside>
         )}
       </div>
     </div>
