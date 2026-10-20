@@ -4,6 +4,7 @@ import { eq } from "drizzle-orm";
 import Link from "next/link";
 import HeroFigure from "@/app/HeroFigure";
 import StoryGrid from "@/app/StoryGrid";
+import RevealGrid from "@/app/RevealGrid";
 import SmoothHashLink from "@/app/SmoothHashLink";
 import { HERO_MAX_COVERS, type HeroCover } from "@/app/heroCovers";
 import styles from "./page.module.scss";
@@ -103,8 +104,11 @@ export default async function Home() {
         <section className={styles.latest} id="latest">
           <h2 className={`${styles.latestTitle} font-display`}>Latest</h2>
           {/* Front-page story cards — 2-up side by side, stacked on mobile;
-              each card opens the story's own page */}
-          <StoryGrid stories={published} />
+              each card opens the story's own page. RevealGrid lets them rise
+              row by row as the section scrolls into view. */}
+          <RevealGrid>
+            <StoryGrid stories={published} />
+          </RevealGrid>
         </section>
       )}
     </div>

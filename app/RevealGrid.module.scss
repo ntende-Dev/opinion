@@ -1,0 +1,35 @@
+// ─────────────────────────────────────────────────────────────────────────
+// The Latest grid's arrival. The li elements belong to StoryGrid, a server
+// component; this module reaches them as descendants, which keeps the reveal
+// on the grid's own rhythm without teaching StoryGrid about motion.
+//
+// The cards are visible by default — the pending state that lifts them into
+// place is only ever applied from the browser, so a reader with scripts off
+// (or an engine without an IntersectionObserver) simply sees the grid.
+// ─────────────────────────────────────────────────────────────────────────
+
+.wrap {
+  li {
+    transition:
+      opacity var(--dur-base) var(--ease-out),
+      transform var(--dur-base) var(--ease-out);
+
+    // The right-hand card of each row answers the left, one short beat later,
+    // so a pair lands as a pair.
+    &:nth-child(even) {
+      transition-delay: 90ms;
+    }
+  }
+}
+
+/* Applied only from JavaScript, immediately before the observer starts. */
+.pending {
+  opacity: 0;
+  transform: translate3d(0, 14px, 0);
+}
+
+/* The destination: held until the card crosses the fold's lower edge. */
+.in {
+  opacity: 1;
+  transform: none;
+}

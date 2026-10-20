@@ -56,7 +56,7 @@ export default function ReadingProgress() {
   }, []);
 
   return (
-    <div ref={bar} className={s.track} aria-hidden="true">
+    <div ref={bar} className={s.track} aria-hidden="true" data-print="hide">
       <div className={s.fill} />
     </div>
   );

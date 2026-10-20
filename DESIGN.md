@@ -32,10 +32,23 @@ No ALL-CAPS labels, no tracked-out eyebrow labels, no middle-dot meta strings ("
 - Dashboard: quiet editorial admin UI; status badges and buttons carry the accent color only.
 
 ## Principles (what makes this unique)
-1. Typography is the hero — no illustration/gradient decoration required.
+1. Typography is the hero - no illustration/gradient decoration required.
 2. Restraint: one memorable element (the serif editorial voice); everything around it quiet and disciplined.
 3. Structural devices (rules, badges, dividers) encode information, never pure decoration.
 4. Accessibility floor: responsive, visible keyboard focus, reduced motion respected, harmonious palette.
+
+## Story furniture (the article page, bottom to top)
+- **Desk kicker**: a short 2px accent rule, then the desk name in Outfit `--step--1` (normal case, linked) above the headline.
+- **Byline**: the writer in ink (weight 500), the date behind an em dash in muted; no writer, no dash.
+- **Pull quote** (`blockquote` in `.prose-content`): hairlines above and below, display type centred at `--step-2`, the house red opens it with a large raised quotation mark, `cite` in Outfit muted. No side rules, no italic.
+- **Figures** (`figure`/`figcaption`/inline `img` in `.prose-content`): hairline frame and 0.25rem radius like the cover; captions in Outfit `--step--1` muted, held off the plate.
+- **Related stories**: after the endnote, display-type heading ("More from *Desk*", falling back to "Elsewhere in the paper" when the desk is empty) over the ordinary 2-up card grid.
+- **Print**: everything carrying `data-print="hide"` (masthead, footer, consent bar, progress rule, ad strip, back-to-top), plus `footer`/`.skip-link`/toasts, stays on screen; measure opens, type steps to 11pt, external links print their address, figures and quotes never break across a page.
+
+## Motion (two systems, one vocabulary)
+- The vocabulary is `styles/_motion.scss` mixins (paper-rise / drop / lean / leave) + the duration/easing tokens in `globals.scss`. CSS Modules hash keyframes, so a module that names an animation also emits it. No GSAP, no smooth-scroll library.
+- **Compressing masthead**: `SiteHeader`'s two tiers sit in a sticky `.stick` bar (paper-painted, z-80). Past 140px it compresses (tighter paddings, 64px-to-40px mark, softer avatar, one hairline + soft shadow); back above 40px it releases. Hysteresis so boundary readers never see it thrash; one rAF-coalesced listener. The ad and mobile panel anchor to the document or the bar as belonging to each.
+- **Latest-grid reveal**: cards are visible by default; `RevealGrid` (client) applies a pending state and an IntersectionObserver per card, so each row lifts 14px and settles as it crosses the fold, the right-hand card 90ms after the left. Anchors land with 7.5rem scroll-margin so the bar never covers what a link pointed at.
 
 ## Review against defaults
 - Not warm cream + terracotta ✓ (white + deep ink + editorial red)

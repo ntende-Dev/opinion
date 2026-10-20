@@ -22,7 +22,7 @@ export const cardColumns = {
 
 /** Newest first. Both stamps are ISO text (which sorts correctly); created_at
  *  covers any row published without a stamp. */
-const newestFirst = desc(
+export const newestFirst = desc(
   sql`coalesce(${stories.publishedAt}, ${stories.createdAt})`,
 );
 

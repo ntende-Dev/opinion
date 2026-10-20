@@ -1,12 +1,16 @@
 import { cache } from "react";
+import Link from "next/link";
 import { db } from "@/drizzle/db";
 import { stories, users } from "@/drizzle/schema";
 import { notFound } from "next/navigation";
 import { auth } from "@/auth";
-import { eq } from "drizzle-orm";
+import { and, eq, ne } from "drizzle-orm";
 import { EDITORS } from "@/lib/roles";
+import { sectionById, type SectionId } from "@/lib/sections";
+import { cardColumns, newestFirst } from "@/lib/stories";
 import { objectPosition } from "@/lib/focal";
 import s from "@/app/Story.module.scss";
+import StoryGrid from "@/app/StoryGrid";
 import ReadingProgress from "@/app/ReadingProgress";
 import SmoothHashLink from "@/app/SmoothHashLink";
 
@@ -22,9 +26,11 @@ function safeDecode(slug: string) {
 }
 
 type StoryRow = {
+  id: number;
   title: string;
   excerpt: string;
   content: string;
+  section: string | null;
   coverImage: string | null;
   coverFocalX: number;
   coverFocalY: number;
@@ -37,9 +43,11 @@ type StoryRow = {
 const loadStory = cache(async (slug: string): Promise<StoryRow | null> => {
   const [row] = await db
     .select({
+      id: stories.id,
       title: stories.title,
       excerpt: stories.excerpt,
       content: stories.content,
+      section: stories.section,
       coverImage: stories.coverImage,
       coverFocalX: stories.coverFocalX,
       coverFocalY: stories.coverFocalY,
@@ -53,6 +61,45 @@ const loadStory = cache(async (slug: string): Promise<StoryRow | null> => {
     .where(eq(stories.slug, slug));
   return row ?? null;
 });
+
+/**
+ * The furniture under the argument: up to two more filings from the same
+ * desk, newest first. A desk with nothing else in print falls back to the
+ * rest of the paper, so the slot never prints an empty frame — and a paper
+ * this small never prints "related" stories that aren't there.
+ */
+const loadRelated = cache(
+  async (section: string | null, excludeId: number) => {
+    const base = db
+      .select(cardColumns)
+      .from(stories)
+      .leftJoin(users, eq(users.id, stories.authorId));
+
+    if (section) {
+      const sameDesk = await base
+        .where(
+          and(
+            eq(stories.status, "published"),
+            eq(stories.section, section),
+            ne(stories.id, excludeId),
+          ),
+        )
+        .orderBy(newestFirst)
+        .limit(2);
+      if (sameDesk.length > 0) {
+        return { desk: sectionById(section as SectionId), stories: sameDesk };
+      }
+    }
+
+    const elsewhere = await base
+      .where(
+        and(eq(stories.status, "published"), ne(stories.id, excludeId)),
+      )
+      .orderBy(newestFirst)
+      .limit(2);
+    return { desk: null, stories: elsewhere };
+  },
+);
 
 export async function generateMetadata({
   params,
@@ -121,6 +168,10 @@ export default async function Story({
   // Empty when the stored timestamp cannot be formatted — the byline then
   // carries the author alone rather than a stranded "Published".
   const when = date ? dateline(date) : "";
+  const desk = story.section
+    ? sectionById(story.section as SectionId)
+    : undefined;
+  const related = await loadRelated(story.section, story.id);
 
   return (
     <div className="container font-body">
@@ -146,6 +197,11 @@ export default async function Story({
           />
         )}
         <header className={s.head}>
+          {desk && (
+            <p className={`${s.kicker} font-ui`}>
+              <Link href={`/section/${desk.id}`}>{desk.name}</Link>
+            </p>
+          )}
           <h1 className="font-display">{story.title}</h1>
           <p className={`${s.byline} font-ui`}>
             {story.status !== "published" ? (
@@ -153,16 +209,9 @@ export default async function Story({
             ) : (
               <>
                 {story.authorName && (
-                  <>
-                    By {story.authorName}
-                    {when ? (
-                      <span className={s.dash}>
-                        —
-                      </span>
-                    ) : null}
-                  </>
+                  <span className={s.author}>By {story.authorName}</span>
                 )}
-                {when}
+                {when && <span className={s.dateline}>{when}</span>}
               </>
             )}
           </p>
@@ -175,7 +224,7 @@ export default async function Story({
         {/* The piece ends here: the rule closes the argument, and the link
             returns the reader to #main — the same target as the skip link, so
             the return works before JavaScript and lands focus at the top. */}
-        <p className={s.endnote}>
+        <p className={s.endnote} data-print="hide">
           <SmoothHashLink
             href="#main"
             className={s.backToTop}
@@ -198,6 +247,18 @@ export default async function Story({
           </SmoothHashLink>
         </p>
       </article>
+
+      {/* The desk the reader has just left, or the paper around it. */}
+      {related.stories.length > 0 && (
+        <aside className={s.related} aria-label="Related stories">
+          <h2 className={`${s.relatedTitle} font-display`}>
+            {related.desk
+              ? `More from ${related.desk.name}`
+              : "Elsewhere in the paper"}
+          </h2>
+          <StoryGrid stories={related.stories} />
+        </aside>
+      )}
     </div>
   );
 }

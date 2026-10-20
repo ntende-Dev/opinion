@@ -322,6 +322,40 @@ export default function SiteHeader({
     return () => window.removeEventListener("profile-updated", onProfileUpdate);
   }, []);
 
+  /**
+   * The masthead compresses once the reader has left the hero behind, and
+   * releases again near the top. The two thresholds are deliberately far
+   * apart — hysteresis — so a reader pacing at the boundary never sees the
+   * bar thrash between its two sizes. One passive listener, coalesced into a
+   * single frame per scroll burst, the same discipline the progress rule uses.
+   */
+  const [compressed, setCompressed] = useState(false);
+  useEffect(() => {
+    let frame = 0;
+    const measure = () => {
+      frame = 0;
+      const y = window.scrollY;
+      setCompressed((current) => (current ? y > 40 : y > 140));
+    };
+    const request = () => {
+      // A hidden tab never paints, and a queued animation frame never runs
+      // there — the compression would freeze until the reader returns. When
+      // the document is hidden, measure synchronously instead.
+      if (document.hidden) {
+        measure();
+        return;
+      }
+      if (frame) return;
+      frame = window.requestAnimationFrame(measure);
+    };
+    measure();
+    window.addEventListener("scroll", request, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", request);
+      if (frame) window.cancelAnimationFrame(frame);
+    };
+  }, []);
+
   useEffect(() => {
     if (status !== "authenticated") {
       setProfile(null);
@@ -371,9 +405,19 @@ export default function SiteHeader({
   };
 
   return (
-    <header className={styles.header}>
-      {/* Tier one — the masthead: mark, then the paper's utilities. */}
-      <div className={styles.masthead}>
+    <>
+      {/* The header IS the bar that stays with the reader. It is sticky
+          against the body, which spans the whole page — a sticky element can
+          only ever pin while its parent is on screen, so the parent must be
+          the document, not a bar-sized wrapper. The ad strip stays outside,
+          in ordinary flow, and the compressed class lives on this element so
+          its shadow can paint at the pinned edge. */}
+      <header
+        className={`${styles.header} ${compressed ? styles.compressed : ""}`}
+        data-print="hide"
+      >
+        {/* Tier one — the masthead: mark, then the paper's utilities. */}
+        <div className={styles.masthead}>
         <Link
           href="/"
           aria-label="The Opinion Weekly — home"
@@ -474,67 +518,70 @@ export default function SiteHeader({
         <div className={styles.sectionSearch}>
           <SearchField variant="bar" />
         </div>
-      </nav>
+        </nav>
 
-      {/* Mobile drop-down panel. */}
-      {menuOpen && (
-        <nav
-          id="mobile-menu"
-          ref={panelRef}
-          tabIndex={-1}
-          /* Still mounted while it leaves, so it must not take a tap or a tab
-             stop on the way out. */
-          inert={panelClosing}
-          className={`${styles.panel} ${panelClosing ? styles.panelClosing : ""}`}
-        >
-          {authed && profile && <ProfileBlock profile={profile} inPanel />}
-          <SearchField variant="panel" onSubmit={closeMenu} />
-          <Link href="/" className={styles.link} onClick={closeMenu}>
-            Home
-          </Link>
-          {sections.map((section) => (
-            <Link
-              key={section.id}
-              href={`/section/${section.id}`}
-              className={`${styles.link} ${currentSection === section.id ? styles.panelLinkActive : ""}`}
-              aria-current={currentSection === section.id ? "page" : undefined}
-              onClick={closeMenu}
-            >
-              {section.name}
+        {/* Mobile drop-down panel. */}
+        {menuOpen && (
+          <nav
+            id="mobile-menu"
+            ref={panelRef}
+            tabIndex={-1}
+            /* Still mounted while it leaves, so it must not take a tap or a
+               tab stop on the way out. */
+            inert={panelClosing}
+            className={`${styles.panel} ${panelClosing ? styles.panelClosing : ""}`}
+          >
+            {authed && profile && <ProfileBlock profile={profile} inPanel />}
+            <SearchField variant="panel" onSubmit={closeMenu} />
+            <Link href="/" className={styles.link} onClick={closeMenu}>
+              Home
             </Link>
-          ))}
-          <Link href="/contact" className={styles.link} onClick={closeMenu}>
-            Contact
-          </Link>
-          {authed ? (
-            <>
-              <Link href="/dashboard" className={styles.link} onClick={closeMenu}>
-                Dashboard
-              </Link>
-              <button onClick={signout} className={styles.panelButton}>
-                Sign out
-              </button>
-            </>
-          ) : (
-            <>
-              <Link href="/login" className={styles.link} onClick={closeMenu}>
-                Login
-              </Link>
+            {sections.map((section) => (
               <Link
-                href="/signup"
-                className={styles.panelButton}
+                key={section.id}
+                href={`/section/${section.id}`}
+                className={`${styles.link} ${currentSection === section.id ? styles.panelLinkActive : ""}`}
+                aria-current={currentSection === section.id ? "page" : undefined}
                 onClick={closeMenu}
               >
-                Sign up
+                {section.name}
               </Link>
-            </>
-          )}
-        </nav>
-      )}
+            ))}
+            <Link href="/contact" className={styles.link} onClick={closeMenu}>
+              Contact
+            </Link>
+            {authed ? (
+              <>
+                <Link href="/dashboard" className={styles.link} onClick={closeMenu}>
+                  Dashboard
+                </Link>
+                <button onClick={signout} className={styles.panelButton}>
+                  Sign out
+                </button>
+              </>
+            ) : (
+              <>
+                <Link href="/login" className={styles.link} onClick={closeMenu}>
+                  Login
+                </Link>
+                <Link
+                  href="/signup"
+                  className={styles.panelButton}
+                  onClick={closeMenu}
+                >
+                  Sign up
+                </Link>
+              </>
+            )}
+          </nav>
+        )}
+      </header>
 
       {/* The ad strip is for readers only — signed-in members of the paper
-          never see it, so it stays out of their reading column too. */}
+          never see it, so it stays out of their reading column too. It sits
+          outside the header, so it scrolls away like print rather than
+          pinning with the bar. */}
       {!authed && <AdBanner />}
-    </header>
+    </>
   );
 }

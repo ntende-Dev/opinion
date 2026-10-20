@@ -42,11 +42,67 @@
   color: var(--color-muted);
 }
 
-/** `mx-2 text-[var(--color-line)]` — the em dash between author and date. */
-.dash {
-  margin-right: 0.5rem;
-  margin-left: 0.5rem;
-  color: var(--color-line);
+/** The writer, held in ink; everything after them is furniture. */
+.author {
+  color: var(--color-ink);
+  font-weight: 500;
+}
+
+/** The date rides behind an em dash — and carries no dash of its own when
+ *  there is no writer ahead of it. */
+.dateline {
+  &::before {
+    content: "—";
+    margin-inline: 0.5rem;
+    color: var(--color-line);
+  }
+
+  &:first-child::before {
+    content: none;
+  }
+}
+
+/** The desk, printed above the headline the newspapers' way: a short rule in
+ *  the house red, then the desk's name — itself a link onward. */
+.kicker {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+  font-size: var(--step--1);
+  line-height: 1.25rem;
+  font-weight: 500;
+
+  &::before {
+    content: "";
+    width: 1.5rem;
+    height: 2px;
+    background-color: var(--color-accent);
+  }
+
+  a {
+    color: var(--color-accent);
+
+    @include m.transition-colors;
+
+    &:hover {
+      color: var(--color-accent-hover);
+    }
+  }
+}
+
+/** ── The foot of the piece ──────────────────────────────────────────────
+ *  Two more filings, straight from the paper's press: same desk when the
+ *  desk has them, the rest of the paper when it doesn't. The heading is
+ *  display type the reader has just been reading in. */
+.related {
+  margin-top: 2.5rem;
+}
+
+.relatedTitle {
+  margin-bottom: 1.25rem;
+  font-size: var(--step-2);
+  font-weight: 600;
 }
 
 /**

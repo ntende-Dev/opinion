@@ -71,6 +71,7 @@ export default function CookieConsent() {
     <aside
       className={`${styles.bar} ${state === "leaving" ? styles.leaving : ""}`}
       aria-label="Cookie preferences"
+      data-print="hide"
       onAnimationEnd={settled}
     >
       <div className={styles.inner}>
