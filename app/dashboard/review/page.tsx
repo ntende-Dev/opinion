@@ -28,12 +28,14 @@ export default async function ReviewQueue() {
     .orderBy(desc(stories.createdAt));
 
   return (
-    <div className="font-body">
+    // The whole queue sits on the paper's measure, matching the other
+    // dashboard pages — one column edge for headings, items and controls.
+    <div className="font-body measure">
       <h1 className={`${r.title} font-display`}>
         Pending review <span className={r.count}>({pending.length})</span>
       </h1>
       {pending.length === 0 && (
-        <p className={`${r.empty} text-muted measure`}>
+        <p className={`${r.empty} text-muted`}>
           🎉 Inbox Zero — nothing awaiting review.
         </p>
       )}

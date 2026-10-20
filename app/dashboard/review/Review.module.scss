@@ -5,7 +5,8 @@
 // ReviewActions renders the two buttons; its markup lives one directory up.
 //
 // Global helpers still carried in the markup: .font-body, .font-display,
-// .font-ui, .text-muted, .measure.
+// .font-ui, .text-muted. The page sits inside the global `.measure` so the
+// queue shares one column edge with the rest of the dashboard.
 // ─────────────────────────────────────────────────────────────────────────
 
 /** `font-display mb-6` */

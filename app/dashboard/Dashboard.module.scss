@@ -5,7 +5,8 @@
 // management rows and the submit-for-review button.
 //
 // Global helpers still carried in the markup: .container, .font-body,
-// .font-display, .font-ui, .text-muted, .measure.
+// .font-display, .font-ui, .text-muted. The page content sits inside the
+// global `.measure` so every strip shares one column edge.
 // ─────────────────────────────────────────────────────────────────────────
 
 /* The shell ------------------------------------------------------------- */

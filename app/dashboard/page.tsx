@@ -59,13 +59,14 @@ export default async function MyStories() {
   const all = allRaw.map((r) => ({ ...r, status: r.status as Status }));
 
   return (
-    <div className="font-body">
-      <div className="measure">
-        <ProfileCard />
-      </div>
+    // The whole page sits on the paper's measure — profile card, the story
+    // list and the editors' management rows all share one right edge, as on
+    // the write, admin, messages and review pages.
+    <div className="font-body measure">
+      <ProfileCard />
       <h1 className={`${d.title} font-display`}>My stories</h1>
       {mine.length === 0 && (
-        <p className={`${d.empty} text-muted measure`}>
+        <p className={`${d.empty} text-muted`}>
           You haven't written any stories yet.{" "}
           <a href="/dashboard/write" className={d.link}>
             Start writing
@@ -73,7 +74,7 @@ export default async function MyStories() {
           .
         </p>
       )}
-      <ul className={`${d.list} measure`}>
+      <ul className={d.list}>
         {mine.map((s) => (
           <li key={s.id} className={d.item}>
             <div className={d.itemHead}>
