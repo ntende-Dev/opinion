@@ -34,7 +34,7 @@
   letter-spacing: -0.015em;
   text-transform: uppercase;
   text-align: left;
-  color: var(--color-accent);
+  color: var(--color-display-red);
   white-space: nowrap;
   /* A hair over the line box: the heavy caps carry the row height on
      their own, like the masthead word on the image it is set against. */
@@ -61,7 +61,7 @@
   flex: none;
   padding: 0.25rem 0.625rem;
   border-radius: 0.125rem;
-  background-color: var(--color-accent);
+  background-color: var(--color-display-red);
   color: #fff;
   font-size: var(--step--1);
   font-weight: 700;

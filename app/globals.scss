@@ -9,6 +9,11 @@
   --color-ink: #111827;
   --color-accent: #7f1d1d;
   --color-accent-hover: #450a0a;
+  /* The display red: the brighter envelope red reserved for the desk
+     masthead's lockup (the desk word and the Inside pill) where the type
+     itself is the picture. Every functional red — links, buttons, rules —
+     stays on --color-accent. */
+  --color-display-red: #c8102e;
   --color-muted: #475569;
   --color-line: #cbd5e1;
 
@@ -50,6 +55,9 @@
     --color-ink: #e2e8f0;
     --color-accent: #fca5a5;
     --color-accent-hover: #fecaca;
+    /* Brightened from the print #C8102E so the desk word keeps its heat on
+       the near-black paper. */
+    --color-display-red: #ee4356;
     --color-muted: #94a3b8;
     --color-line: #334155;
   }
