@@ -24,10 +24,14 @@ export default function Login() {
 
   useEffect(() => {
     const verified = searchParams.get("verified");
+    const reset = searchParams.get("reset");
     const err = searchParams.get("error");
     if (verified === "1") {
       setKind("success");
       setError("Your email is verified. You can now sign in.");
+    } else if (reset === "1") {
+      setKind("success");
+      setError("Your password has been updated. Sign in with the new one.");
     } else if (err && VERIFY_ERRORS[err]) {
       setKind("error");
       setError(VERIFY_ERRORS[err]);
@@ -99,6 +103,11 @@ export default function Login() {
             {busy ? "Signing in…" : "Sign in"}
           </button>
         </form>
+        <p className={`${f.noteTight} font-ui`}>
+          <Link href="/forgot-password" className={f.link}>
+            Forgot your password?
+          </Link>
+        </p>
         <p className={`${f.note} text-muted font-ui`}>
           The opinionated editorial dashboard is a work in progress. If you
           have any questions or feedback, please reach out to{" "}

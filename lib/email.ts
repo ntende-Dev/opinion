@@ -115,6 +115,44 @@ export async function sendWelcomeEmail(email: string, name: string) {
 }
 
 /**
+ * Password-reset link. Mirrors the verification email; the raw token is only
+ * ever in the link — the database stores its SHA-256 hash (see the forgot
+ * password action), so a database leak does not hand out working reset links.
+ */
+export async function sendPasswordResetEmail(email: string, token: string, name: string) {
+  const transport = await getTransporter();
+  const resetUrl = `${BASE_URL}/reset-password?token=${token}`;
+
+  const info = await transport.sendMail({
+    from: FROM,
+    to: email,
+    subject: "Reset your password - The Opinion Weekly",
+    text: `Hi ${name},\n\nSomeone asked to reset the password for this email address. Set a new one here:\n\n${resetUrl}\n\nThis link expires in 1 hour and can be used once. If you did not ask for this, you can ignore the email — your password is unchanged.\n\n- The Opinion Weekly`,
+    html: `
+      <p style="font-family: Arial, Helvetica, sans-serif;">Hi ${name},</p>
+      <p style="font-family: Arial, Helvetica, sans-serif;">
+        Someone asked to reset the password for this email address. Set a new one here:
+      </p>
+      <p>
+        <a href="${resetUrl}"
+           style="background:#7f1d1d;color:#ffffff;padding:10px 16px;border-radius:4px;
+                  text-decoration:none;font-family:Arial, Helvetica, sans-serif;">
+          Reset password
+        </a>
+      </p>
+      <p style="font-family: Arial, Helvetica, sans-serif;">
+        This link expires in 1 hour and can be used once. If you did not ask for this,
+        you can ignore the email — your password is unchanged.
+      </p>
+      <p style="font-family: Arial, Helvetica, sans-serif;">- The Opinion Weekly</p>
+    `,
+  });
+
+  logDelivery(info, "Password reset email");
+  return info;
+}
+
+/**
  * Notify the editors of a new contact-form message.
  * Mirrors the tested contact email: from the noreply mailbox,
  * to the editor inbox, reply-to the person who wrote in.

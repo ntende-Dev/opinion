@@ -43,6 +43,13 @@
       "when": 1792478903931,
       "tag": "0005_nappy_shocker",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1792494873263,
+      "tag": "0006_add_reset_token",
+      "breakpoints": true
     }
   ]
 }

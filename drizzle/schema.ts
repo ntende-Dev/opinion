@@ -10,6 +10,9 @@ export const users = pgTable("users", {
   emailVerified: text("email_verified"),
   verificationToken: text("verification_token"),
   verificationTokenExpires: text("verification_token_expires"),
+  /** Password-reset: only the SHA-256 hash of the emailed token is stored. */
+  resetToken: text("reset_token"),
+  resetTokenExpires: text("reset_token_expires"),
 });
 
 export const stories = pgTable(
