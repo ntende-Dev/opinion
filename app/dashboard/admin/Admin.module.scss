@@ -142,3 +142,86 @@
     background-color: rgb(156, 163, 175); // gray-400
   }
 }
+
+/* ── Deleting an account ─────────────────────────────────────────────── */
+
+/** A quiet destructive action — the accent colour carries the warning, the
+    underline only arrives on hover so it never shouts from every row. */
+.delete {
+  border-width: 0;
+  padding: 0.375rem 0.25rem;
+  font-size: var(--step--1);
+  line-height: 1.25rem;
+  color: var(--color-accent);
+
+  &:hover {
+    text-decoration-line: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 2px;
+  }
+
+  &:disabled {
+    opacity: 0.6;
+  }
+}
+
+/* ── Creating an account ─────────────────────────────────────────────── */
+
+/** The "Add a user" card sits above the roster, framed like the profile card. */
+.create {
+  margin-bottom: 2.5rem;
+  border-radius: 0.5rem;
+  padding: 1.25rem;
+
+  @include m.hairline;
+}
+
+.createTitle {
+  margin-bottom: 1rem;
+  font-size: 1.125rem;
+  line-height: 1.75rem;
+}
+
+/** Two fields to a line on wide screens; the paper's own measure keeps it
+    honest on a phone. */
+.createGrid {
+  display: grid;
+  gap: 1rem;
+
+  @media (min-width: m.$bp-md) {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.passwordRow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/** `font-ui text-[var(--color-accent)] hover:underline` — fills the field
+    with a generated password so the admin isn't inventing one under pressure. */
+.suggest {
+  flex-shrink: 0;
+  font-size: var(--step--1);
+  line-height: 1.25rem;
+  color: var(--color-accent);
+
+  &:hover {
+    text-decoration-line: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 2px;
+  }
+}
+
+.createNote {
+  margin-top: 0.75rem;
+  font-size: var(--step--1);
+  line-height: 1.375;
+  color: var(--color-muted);
+}
+
+.create > .createNote + button,
+.create > button {
+  margin-top: 1rem;
+}

@@ -61,3 +61,19 @@ export async function markHandled(formData: FormData) {
 
   revalidatePath("/dashboard/messages");
 }
+
+/**
+ * Remove a message outright. Admin-only — editors mark messages handled, but
+ * taking one out of the paper's record is a step further.
+ */
+export async function deleteMessage(id: number) {
+  const session = await auth();
+  if ((session?.user as any)?.role !== "admin") {
+    throw new Error("Only an admin can delete messages");
+  }
+  if (!Number.isInteger(id)) return;
+
+  await db.delete(contactMessages).where(eq(contactMessages.id, id));
+  revalidatePath("/dashboard/messages");
+  return { ok: true as const };
+}

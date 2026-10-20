@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { EDITORS } from "@/lib/roles";
 import { markHandled } from "@/app/contact/action";
+import DeleteMessage from "./DeleteMessage";
 import ms from "./Messages.module.scss";
 import c from "../Chip.module.scss";
 
@@ -28,6 +29,8 @@ export default async function Messages() {
       .orderBy(asc(contactMessages.createdAt)),
   ]);
 
+  const isAdmin = role === "admin";
+
   function row(m: typeof contactMessages.$inferSelect, isHandled: boolean) {
     return (
       <li key={m.id} className={ms.item}>
@@ -44,18 +47,23 @@ export default async function Messages() {
               {m.createdAt && new Date(m.createdAt).toLocaleString()}
             </p>
           </div>
-          {isHandled ? (
-            <span className={`${c.chip} ${c.draft} ${ms.handledChip}`}>
-              handled
-            </span>
-          ) : (
-            <form action={markHandled} className={ms.markForm}>
-              <input type="hidden" name="id" value={m.id} />
-              <button className={`${ms.markButton} font-ui`}>
-                Mark handled
-              </button>
-            </form>
-          )}
+          <div className={ms.actions}>
+            {isHandled ? (
+              <span className={`${c.chip} ${c.draft} ${ms.handledChip}`}>
+                handled
+              </span>
+            ) : (
+              <form action={markHandled} className={ms.markForm}>
+                <input type="hidden" name="id" value={m.id} />
+                <button className={`${ms.markButton} font-ui`}>
+                  Mark handled
+                </button>
+              </form>
+            )}
+            {isAdmin && (
+              <DeleteMessage id={m.id} subject={m.subject} />
+            )}
+          </div>
         </div>
         <p className={ms.body}>{m.message}</p>
       </li>
