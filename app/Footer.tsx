@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { SITE, SOCIALS } from "@/lib/site";
+import CookieSettingsButton from "@/app/CookieSettingsButton";
 import styles from "./Footer.module.scss";
 
 const colLink = `${styles.columnLink} font-ui`;
@@ -129,6 +130,9 @@ export default function Footer({ isAuthed }: { isAuthed: boolean }) {
               <Link href="/contact" className={colLink}>
                 Advertise
               </Link>
+            </li>
+            <li>
+              <CookieSettingsButton className={colLink} />
             </li>
           </Column>
         </div>

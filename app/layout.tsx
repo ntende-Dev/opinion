@@ -8,6 +8,7 @@ import Providers from "@/app/Providers";
 import { Toaster } from "sonner";
 import SiteHeader from "@/app/SiteHeader";
 import Footer from "@/app/Footer";
+import CookieConsent from "@/app/CookieConsent";
 
 const siteUrl = process.env.NEXTAUTH_URL || "http://localhost:3000";
 
@@ -86,6 +87,9 @@ export default async function RootLayout({
           </main>
           <Footer isAuthed={isAuthed} />
         </Providers>
+        {/* The consent bar sits last so keyboard readers meet it after the
+            page's content, and its buttons are ordinary tab stops. */}
+        <CookieConsent />
         <Toaster position="top-center" />
       </body>
     </html>

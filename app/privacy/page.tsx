@@ -48,8 +48,18 @@ export default function Privacy() {
 
           <p>
             We set one kind of cookie: the session cookie that keeps you signed
-            in. We do not run advertising trackers, we do not sell data, and we
-            do not follow you around the wider web.
+            in. It is strictly necessary — the dashboard does not work without
+            it — so it is not held behind a consent prompt. We do not run
+            advertising trackers, we do not sell data, and we do not follow you
+            around the wider web.
+          </p>
+
+          <p>
+            If we ever add anything optional (analytics, for instance), the bar
+            at the foot of the page will ask before it is set. Your answer is
+            kept in your own browser, and <em>cookie settings</em> in the footer
+            can change it at any time. Either answer — accept or decline —
+            leaves you free to read everything the paper publishes.
           </p>
 
           <h2>Who sees it</h2>

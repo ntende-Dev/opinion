@@ -121,6 +121,19 @@
   }
 }
 
+/* The same list entry, as a button — "Cookie settings" reopens the consent
+   bar. A button carries browser defaults an anchor never had, so strip them
+   to match the list's typography and hit area. */
+button.columnLink {
+  width: 100%;
+  border-width: 0;
+  padding: 0;
+  background-color: transparent;
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
+}
+
 .colophon {
   margin-top: 3rem; // mt-12
   display: flex;
