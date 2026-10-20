@@ -14,8 +14,9 @@ $bp-xl: 1280px;
 /// Tailwind's `transition-colors` — plus `transform`, so a control that presses
 /// or leans eases back on the same 150ms curve instead of snapping.
 @mixin transition-colors {
-  transition-property: color, background-color, border-color,
-    text-decoration-color, fill, stroke, transform;
+  transition-property:
+    color, background-color, border-color, text-decoration-color, fill, stroke,
+    transform;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
   transition-duration: 150ms;
 }
@@ -91,8 +92,10 @@ $bp-xl: 1280px;
 /// Editorial text link — `underline underline-offset-2 hover:no-underline`,
 /// sitting on top of the site-wide anchor colour and hover.
 @mixin text-link {
-  text-decoration-line: underline;
-  text-underline-offset: 2px;
+  /* text-decoration-line: underline;
+  text-underline-offset: 2px;*/
+
+  text-decoration: none;
 
   &:hover {
     text-decoration-line: none;

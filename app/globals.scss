@@ -231,7 +231,14 @@ h3 { font-size: var(--step-2); }
 .prose-content p {
   margin-bottom: 1.25rem;
 }
-.prose-content p:first-child::first-letter {
+/* The drop cap. Two selectors, because editor HTML arrives in two shapes: a
+   story that opens with a proper paragraph is capped at `p:first-child`, and
+   one that opens with bare text — no wrapping <p> — is capped at the
+   container itself, since a block's ::first-letter only reaches its own
+   first formatted line. Exactly one of the two can match a given story, so
+   the cap never doubles up. */
+.prose-content > p:first-child::first-letter,
+.prose-content::first-letter {
   float: left;
   font-size: 3rem;
   line-height: 1;
