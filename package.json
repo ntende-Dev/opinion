@@ -13,6 +13,7 @@
     "@aws-sdk/s3-request-presigner": "^3.1152.0",
     "@neon/config": "^1.9.2",
     "@neondatabase/serverless": "^1.2.0",
+    "@remotion/player": "4.0.537",
     "@types/pg": "^8.23.1",
     "autoprefixer": "^10.6.1",
     "bcryptjs": "^3.0.3",
@@ -25,6 +26,7 @@
     "react": "19.3.0",
     "react-dom": "19.3.0",
     "react-spinners": "^0.17.1",
+    "remotion": "4.0.537",
     "sonner": "^2.0.8",
     "three": "^0.186.1"
   },

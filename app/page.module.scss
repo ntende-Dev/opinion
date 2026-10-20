@@ -4,7 +4,6 @@
 // Keyframes named below: emitted into this module so the name and the keyframes
 // are hashed together (a CSS Module scopes animation names to its own file).
 @include mo.paper-rise;
-@include mo.paper-lean;
 
 // ─────────────────────────────────────────────────────────────────────────
 // Front page — hero and the latest-stories grid.
@@ -96,44 +95,6 @@
   &:hover {
     border-color: var(--color-muted);
   }
-}
-
-.heroFigure {
-  margin: 0;
-  overflow: hidden;
-  border-radius: 0.25rem;
-  @include m.hairline;
-  aspect-ratio: 16 / 10;
-  animation: paper-lean var(--dur-reveal) var(--ease-out) 120ms both;
-
-  @media (min-width: m.$bp-lg) {
-    aspect-ratio: 4 / 5;
-  }
-}
-
-.heroLink {
-  display: block;
-  height: 100%;
-}
-
-.heroImage {
-  height: 100%;
-  width: 100%;
-  object-fit: cover;
-  transition: transform 700ms var(--ease-out);
-}
-
-/* The lead photograph leans in under the pointer — slow enough to be felt
-   rather than watched, and clipped by the figure's own edge. A touch screen
-   gets no sticky zoom after a tap. */
-@media (hover: hover) {
-  .heroLink:hover .heroImage {
-    transform: scale(1.03);
-  }
-}
-
-.heroLink:focus-visible .heroImage {
-  transform: scale(1.03);
 }
 
 /* ── Latest ─────────────────────────────────────────────────────────── */

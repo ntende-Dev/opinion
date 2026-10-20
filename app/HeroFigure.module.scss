@@ -1,0 +1,94 @@
+@use "./styles/mixins" as m;
+@use "./styles/motion" as mo;
+
+// The hero cover is a paper object: a framed photograph that leans in under
+// the pointer. The loop lives inside it; the link and its pause control sit on
+// top so neither the Player nor the picture takes the click.
+@include mo.paper-lean;
+
+.figure {
+  position: relative;
+  margin: 0;
+  overflow: hidden;
+  border-radius: 0.25rem;
+  @include m.hairline;
+  aspect-ratio: 16 / 10;
+  animation: paper-lean var(--dur-reveal) var(--ease-out) 120ms both;
+
+  @media (min-width: m.$bp-lg) {
+    aspect-ratio: 4 / 5;
+  }
+}
+
+.media {
+  position: absolute;
+  inset: 0;
+  transition: transform 700ms var(--ease-out);
+}
+
+.image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* The photograph leans in under the pointer - slow enough to be felt rather
+   than watched, and clipped by the figure's own edge. A touch screen gets no
+   sticky zoom after a tap. */
+@media (hover: hover) {
+  .figure:hover .media {
+    transform: scale(1.03);
+  }
+}
+
+.figure:focus-within .media {
+  transform: scale(1.03);
+}
+
+/* The Player is a visual layer. The transparent link above it owns the click,
+   and the pause control above that owns its own corner. */
+.player {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.link {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: block;
+  border-radius: inherit;
+
+  &:focus-visible {
+    outline-offset: -4px;
+  }
+}
+
+.control {
+  position: absolute;
+  right: 0.75rem;
+  bottom: 0.75rem;
+  z-index: 3;
+  display: grid;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border: 1px solid var(--color-line);
+  border-radius: 0.25rem;
+  background: var(--color-paper);
+  color: var(--color-ink);
+  cursor: pointer;
+  opacity: 0.82;
+  transition-property: opacity, color, border-color, transform;
+  transition-duration: var(--dur-fast);
+  transition-timing-function: var(--ease-out);
+  @include m.press;
+
+  &:hover,
+  &:focus-visible {
+    opacity: 1;
+    border-color: var(--color-ink);
+  }
+}

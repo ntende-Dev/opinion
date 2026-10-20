@@ -2,8 +2,10 @@ import { db } from "@/drizzle/db";
 import { stories, users } from "@/drizzle/schema";
 import { eq } from "drizzle-orm";
 import Link from "next/link";
+import HeroFigure from "@/app/HeroFigure";
 import StoryGrid from "@/app/StoryGrid";
 import SmoothHashLink from "@/app/SmoothHashLink";
+import { HERO_MAX_COVERS, type HeroCover } from "@/app/heroCovers";
 import styles from "./page.module.scss";
 
 export const dynamic = "force-dynamic";
@@ -35,8 +37,21 @@ export default async function Home() {
     .where(eq(stories.status, "published"))
     .orderBy(stories.id);
 
-  const [featured] = published;
-  const heroImage = featured?.coverImage ?? null;
+  // The hero loops the first five published stories that have a cover. The
+  // cap is the brief's: five images, five seconds each.
+  const covers: HeroCover[] = published
+    .flatMap((story) =>
+      story.coverImage
+        ? [
+            {
+              slug: story.slug,
+              title: story.title,
+              coverImage: story.coverImage,
+            },
+          ]
+        : [],
+    )
+    .slice(0, HERO_MAX_COVERS);
 
   return (
     <div className="container font-body">
@@ -66,25 +81,7 @@ export default async function Home() {
               </Link>
             </div>
           </div>
-          <figure className={styles.heroFigure}>
-            {heroImage ? (
-              <Link href={`/story/${featured.slug}`} className={styles.heroLink}>
-                <img
-                  src={heroImage}
-                  alt={`Cover of ${featured.title}`}
-                  fetchPriority="high"
-                  className={styles.heroImage}
-                />
-              </Link>
-            ) : (
-              <img
-                src="/hero-emblem.svg"
-                alt="The Opinion Weekly masthead emblem"
-                fetchPriority="high"
-                className={styles.heroImage}
-              />
-            )}
-          </figure>
+          <HeroFigure covers={covers} />
         </div>
       </section>
 
