@@ -17,6 +17,35 @@ const filedUnder = cache((section: SectionId) =>
   listPublishedStories({ section }),
 );
 
+const MONTHS = [
+  "January", "February", "March", "April", "May", "June", "July",
+  "August", "September", "October", "November", "December",
+];
+
+/**
+ * Monday to Sunday of the publication week, Johannesburg time — the note
+ * strip's date. Built from the paper's home zone so the strip never names
+ * a week the filing desk isn't living in.
+ */
+function weekLabel() {
+  const iso = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Africa/Johannesburg",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(new Date()); // YYYY-MM-DD
+  const [year, month, day] = iso.split("-").map(Number);
+  const weekday = new Date(Date.UTC(year, month - 1, day)).getUTCDay();
+  const monday = new Date(Date.UTC(year, month - 1, day - ((weekday + 6) % 7)));
+  const sunday = new Date(Date.UTC(year, month - 1, day - ((weekday + 6) % 7) + 6));
+  const endMonth = sunday.getUTCMonth();
+  const span = `${sunday.getUTCDate()} ${MONTHS[endMonth]} ${sunday.getUTCFullYear()}`;
+  if (monday.getUTCMonth() === endMonth) {
+    return `${monday.getUTCDate()} - ${span}`;
+  }
+  return `${monday.getUTCDate()} ${MONTHS[monday.getUTCMonth()]} - ${span}`;
+}
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { section: id } = await params;
   const section = sectionById(id);
@@ -48,6 +77,8 @@ export default async function SectionPage({ params }: Props) {
    * word exactly on the column width; this table just keeps the first
    * paint close for readers still without script.
    */
+  const tiles = section.brand?.kind === "tiles";
+
   const wordEm = (() => {
     const ADV: Record<string, number> = {
       A: 0.74, B: 0.7, C: 0.73, D: 0.77, E: 0.68, F: 0.62, G: 0.78,
@@ -57,11 +88,17 @@ export default async function SectionPage({ params }: Props) {
     };
     const name = section.name.toUpperCase();
     const sum = [...name].reduce((total, ch) => total + (ADV[ch] ?? 0.68), 0);
+    // Outfit's caps run a touch narrower than Literata's; the fit still
+    // happens on the client — this only aims the first paint.
+    if (tiles) return 1.03 * sum;
     return 1.03 * sum - 0.015 * (name.length - 1);
   })();
   // 97% of the masthead's own width — the word should end a breath before
-  // the edge, the way the branding reference does.
-  const wordSize = `${(97 / wordEm).toFixed(2)}cqw`;
+  // the edge, the way the branding reference does. The tile band fills the
+  // full column and FitWord lands it there exactly.
+  const wordSize = tiles
+    ? `${(100 / wordEm).toFixed(2)}cqw`
+    : `${(97 / wordEm).toFixed(2)}cqw`;
 
   return (
     <div className="container font-body">
@@ -69,10 +106,36 @@ export default async function SectionPage({ params }: Props) {
           the Inside ticker with the latest filings. It spans the whole
           container — the cards below return to the reading measure. */}
       <header className={styles.masthead}>
-        <p className={`${styles.paperName} font-ui`}>The Opinion Weekly</p>
-        <FitWord initialSize={wordSize} className={`${styles.word} font-display`}>
-          {section.name}
-        </FitWord>
+        {!tiles ? (
+          <>
+            <p className={`${styles.paperName} font-ui`}>The Opinion Weekly</p>
+            <FitWord
+              initialSize={wordSize}
+              className={`${styles.word} font-display`}
+            >
+              {section.name}
+            </FitWord>
+          </>
+        ) : (
+          <FitWord
+            initialSize={wordSize}
+            className={styles.tilesWord}
+            tiles
+          >
+            {section.name}
+          </FitWord>
+        )}
+
+        {/* The culture note strip: label, a rule running to the week. */}
+        {tiles && (
+          <p className={styles.strip}>
+            <span className={`${styles.stripLabel} font-display`}>
+              {section.brand?.strip}
+            </span>
+            <span className={styles.stripRule} aria-hidden="true" />
+            <span className={`${styles.stripDate} font-ui`}>{weekLabel()}</span>
+          </p>
+        )}
 
         {filed.length > 0 ? (
           <nav className={styles.ticker} aria-label={`Inside ${section.name}`}>

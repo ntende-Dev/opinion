@@ -9,7 +9,30 @@
  *
  * The id is both the stored value and the URL segment.
  */
-export const SECTIONS = [
+export const SECTION_IDS = [
+  "politics",
+  "business",
+  "world",
+  "opinion",
+  "sport",
+  "technology",
+  "entertainment",
+] as const;
+
+export type SectionId = (typeof SECTION_IDS)[number];
+
+/**
+ * A desk may carry its own branding device. "tiles" gives the desk word a
+ * per-letter colour-plate cover with the strip from `strip`.
+ */
+export type Desk = {
+  readonly id: SectionId;
+  readonly name: string;
+  readonly deck: string;
+  readonly brand?: { readonly kind: "tiles"; readonly strip: string };
+};
+
+export const SECTIONS: readonly Desk[] = [
   {
     id: "politics",
     name: "Politics",
@@ -44,18 +67,21 @@ export const SECTIONS = [
     id: "entertainment",
     name: "Entertainment",
     deck: "Screens, stages and the culture that fills the hours between.",
+    /** The culture desk carries its own cover: heavy-caps letter tiles on a
+     *  cycling palette, plus the note strip with the publication week. Every
+     *  other desk keeps the standing word lockup. */
+    brand: { kind: "tiles", strip: "Arts & Entertainment" },
   },
-] as const;
-
-export type SectionId = (typeof SECTIONS)[number]["id"];
+];
 
 /** Guards anything arriving from a URL, a form or the API. */
 export function isSectionId(value: unknown): value is SectionId {
   return (
-    typeof value === "string" && SECTIONS.some((section) => section.id === value)
+    typeof value === "string" &&
+    SECTION_IDS.some((section) => section === value)
   );
 }
 
-export function sectionById(id: string) {
+export function sectionById(id: string): Desk | undefined {
   return SECTIONS.find((section) => section.id === id);
 }

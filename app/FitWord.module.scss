@@ -1,0 +1,18 @@
+// ─────────────────────────────────────────────────────────────────────────
+// The culture desk's letter plates. Each letter of the desk word sits on
+// its own colour tile; the row is fitted to the column by FitWord, so the
+// per-tile paddings and the hairline gaps between plates all scale with
+// the type. Letters hold print ink in both themes — the plates are the
+// colour event, the type stays constant.
+// ─────────────────────────────────────────────────────────────────────────
+
+.tile {
+  display: inline-block;
+  padding: 0.18em 0.05em;
+  line-height: 1;
+  /* The plates sit flush, parted by a paper-colour hairline — almost
+     touching, the way the reference band reads. */
+  &:not(:first-child) {
+    margin-left: 0.03em;
+  }
+}
