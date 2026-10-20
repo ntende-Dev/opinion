@@ -26,13 +26,18 @@ export default function BackToTopLink({ className }: { className?: string }) {
     if (!main) return;
 
     event.preventDefault();
-    main.scrollIntoView({ behavior: "smooth", block: "start" });
-    // Focus follows the reading position without yanking the scroll back to
-    // the target mid-flight.
+
+    // Focus first, without scrolling, so the reader lands at the top at the
+    // moment they ask for it; then name the place, and start the motion last
+    // so nothing after it can interrupt the scroll.
     main.focus({ preventScroll: true });
     // Match the native fragment: the address bar names where the reader is,
-    // and Back returns them to the end of the story.
-    window.history.pushState(null, "", "#main");
+    // and Back returns them to the end of the story. A reader already at
+    // #main gets the scroll without a second history entry.
+    if (window.location.hash !== "#main") {
+      window.history.pushState(null, "", "#main");
+    }
+    main.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
   return (
