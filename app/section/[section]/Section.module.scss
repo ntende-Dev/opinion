@@ -1,36 +1,185 @@
 @use "../../styles/mixins" as m;
 
 // ─────────────────────────────────────────────────────────────────────────
-// A section page — the desk's heading over the cards filed under it.
+// A section page's cover — modelled on the paper's desk-branding device:
+// the paper's name small at the top, the desk word set in heavy caps filling
+// the full width in the house red, and an "Inside" ticker that runs the
+// desk's latest headlines past a fixed pill.
 //
-// The page reads on the same centered column as a story page: an outer
-// `.container` for the page padding, with `.measure-center` inside putting
-// header and cards on the masthead's centre line, per DESIGN.md's "Centered
-// single column". The head keeps the front page's device — a hairline, then
-// the datum line in Outfit, then the serif heading.
+// The masthead spans the whole container as cover type; the desk's cards
+// return to the reading measure below it. `--desk-size` arrives from the
+// page in container-query units, computed from the desk's name length, so
+// "World" and "Entertainment" both end on the same visual beat.
 // ─────────────────────────────────────────────────────────────────────────
 
-.head {
-  @include m.hairline(top);
-  padding-top: 0.75rem;
-  margin-bottom: 2rem;
+.masthead {
+  container-type: inline-size;
+  margin-bottom: 2.25rem;
 }
 
-.count {
-  font-size: var(--step--1);
-  line-height: 1.25rem;
-  color: var(--color-muted);
+.paperName {
+  font-size: var(--step-0);
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  color: var(--color-ink);
 }
 
-.deck {
+/* The desk word: Literata's heaviest cut, uppercase, the house red. One
+   visual line, however long the name. */
+.word {
+  margin-top: 0.25rem;
+  font-size: var(--desk-size, 20cqw);
+  font-weight: 900;
+  line-height: 1.05;
+  letter-spacing: -0.015em;
+  text-transform: uppercase;
+  text-align: left;
+  color: var(--color-accent);
+  white-space: nowrap;
+  /* A hair over the line box: the heavy caps carry the row height on
+     their own, like the masthead word on the image it is set against. */
+  padding-bottom: 0.06em;
+}
+
+/* ── The Inside ticker ─────────────────────────────────────────────────── */
+
+.ticker {
+  display: flex;
+  align-items: stretch;
   margin-top: 0.75rem;
-  max-width: var(--measure);
-  font-size: var(--step-1);
-  line-height: 1.4;
+  border: 1px solid var(--color-line);
+  border-radius: 0.25rem;
+}
+
+/* The desk's name spoken as motion: the pill stands still at the strip's
+   left end while the filings run past it. */
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  margin: 3px;
+  flex: none;
+  padding: 0.25rem 0.625rem;
+  border-radius: 0.125rem;
+  background-color: var(--color-accent);
+  color: #fff;
+  font-size: var(--step--1);
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.pillArrow {
+  flex: none;
+}
+
+/**
+ * The filed headlines slide under the pill at reading pace. The track is
+ * the same list twice — half its width is exactly one copy — so the loop's
+ * seam is a duplicate item arriving where the first left. Hover pauses it;
+ * a reader chasing a link does not have to race the paper.
+ */
+.window {
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  /* The headline fades in and out of the strip's edges rather than being
+     cut by them. */
+  mask-image: linear-gradient(
+    to right,
+    transparent,
+    #000 18px,
+    #000 calc(100% - 18px),
+    transparent
+  );
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent,
+    #000 18px,
+    #000 calc(100% - 18px),
+    transparent
+  );
+}
+
+.track {
+  display: flex;
+  width: max-content;
+  padding-left: 1rem;
+  gap: 0; /* the separator lives on the item */
+  animation: desk-ticker var(--ticker-steps, 24s) linear infinite;
+}
+
+.ticker:hover .track {
+  animation-play-state: paused;
+}
+
+@keyframes desk-ticker {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.tickerItem {
+  display: flex;
+  align-items: center;
+  flex: none;
+  white-space: nowrap;
+
+  /* The vertical bar between filings — the newspaper's own separator. */
+  &::after {
+    content: "|";
+    margin-inline: 1rem;
+    color: var(--color-line);
+  }
+}
+
+.tickerLink {
+  font-size: var(--step--1);
+  font-weight: 700;
+  line-height: 1.35;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--color-ink);
+
+  @include m.transition-colors;
+
+  &:hover {
+    color: var(--color-accent);
+  }
+}
+
+/* An empty desk speaks once and holds still. */
+.tickerStatic {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 0.75rem;
+  padding: 0.25rem 0.75rem 0.25rem 0.25rem;
+  border: 1px solid var(--color-line);
+  border-radius: 0.25rem;
+  font-size: var(--step--1);
   color: var(--color-muted);
 }
 
 .empty {
   margin-bottom: 3rem;
   max-width: var(--measure);
+}
+
+/* A reader who asked for less motion holds the desk's first filings still —
+   the strip keeps working as navigation, it just stops running the rest
+   past the fold. */
+@media (prefers-reduced-motion: reduce) {
+  .track {
+    animation: none;
+    /* The strip then scrolls as an ordinary overflow row, listing every
+       filing without any of them sliding by unread. */
+    width: auto;
+    overflow-x: auto;
+  }
+
+  .window {
+    mask-image: none;
+    -webkit-mask-image: none;
+    overflow-x: auto;
+  }
 }

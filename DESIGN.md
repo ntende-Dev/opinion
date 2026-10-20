@@ -37,6 +37,12 @@ No ALL-CAPS labels, no tracked-out eyebrow labels, no middle-dot meta strings ("
 3. Structural devices (rules, badges, dividers) encode information, never pure decoration.
 4. Accessibility floor: responsive, visible keyboard focus, reduced motion respected, harmonious palette.
 
+## Section masthead (the desk cover)
+- Each desk page opens on a cover, not a heading: "The Opinion Weekly" in Outfit 600, then the desk word in Literata 900 uppercase filling 97% of the column width in the house red, then an "Inside →" ticker strip.
+- The word's exact fit is two-layered: the server emits a container-query size from a small uppercase-advance table (calibrated +3%), and `FitWord` (client) measures the real glyphs after fonts load and lands the line on 97% of the column. No script, within a few percent.
+- The ticker is a CSS marquee: the desk's published headlines uppercase Outfit 700, each a link, separated by `|`, duplicated once and translating `-50%` so the loop's seam is a duplicate arriving. Edges fade via mask; hover pauses; `prefers-reduced-motion` turns the strip into a plain scrolling row. The repeated copy is `aria-hidden`.
+- This is the deliberate all-caps exception in the design system — a display lockup, not a label. Everything else keeps sentence case.
+
 ## Story furniture (the article page, bottom to top)
 - **Desk kicker**: a short 2px accent rule, then the desk name in Outfit `--step--1` (normal case, linked) above the headline.
 - **Byline**: the writer in ink (weight 500), the date behind an em dash in muted; no writer, no dash.
