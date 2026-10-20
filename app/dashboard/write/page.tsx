@@ -323,7 +323,18 @@ export default function Write() {
                     style={{ objectPosition: `${focalX}% ${focalY}%` }}
                   />
                   <figcaption className={`${w.cropCaption} font-ui`}>
-                    Hero crop
+                    Desktop hero
+                  </figcaption>
+                </figure>
+                <figure className={w.cropPreviewWide}>
+                  <img
+                    src={coverImage}
+                    alt=""
+                    className={w.cropImageWide}
+                    style={{ objectPosition: `${focalX}% ${focalY}%` }}
+                  />
+                  <figcaption className={`${w.cropCaption} font-ui`}>
+                    Phone hero
                   </figcaption>
                 </figure>
               </div>

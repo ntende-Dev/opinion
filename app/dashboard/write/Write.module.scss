@@ -117,20 +117,36 @@
   margin-bottom: 0.5rem;
 }
 
-.cropPreview {
+.cropPreview,
+.cropPreviewWide {
   flex: 0 0 auto;
-  width: 9.6rem;
   margin: 0;
 }
 
-.cropImage {
+.cropPreview {
+  width: 9.6rem;
+}
+
+.cropPreviewWide {
+  width: 12rem;
+}
+
+.cropImage,
+.cropImageWide {
   display: block;
   width: 100%;
-  aspect-ratio: 4 / 5;
   object-fit: cover;
   border-radius: 0.25rem;
 
   @include m.hairline;
+}
+
+.cropImage {
+  aspect-ratio: 4 / 5;
+}
+
+.cropImageWide {
+  aspect-ratio: 16 / 10;
 }
 
 .cropCaption {
