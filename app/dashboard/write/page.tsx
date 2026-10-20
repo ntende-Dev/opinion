@@ -18,6 +18,8 @@ type EditStory = {
   excerpt: string | null;
   content: string;
   coverImage: string | null;
+  coverFocalX: number;
+  coverFocalY: number;
   section: string | null;
 };
 
@@ -25,6 +27,10 @@ export default function Write() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [coverImage, setCoverImage] = useState("");
+  // The point the hero and cards keep when they crop the cover. 50/50 is the
+  // centre of the picture, which is also what every existing story uses.
+  const [focalX, setFocalX] = useState(50);
+  const [focalY, setFocalY] = useState(50);
   const [uploading, setUploading] = useState(false);
   const [editStory, setEditStory] = useState<EditStory | null>(null);
   const [loadError, setLoadError] = useState("");
@@ -54,6 +60,8 @@ export default function Write() {
       .then((s: EditStory) => {
         setEditStory(s);
         setCoverImage(s.coverImage ?? "");
+        setFocalX(s.coverFocalX ?? 50);
+        setFocalY(s.coverFocalY ?? 50);
       })
       .catch((code) => {
         setLoadError(
@@ -89,6 +97,8 @@ export default function Write() {
       content: String(formData.get("content") ?? ""),
       // Empty means remove the cover — PUT fully specifies the row.
       coverImage: coverImage || null,
+      coverFocalX: focalX,
+      coverFocalY: focalY,
       section: String(formData.get("section") ?? ""),
     };
     const res = await fetch(
@@ -298,17 +308,104 @@ export default function Write() {
             Cover image
           </span>
           {coverImage && (
-            <img
-              src={coverImage}
-              alt="Cover preview"
-              className={w.coverPreview}
-            />
+            <>
+              <div className={w.coverPreviews}>
+                <img
+                  src={coverImage}
+                  alt="Cover preview"
+                  className={w.coverPreview}
+                />
+                <figure className={w.cropPreview}>
+                  <img
+                    src={coverImage}
+                    alt=""
+                    className={w.cropImage}
+                    style={{ objectPosition: `${focalX}% ${focalY}%` }}
+                  />
+                  <figcaption className={`${w.cropCaption} font-ui`}>
+                    Hero crop
+                  </figcaption>
+                </figure>
+              </div>
+              <div
+                className={w.focal}
+                role="group"
+                aria-labelledby="cover-crop-label"
+              >
+                <p
+                  id="cover-crop-label"
+                  className={`${w.focalLegend} font-ui`}
+                >
+                  Cover crop
+                </p>
+                <p className={w.focalHint}>
+                  Move the crop until the subject stays inside the hero and
+                  card frames.
+                </p>
+                <div className={w.focalRow}>
+                  <label htmlFor="focal-x" className={w.focalLabel}>
+                    Horizontal
+                  </label>
+                  <input
+                    id="focal-x"
+                    type="range"
+                    min={0}
+                    max={100}
+                    step={1}
+                    value={focalX}
+                    onChange={(event) => {
+                      setFocalX(Number(event.target.value));
+                      markDirty();
+                    }}
+                    className={w.focalRange}
+                  />
+                  <output htmlFor="focal-x" className={w.focalValue}>
+                    {focalX}%
+                  </output>
+                </div>
+                <div className={w.focalRow}>
+                  <label htmlFor="focal-y" className={w.focalLabel}>
+                    Vertical
+                  </label>
+                  <input
+                    id="focal-y"
+                    type="range"
+                    min={0}
+                    max={100}
+                    step={1}
+                    value={focalY}
+                    onChange={(event) => {
+                      setFocalY(Number(event.target.value));
+                      markDirty();
+                    }}
+                    className={w.focalRange}
+                  />
+                  <output htmlFor="focal-y" className={w.focalValue}>
+                    {focalY}%
+                  </output>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setFocalX(50);
+                    setFocalY(50);
+                    markDirty();
+                  }}
+                  className={`${w.focalReset} font-ui`}
+                >
+                  Centre the crop
+                </button>
+              </div>
+            </>
           )}
           <div className={w.coverRow}>
             <ImageUpload
               label="Upload cover image"
               onUploaded={(url) => {
                 setCoverImage(url);
+                // A new picture needs its own crop; start from the centre.
+                setFocalX(50);
+                setFocalY(50);
                 markDirty();
               }}
             />
@@ -317,6 +414,8 @@ export default function Write() {
                 type="button"
                 onClick={() => {
                   setCoverImage("");
+                  setFocalX(50);
+                  setFocalY(50);
                   markDirty();
                 }}
                 className={`${w.removeCover} font-ui`}

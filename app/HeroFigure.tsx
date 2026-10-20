@@ -3,6 +3,7 @@
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { objectPosition } from "@/lib/focal";
 import type { HeroCover } from "./heroCovers";
 import s from "./HeroFigure.module.scss";
 
@@ -109,6 +110,7 @@ export default function HeroFigure({ covers }: { covers: HeroCover[] }) {
             alt=""
             draggable={false}
             fetchPriority="high"
+            style={{ objectPosition: objectPosition(first.focalX, first.focalY) }}
             className={s.image}
           />
         ) : (

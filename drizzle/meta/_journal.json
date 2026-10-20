@@ -36,6 +36,13 @@
       "when": 1792404446484,
       "tag": "0004_purple_morbius",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1792478903931,
+      "tag": "0005_nappy_shocker",
+      "breakpoints": true
     }
   ]
 }

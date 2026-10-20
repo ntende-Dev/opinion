@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { auth } from "@/auth";
 import { eq } from "drizzle-orm";
 import { EDITORS } from "@/lib/roles";
+import { objectPosition } from "@/lib/focal";
 import s from "@/app/Story.module.scss";
 import ReadingProgress from "@/app/ReadingProgress";
 import SmoothHashLink from "@/app/SmoothHashLink";
@@ -25,6 +26,8 @@ type StoryRow = {
   excerpt: string;
   content: string;
   coverImage: string | null;
+  coverFocalX: number;
+  coverFocalY: number;
   status: string;
   publishedAt: string | null;
   createdAt: string;
@@ -38,6 +41,8 @@ const loadStory = cache(async (slug: string): Promise<StoryRow | null> => {
       excerpt: stories.excerpt,
       content: stories.content,
       coverImage: stories.coverImage,
+      coverFocalX: stories.coverFocalX,
+      coverFocalY: stories.coverFocalY,
       status: stories.status,
       publishedAt: stories.publishedAt,
       createdAt: stories.createdAt,
@@ -131,6 +136,12 @@ export default async function Story({
           <img
             src={story.coverImage}
             alt={`Cover for ${story.title}`}
+            style={{
+              objectPosition: objectPosition(
+                story.coverFocalX,
+                story.coverFocalY,
+              ),
+            }}
             className={s.cover}
           />
         )}

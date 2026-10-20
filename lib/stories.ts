@@ -13,6 +13,8 @@ export const cardColumns = {
   slug: stories.slug,
   excerpt: stories.excerpt,
   coverImage: stories.coverImage,
+  coverFocalX: stories.coverFocalX,
+  coverFocalY: stories.coverFocalY,
   authorName: users.name,
   publishedAt: stories.publishedAt,
   createdAt: stories.createdAt,

@@ -9,6 +9,8 @@ export type HeroCover = {
   slug: string;
   title: string;
   coverImage: string;
+  focalX: number;
+  focalY: number;
 };
 
 export const HERO_MAX_COVERS = 5;

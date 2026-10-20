@@ -1,4 +1,4 @@
-import { pgTable, serial, text, index } from "drizzle-orm/pg-core";
+import { pgTable, serial, text, integer, index } from "drizzle-orm/pg-core";
 
 export const users = pgTable("users", {
   id: serial("id").primaryKey(),
@@ -21,6 +21,10 @@ export const stories = pgTable(
     excerpt: text("excerpt").notNull().default(""),
     content: text("content").notNull().default(""),
     coverImage: text("cover_image"),
+    /** Where the cover crop centres, as a percentage from the left. */
+    coverFocalX: integer("cover_focal_x").notNull().default(50),
+    /** Where the cover crop centres, as a percentage from the top. */
+    coverFocalY: integer("cover_focal_y").notNull().default(50),
     status: text("status").notNull().default("draft"),
     /** Filing desk — one of the ids in lib/sections.ts, or null while unfiled. */
     section: text("section"),

@@ -28,6 +28,8 @@ export default async function Home() {
       slug: stories.slug,
       excerpt: stories.excerpt,
       coverImage: stories.coverImage,
+      coverFocalX: stories.coverFocalX,
+      coverFocalY: stories.coverFocalY,
       authorName: users.name,
       publishedAt: stories.publishedAt,
       createdAt: stories.createdAt,
@@ -47,6 +49,8 @@ export default async function Home() {
               slug: story.slug,
               title: story.title,
               coverImage: story.coverImage,
+              focalX: story.coverFocalX,
+              focalY: story.coverFocalY,
             },
           ]
         : [],

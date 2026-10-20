@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { objectPosition } from "@/lib/focal";
 import styles from "./StoryCard.module.scss";
 
 export type CardStory = {
@@ -7,6 +8,8 @@ export type CardStory = {
   slug: string;
   excerpt: string | null;
   coverImage: string | null;
+  coverFocalX: number;
+  coverFocalY: number;
   authorName: string | null;
   publishedAt: string | null;
   createdAt: string;
@@ -56,6 +59,12 @@ export default function StoryCard({ story }: { story: CardStory }) {
             alt=""
             width={1200}
             height={675}
+            style={{
+              objectPosition: objectPosition(
+                story.coverFocalX,
+                story.coverFocalY,
+              ),
+            }}
             className={styles.cardImage}
           />
         )}

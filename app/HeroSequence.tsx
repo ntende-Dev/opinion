@@ -1,4 +1,5 @@
 import { AbsoluteFill, useCurrentFrame } from "remotion";
+import { objectPosition } from "@/lib/focal";
 import {
   HERO_FADE_FRAMES,
   HERO_SLIDE_FRAMES,
@@ -52,6 +53,7 @@ export default function HeroSequence({ covers }: { covers: HeroCover[] }) {
                 width: "100%",
                 height: "100%",
                 objectFit: "cover",
+                objectPosition: objectPosition(cover.focalX, cover.focalY),
               }}
             />
           </AbsoluteFill>

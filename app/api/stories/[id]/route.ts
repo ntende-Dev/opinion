@@ -5,6 +5,7 @@ import { and, eq, ne } from "drizzle-orm";
 import { EDITORS, type Status } from "@/lib/roles";
 import { isSectionId } from "@/lib/sections";
 import { slugify } from "@/lib/slug";
+import { clampFocal } from "@/lib/focal";
 
 const OWNER_MOVES: Record<Status, Status[]> = {
   draft: ["pending"],
@@ -130,6 +131,8 @@ export async function PUT(
     excerpt?: string;
     content?: string;
     coverImage?: string | null;
+    coverFocalX?: number | null;
+    coverFocalY?: number | null;
     section?: string | null;
   };
 
@@ -163,6 +166,8 @@ export async function PUT(
       excerpt: body.excerpt ?? "",
       content: body.content,
       coverImage: body.coverImage ?? null,
+      coverFocalX: clampFocal(body.coverFocalX),
+      coverFocalY: clampFocal(body.coverFocalY),
       // Empty means unfiled — PUT fully specifies the row.
       section: isSectionId(body.section) ? body.section : null,
     })

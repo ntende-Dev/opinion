@@ -4,18 +4,30 @@ import { auth } from "@/auth";
 import { eq } from "drizzle-orm";
 import { isSectionId } from "@/lib/sections";
 import { slugify } from "@/lib/slug";
+import { clampFocal } from "@/lib/focal";
 
 export async function POST(req: Request) {
   const session = await auth();
   if (!session) return new Response("Unauthorized", { status: 401 });
 
   const authorId = (session.user as any).id;
-  const { title, slug: rawSlug, excerpt, content, coverImage, section } = (await req.json()) as {
+  const {
+    title,
+    slug: rawSlug,
+    excerpt,
+    content,
+    coverImage,
+    coverFocalX,
+    coverFocalY,
+    section,
+  } = (await req.json()) as {
     title?: string;
     slug?: string;
     excerpt?: string;
     content?: string;
-    coverImage?: string;
+    coverImage?: string | null;
+    coverFocalX?: number | null;
+    coverFocalY?: number | null;
     section?: string | null;
   };
 
@@ -54,6 +66,8 @@ export async function POST(req: Request) {
         excerpt: excerpt ?? "",
         content: content ?? "",
         coverImage,
+        coverFocalX: clampFocal(coverFocalX),
+        coverFocalY: clampFocal(coverFocalY),
         status: "draft",
         section: isSectionId(section) ? section : null,
         authorId: Number(authorId),
