@@ -1,3 +1,5 @@
+@use "./styles/mixins" as m;
+
 // ─────────────────────────────────────────────────────────────────────────
 // A single story page. Global helpers still carried in the markup:
 // .container, .font-body, .font-display, .font-ui, .measure, .prose-content.
@@ -61,4 +63,45 @@
 /** As `leading-relaxed` on the article body. */
 .content {
   line-height: 1.625;
+}
+
+/* ── The end of the piece ──────────────────────────────────────────────
+   Everything above the rule is the argument; everything below it is
+   navigation, so the reader can tell the article has finished. */
+.endnote {
+  margin-top: 2.5rem;
+  padding-top: 0.875rem;
+  @include m.hairline(top);
+  text-align: right;
+}
+
+.backToTop {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-family: var(--font-ui);
+  font-size: var(--step--1);
+  line-height: 1.25rem;
+  font-weight: 500;
+  color: var(--color-accent);
+  text-decoration-line: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 4px;
+
+  @include m.transition-colors;
+
+  &:hover {
+    color: var(--color-accent-hover);
+  }
+
+  /* The arrow lifts on the same short beat as the rest of the paper's
+     controls, so the direction is legible before the click. */
+  svg {
+    transition: transform var(--dur-fast) var(--ease-out);
+  }
+
+  &:hover svg,
+  &:focus-visible svg {
+    transform: translateY(-2px);
+  }
 }
