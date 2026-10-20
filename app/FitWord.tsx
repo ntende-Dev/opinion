@@ -2,15 +2,23 @@
 import { useEffect, useRef } from "react";
 import s from "./FitWord.module.scss";
 
-/** The culture palette, in the order the letters cycle it. */
+/** The culture palette — thirteen plates for thirteen letters, one each. The
+ *  standing seven sit 20% lighter toward white; six newer, lighter hues
+ *  round the run out, interleaved so no two neighbours share a family. */
 const TILES_DEFAULT = [
-  "#a8938b", // mauve taupe
-  "#577e2d", // olive green
-  "#d8d838", // chartreuse
-  "#87cbe9", // sky
-  "#d6d0c2", // greige
-  "#ef9611", // orange
-  "#2fae76", // mint green
+  "#f2b8c4", // blush
+  "#aebdf2", // cornflower
+  "#f6e3a0", // butter
+  "#799857", // olive
+  "#f8cfa5", // apricot
+  "#c7baee", // lavender
+  "#e0e060", // chartreuse
+  "#9fd5ed", // sky
+  "#b9a9a2", // taupe
+  "#f2ab41", // orange
+  "#b7e8d2", // seafoam
+  "#ded9ce", // greige
+  "#59be91", // mint
 ];
 
 /**
