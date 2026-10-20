@@ -208,6 +208,31 @@
   max-width: var(--measure);
 }
 
+/* ── The poster advert ──────────────────────────────────────────────────
+   A desk's paid poster rides the reading column above the grid: a
+   furniture-scale "Advertisement" tag, then the poster inside the paper's
+   hairline frame. Nothing fixed about it — the image holds its own
+   3:2 ratio at every breadth, so the band simply shrinks with the column. */
+
+.billboardAd {
+  margin-bottom: 2.5rem;
+}
+
+.adTag {
+  margin: 0 0 0.375rem;
+  font-size: var(--step--2);
+  font-weight: 600;
+  color: var(--color-muted);
+}
+
+.adImage {
+  display: block;
+  width: 100%;
+  height: auto;
+  border: 1px solid var(--color-line);
+  background-color: var(--color-paper);
+}
+
 /* A reader who asked for less motion holds the desk's first filings still —
    the strip keeps working as navigation, it just stops running the rest
    past the fold. */
