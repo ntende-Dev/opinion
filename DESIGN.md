@@ -14,7 +14,7 @@ Avoids the warm-cream + terracotta Claude default and the acid-green dark-mode d
 | paper | #FFFFFF | page background (newsprint white) |
 | ink   | #111827 | primary body/headline text (near-black, not #000) |
 | accent| #7F1D1D | editorial deep-red for links, buttons, active states |
-| display red | #C8102E | brighter envelope red, display only — the desk masthead's word and Inside pill (dark mode lightens it to #EE4356); never for links or controls |
+| display red | #ED1C24 | brighter envelope red, display only — the desk masthead's word and Inside pill (dark mode lightens it to #F4585F); never for links or controls |
 | muted | #475569 | secondary text (byline, dates, status badges) |
 | line  | #CBD5E1 | subtle rules and dividers |
 
@@ -41,7 +41,7 @@ No ALL-CAPS labels, no tracked-out eyebrow labels, no middle-dot meta strings ("
 ## Section masthead (the desk cover)
 - Each desk page opens on a cover, not a heading: "The Opinion Weekly" in Outfit 600, then the desk word in Literata 900 uppercase filling 97% of the column width in the house red, then an "Inside →" ticker strip.
 - The word's exact fit is two-layered: the server emits a container-query size from a small uppercase-advance table (calibrated +3%), and `FitWord` (client) measures the real glyphs after fonts load and lands the line on 97% of the column. No script, within a few percent.
-- The word and the Inside pill run on `--color-display-red` (#C8102E) — the bright envelope red of the desk-branding reference. Structural and functional reds stay on `--color-accent`.
+- The word and the Inside pill run on `--color-display-red` (#ED1C24) — the bright envelope red of the desk-branding reference. Structural and functional reds stay on `--color-accent`.
 - The ticker is a CSS marquee: the desk's published headlines uppercase Outfit 700, each a link, separated by `|`, duplicated once and translating `-50%` so the loop's seam is a duplicate arriving. Edges fade via mask; hover pauses; `prefers-reduced-motion` turns the strip into a plain scrolling row. The repeated copy is `aria-hidden`.
 - This is the deliberate all-caps exception in the design system — a display lockup, not a label. Everything else keeps sentence case.
 
