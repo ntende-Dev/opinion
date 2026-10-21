@@ -1,0 +1,36 @@
+@use "./styles/mixins" as m;
+
+// ─────────────────────────────────────────────────────────────────────────
+// The actions under the error notice — the paper's primary action and its
+// bordered secondary, at reading-measure weight.
+// ─────────────────────────────────────────────────────────────────────────
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 2rem;
+}
+
+.primary {
+  @include m.accent-button;
+  border-radius: 0.25rem;
+  padding: 0.5rem 1.25rem;
+  font-size: var(--step--1);
+}
+
+.secondary {
+  @include m.control;
+  padding: 0.5rem 1.25rem;
+  color: var(--color-ink);
+  font-family: var(--font-ui);
+  font-size: var(--step--1);
+  font-weight: 500;
+  text-decoration: none;
+
+  &:hover {
+    color: var(--color-accent);
+    border-color: var(--color-accent);
+  }
+}

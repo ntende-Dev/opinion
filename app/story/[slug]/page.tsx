@@ -7,6 +7,7 @@ import { auth } from "@/auth";
 import { and, eq, ne } from "drizzle-orm";
 import { EDITORS } from "@/lib/roles";
 import { sectionById, type SectionId } from "@/lib/sections";
+import { slugify } from "@/lib/slug";
 import { cardColumns, newestFirst } from "@/lib/stories";
 import { objectPosition } from "@/lib/focal";
 import s from "@/app/Story.module.scss";
@@ -15,6 +16,8 @@ import ReadingProgress from "@/app/ReadingProgress";
 import SmoothHashLink from "@/app/SmoothHashLink";
 
 export const dynamic = "force-dynamic";
+
+const siteUrl = process.env.NEXTAUTH_URL || "http://localhost:3000";
 
 /** Decode a URL slug, tolerating stray % sequences. */
 function safeDecode(slug: string) {
@@ -25,9 +28,24 @@ function safeDecode(slug: string) {
   }
 }
 
+/**
+ * How long the piece reads, in minutes: the body's words over a reading pace
+ * of 200 a minute — the Newspapers' Association measure and a fair pace for
+ * argument rather than fiction. At least one: a very short filing should not
+ * print "a 0-minute read".
+ */
+function readingMinutes(html: string) {
+  const words = html
+    .replace(/<[^>]*>/g, " ") // the content is editor-sanitised HTML
+    .split(/\s+/)
+    .filter(Boolean).length;
+  return Math.max(1, Math.round(words / 200));
+}
+
 type StoryRow = {
   id: number;
   title: string;
+  slug: string;
   excerpt: string;
   content: string;
   section: string | null;
@@ -45,6 +63,7 @@ const loadStory = cache(async (slug: string): Promise<StoryRow | null> => {
     .select({
       id: stories.id,
       title: stories.title,
+      slug: stories.slug,
       excerpt: stories.excerpt,
       content: stories.content,
       section: stories.section,
@@ -173,6 +192,53 @@ export default async function Story({
     : undefined;
   const related = await loadRelated(story.section, story.id);
 
+  // The reading beat, published pages only: a preview carries the status
+  // alone rather than encouraging anyone to time an unread piece.
+  const minutes =
+    story.status === "published" ? readingMinutes(story.content) : 0;
+
+  // The piece, as the indexers read it — NewsArticle per schema.org, emitted
+  // from the server render and escaped against `</script>` injection. A
+  // preview page never prints it: it is noindex anyway.
+  const jsonLd =
+    story.status !== "published"
+      ? null
+      : {
+          "@context": "https://schema.org",
+          "@type": "NewsArticle",
+          headline: story.title,
+          ...(story.excerpt ? { description: story.excerpt } : {}),
+          ...(story.coverImage
+            ? {
+                image: [new URL(story.coverImage, `${siteUrl}/`).href],
+              }
+            : {}),
+          datePublished: date,
+          dateModified: story.publishedAt || date,
+          ...(story.authorName
+            ? {
+                author: [
+                  {
+                    "@type": "Person",
+                    name: story.authorName,
+                    url: `${siteUrl}/by/${slugify(story.authorName)}`,
+                  },
+                ],
+              }
+            : {}),
+          ...(desk ? { articleSection: desk.name } : {}),
+          mainEntityOfPage: {
+            "@type": "WebPage",
+            "@id": `${siteUrl}/story/${story.slug}`,
+          },
+          isAccessibleForFree: true,
+          inLanguage: "en",
+          publisher: {
+            "@type": "Organization",
+            name: "The Opinion Weekly",
+          },
+        };
+
   return (
     <div className="container font-body">
       {/* How far through the piece the reader has come. */}
@@ -209,9 +275,19 @@ export default async function Story({
             ) : (
               <>
                 {story.authorName && (
-                  <span className={s.author}>By {story.authorName}</span>
+                  <span className={s.author}>
+                    By{" "}
+                    <Link href={`/by/${slugify(story.authorName)}`}>
+                      {story.authorName}
+                    </Link>
+                  </span>
                 )}
                 {when && <span className={s.dateline}>{when}</span>}
+                {minutes >= 1 && (
+                  <span className={s.readTime}>
+                    A {minutes}-minute read
+                  </span>
+                )}
               </>
             )}
           </p>
@@ -221,6 +297,14 @@ export default async function Story({
           className={`${s.content} prose-content`}
           dangerouslySetInnerHTML={{ __html: story.content }}
         />
+        {jsonLd && (
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{
+              __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c"),
+            }}
+          />
+        )}
         {/* The piece ends here: the rule closes the argument, and the link
             returns the reader to #main — the same target as the skip link, so
             the return works before JavaScript and lands focus at the top. */}

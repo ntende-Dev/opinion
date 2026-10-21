@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import StoryGrid from "@/app/StoryGrid";
+import RevealGrid from "@/app/RevealGrid";
 import FitWord from "@/app/FitWord";
 import { sectionById, type SectionId } from "@/lib/sections";
 import { listPublishedStories } from "@/lib/stories";
@@ -200,8 +201,11 @@ export default async function SectionPage({ params }: Props) {
             {/* A desk with a single filing prints it full measure — a
                 half-width card hanging in the left column reads lopsided on
                 the narrow reading column, and the full width mirrors how the
-                story's own page opens with the cover. */}
-            <StoryGrid stories={filed} solo={filed.length === 1} />
+                story's own page opens with the cover. RevealGrid gives the
+                cards the same composing-stone rise the front page prints. */}
+            <RevealGrid>
+              <StoryGrid stories={filed} solo={filed.length === 1} />
+            </RevealGrid>
           </>
         ) : (
           <p className={`${styles.empty} font-body`}>

@@ -1,7 +1,8 @@
 import type { MetadataRoute } from "next";
 import { db } from "@/drizzle/db";
-import { stories } from "@/drizzle/schema";
+import { stories, users } from "@/drizzle/schema";
 import { eq } from "drizzle-orm";
+import { slugify } from "@/lib/slug";
 import { sectionsInPrint } from "@/lib/stories";
 
 const base = process.env.NEXTAUTH_URL || "http://localhost:3000";
@@ -19,6 +20,20 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     console.error("sitemap: story query failed, publishing static entries", e);
   }
 
+  // The bylines with something in print — each has a real /by page.
+  const bylines: { name: string }[] = [];
+  try {
+    bylines.push(
+      ...((await db
+        .selectDistinct({ name: users.name })
+        .from(stories)
+        .innerJoin(users, eq(users.id, stories.authorId))
+        .where(eq(stories.status, "published"))) as { name: string }[]),
+    );
+  } catch (e) {
+    console.error("sitemap: byline query failed, skipping bylines", e);
+  }
+
   // Only the desks with something printed: an empty section page is noindex,
   // so listing it here would contradict itself.
   const sections = await sectionsInPrint();
@@ -29,6 +44,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${base}/contact`, changeFrequency: "yearly", priority: 0.3 },
     { url: `${base}/privacy`, changeFrequency: "yearly", priority: 0.2 },
     { url: `${base}/terms`, changeFrequency: "yearly", priority: 0.2 },
+    ...bylines.map((byline) => ({
+      url: `${base}/by/${slugify(byline.name)}`,
+      changeFrequency: "weekly" as const,
+      priority: 0.4,
+    })),
     ...sections.map((section) => ({
       url: `${base}/section/${section}`,
       changeFrequency: "weekly" as const,

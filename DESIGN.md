@@ -49,16 +49,26 @@ No ALL-CAPS labels, no tracked-out eyebrow labels, no middle-dot meta strings ("
 
 ## Story furniture (the article page, bottom to top)
 - **Desk kicker**: a short 2px accent rule, then the desk name in Outfit `--step--1` (normal case, linked) above the headline.
-- **Byline**: the writer in ink (weight 500), the date behind an em dash in muted; no writer, no dash.
+- **Byline**: the writer in ink (weight 500) — the name is a link to their `/by/<name>` page — then the date and the read beat ("A N-minute read") behind em dashes in muted; no writer, no dash. Reading time is the body's words over 200 a minute, at least one.
 - **Pull quote** (`blockquote` in `.prose-content`): hairlines above and below, display type centred at `--step-2`, the house red opens it with a large raised quotation mark, `cite` in Outfit muted. No side rules, no italic.
 - **Figures** (`figure`/`figcaption`/inline `img` in `.prose-content`): hairline frame and 0.25rem radius like the cover; captions in Outfit `--step--1` muted, held off the plate.
 - **Related stories**: after the endnote, display-type heading ("More from *Desk*", falling back to "Elsewhere in the paper" when the desk is empty) over the ordinary 2-up card grid.
 - **Print**: everything carrying `data-print="hide"` (masthead, footer, consent bar, progress rule, ad strip, back-to-top), plus `footer`/`.skip-link`/toasts, stays on screen; measure opens, type steps to 11pt, external links print their address, figures and quotes never break across a page.
 
+## The spike and the jam (404 + error)
+- **`app/not-found.tsx`** opens on the story shell: an "Not found" eyebrow, "This page has been spiked" in display type, and a standfirst that explains the term. Under the prose the reader gets three onward paths (front page, paper search, every desk listed as a sentence of links) and an offer to make the case by mail. No gimmicks; the page is a notice, not a playground.
+- **`app/error.tsx`** is the client error boundary in the same shell — "The presses jammed", a standfirst promising nothing is lost, then "Try again" (the boundary's retry) and "Back to the front page" as the primary/bordered control pair.
+- Both pages accept the editorial shell's opening beat automatically.
+
+## Bylines (the /by pages)
+- Each writer who has filed has a real page at `/by/<name-slug>` (the same slugify fold everywhere else uses): an "Editor"/"Contributor" eyebrow, avatar beside the name in display type, the count line in Outfit muted, then the ordinary card grid. No filings in print yet → a single quiet sentence and a link to the front page; noindex until then and never in the masthead row.
+
 ## Motion (two systems, one vocabulary)
-- The vocabulary is `styles/_motion.scss` mixins (paper-rise / drop / lean / leave) + the duration/easing tokens in `globals.scss`. CSS Modules hash keyframes, so a module that names an animation also emits it. No GSAP, no smooth-scroll library.
+- The vocabulary is `styles/_motion.scss` mixins (paper-rise / drop / lean / leave) + the duration/easing tokens in `globals.scss`. CSS Modules hash keyframes, so a module that names an animation also emits it. The verbose-module pattern: the mixin is included once (top level) and the hashed name referenced for every rule in that file. No GSAP, no smooth-scroll library.
 - **Compressing masthead**: `SiteHeader`'s two tiers sit in a sticky `.stick` bar (paper-painted, z-80). Past 140px it compresses (tighter paddings, 64px-to-40px mark, softer avatar, one hairline + soft shadow); back above 40px it releases. Hysteresis so boundary readers never see it thrash; one rAF-coalesced listener. The ad and mobile panel anchor to the document or the bar as belonging to each.
-- **Latest-grid reveal**: cards are visible by default; `RevealGrid` (client) applies a pending state and an IntersectionObserver per card, so each row lifts 14px and settles as it crosses the fold, the right-hand card 90ms after the left. Anchors land with 7.5rem scroll-margin so the bar never covers what a link pointed at.
+- **Latest-grid reveal**: cards are visible by default; `RevealGrid` (client) applies a pending state and an IntersectionObserver per card, so each row lifts 14px and settles as it crosses the fold, the right-hand card 90ms after the left. Anchors land with 7.5rem scroll-margin so the bar never covers what a link pointed at. Desk pages show the same reveal as the front page.
+- **Opening beats (wave 3)**: pages arrive in reading order, once, then stand still. The shared story shell (`Editorial.module`) staggers eyebrow → title → standfirst → prose (0/70/140/210ms, paper-rise, backwards fill). A story page's cover settles from a 2.5% over-scale (paper-lean, `--dur-reveal`), then the kicker → headline → byline rise in step (0/80/160ms) and the rule draws itself leftward at 200ms before the argument's first line. A desk cover arrives as one rise; FitWord's real measurement is unaffected because transforms never move layout.
+- Reduced motion: the one global backstop in `globals.scss` collapses every duration to its end state; every later component is covered by omission, not by remembering to opt out.
 
 ## Review against defaults
 - Not warm cream + terracotta ✓ (white + deep ink + editorial red)

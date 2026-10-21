@@ -1,0 +1,39 @@
+@use "./styles/mixins" as m;
+
+// ─────────────────────────────────────────────────────────────────────────
+// A writer's masthead in the /by/<name> page: avatar beside the name, the
+// count line beneath, then the ordinary card grid. The editorial shell's
+// eyebrow and measure still come from Editorial.module.scss.
+// ─────────────────────────────────────────────────────────────────────────
+
+.head {
+  display: flex;
+  align-items: flex-end;
+  gap: 1.25rem;
+  margin-top: 1rem;
+}
+
+.avatar {
+  flex: none;
+  width: 72px;
+  height: 72px;
+  object-fit: cover; // uploads vary; the plate is always a square
+  border-radius: 9999px;
+  @include m.hairline;
+}
+
+.name {
+  margin-top: 0;
+  line-height: 1.1;
+}
+
+.count {
+  margin-top: 0.5rem;
+  font-size: var(--step--1);
+  font-weight: 500;
+  color: var(--color-muted);
+}
+
+.empty {
+  margin-top: 2rem;
+}

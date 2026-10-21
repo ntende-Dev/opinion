@@ -149,11 +149,29 @@ button.columnLink {
   }
 }
 
+/* The paper's imprint line, set small and muted. It is a status line, not a
+   label, so it carries no caps and no tracking (see DESIGN.md). The two
+   statements hang on one line with a hairline between them; the rule is drawn
+   by the stylesheet, so assistive technology reads only the words. */
 .copyright {
-  font-size: 0.7rem;
-  text-transform: uppercase;
-  letter-spacing: 0.14em; // tracking-[0.14em]
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: 0.75rem;
+  font-size: 0.75rem;
   color: var(--color-muted);
+}
+
+.copyrightNote {
+  display: inline-flex;
+  align-items: center;
+  column-gap: 0.75rem;
+
+  &::before {
+    content: "";
+    width: 1px;
+    height: 0.85em;
+    background-color: var(--color-line);
+  }
 }
 
 .tagline {

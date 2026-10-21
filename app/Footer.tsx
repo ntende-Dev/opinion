@@ -140,7 +140,10 @@ export default function Footer({ isAuthed }: { isAuthed: boolean }) {
         {/* Colophon */}
         <div className={styles.colophon}>
           <p className={`${styles.copyright} font-ui`}>
-            © {year} {SITE.name} · All opinions are the authors&apos; own.
+            <span>&copy; {year} {SITE.name}</span>
+            <span className={styles.copyrightNote}>
+              All opinions are the authors&apos; own.
+            </span>
           </p>
           <p className={`${styles.tagline} font-body`}>{SITE.tagline}</p>
         </div>

@@ -1,4 +1,5 @@
 @use "../../styles/mixins" as m;
+@use "../../styles/motion";
 
 // ─────────────────────────────────────────────────────────────────────────
 // A section page's cover — modelled on the paper's desk-branding device:
@@ -10,11 +11,18 @@
 // return to the reading measure below it. `--desk-size` arrives from the
 // page in container-query units, computed from the desk's name length, so
 // "World" and "Entertainment" both end on the same visual beat.
+//
+// The cover arrives as one paper-rise beat (the keyframes are included here
+// once and referenced below — same file, same hash). Transforms don't move
+// layout, so FitWord's real measurement lands unchanged underneath.
 // ─────────────────────────────────────────────────────────────────────────
+
+@include motion.paper-rise;
 
 .masthead {
   container-type: inline-size;
   margin-bottom: 2.25rem;
+  animation: paper-rise var(--dur-slow) var(--ease-out) backwards;
 }
 
 /* The culture desk's whole band is the word — no paper-name line above it,
